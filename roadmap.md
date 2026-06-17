@@ -148,13 +148,13 @@
 
 ## 📊 Observability / Monitoring
 
-### 16. Monitoring Dashboard
+### 16. Monitoring Dashboard ✅
 
-* CPU/RAM
-* Connected students
-* Upload speed
-* Active exams
-* Error tracking
+* [x] CPU/RAM (Sistem Konsolu üzerinden izlenebilir)
+* [x] Connected students (Canlı takip)
+* [ ] Upload speed
+* [x] Active exams
+* [x] Error tracking (Canlı Konsol üzerinden anlık takip)
 
 ---
 
