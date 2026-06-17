@@ -50,7 +50,7 @@
 > **Atölye.Platform** bir [PolyOS](https://github.com/Emiran404) ürünüdür — *Pardus Okul Laboratuvar Yönetim ve Ödev Sistemi.*
 
 > [!IMPORTANT]
-> **Atölye.Platform**, Alanya Mesleki ve Teknik Anadolu Lisesi (Alanya MTAL) Bilişim Teknolojileri alanındaki bilgisayar laboratuvarlarında aktif olarak **Alpha aşamasında test edilmektedir** ve gerçek sınav/ödev süreçlerinde başarıyla kullanılmaktadır.
+> **Atölye.Platform**, Alanya Mesleki ve Teknik Anadolu Lisesi (Alanya MTAL) Bilişim Teknolojileri alanındaki bilgisayar laboratuvarlarında aktif olarak 26-27+ Eğitim Yılında **Beta aşamasında test edilmektedir** ve gerçek sınav/ödev süreçlerinde başarıyla kullanılmaktadır.
 
 ---
 
