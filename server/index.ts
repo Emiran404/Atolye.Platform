@@ -184,7 +184,8 @@ app.use('/updates', express.static(updatesPath));
 console.log('📁 Uploads dizini:', uploadsPath);
 
 // Frontend Dist klasörü için static serve (Üretim modu için)
-const distPath = join(__dirname, '../dist');
+const isProdEnv = __dirname.includes('/server/dist') || __dirname.includes('\\server\\dist');
+const distPath = isProdEnv ? join(__dirname, '../../dist') : join(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
   console.log('🌐 Frontend dist dizini yükleniyor:', distPath);
@@ -412,7 +413,7 @@ app.post('/api/reset-all-data', authenticateToken, authorizeRole('teacher'), (re
 });
 
 // Bilinmeyen tüm rotaları frontend'e (index.html) yönlendir (SPA desteği)
-const distPath2 = join(__dirname, '../dist');
+const distPath2 = isProdEnv ? join(__dirname, '../../dist') : join(__dirname, '../dist');
 if (fs.existsSync(distPath2)) {
   app.get('*', (req, res) => {
     // Eğer istek bir API isteği değilse index.html gönder
