@@ -1,5 +1,5 @@
 # Aşama 1: Ortak Derleme (Builder)
-FROM node:22 AS builder
+FROM node:24 AS builder
 WORKDIR /app
 
 # Kök dizindeki bağımlılıkları kopyala ve kur
@@ -23,7 +23,7 @@ RUN npm run build
 
 
 # Aşama 2: Üretim (Production) Sunucusu
-FROM node:22-slim
+FROM node:24-slim
 WORKDIR /app
 
 # Gerekli sistem paketleri (better-sqlite3 derlemesi için python ve build araçları şarttır)
