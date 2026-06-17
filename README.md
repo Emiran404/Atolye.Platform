@@ -341,7 +341,7 @@ Okul laboratuvarlarında kısıtlı internet bant genişliğini korumak için ta
 - [x] ~~Otomatik sınav değerlendirme (OGA modülü)~~
 - [x] ~~Docker konteyner desteği~~
 - [x] ~~LiderAhenk tam entegrasyon (LDAP kullanıcı senkronizasyonu)~~
-- [ ] Progressive Web App (PWA) desteği
+- [x] ~~Progressive Web App (PWA) desteği~~
 
 ---
 
