@@ -52,7 +52,7 @@ const SystemSetupPopup = () => {
           <div className="flex-1 p-8 md:p-10 flex flex-col justify-between">
               <div>
                   <div className="flex items-center gap-2 mb-4">
-                      <span className="px-2 py-1 bg-[#0ea5e9]/10 text-[#0ea5e9] text-[10px] font-bold uppercase tracking-wider rounded">v4.3.1 Stable</span>
+                      <span className="px-2 py-1 bg-[#0ea5e9]/10 text-[#0ea5e9] text-[10px] font-bold uppercase tracking-wider rounded">v4.3.3 Stable</span>
                       <span className="px-2 py-1 bg-[#ec5b13]/10 text-[#ec5b13] text-[10px] font-bold uppercase tracking-wider rounded">Yeni Kurulum</span>
                   </div>
                   <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4 tracking-tight">

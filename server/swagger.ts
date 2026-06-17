@@ -7,7 +7,7 @@ const options = {
     openapi: '3.0.0',
     info: {
       title: 'Atölye.Platform API',
-      version: '4.3.1',
+      version: '4.3.3',
       description: 'Atölye.Platform backend API dokümantasyonu',
     },
     servers: [
