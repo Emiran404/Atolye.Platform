@@ -178,8 +178,8 @@ const TeacherLayout = ({ children }) => {
 
   // Passkey modal kontrolü - giriş yapıldığında göster
   useEffect(() => {
-    // Sadece desteklenen platformlarda (Windows) göster
-    if (!canUsePasskey()) return;
+    // Sadece desteklenen platformlarda (Windows) göster ve DB bloku kalktıysa göster
+    if (!canUsePasskey() || isDbBlocked) return;
 
     const passkeyDismissed = localStorage.getItem('passkey_modal_dismissed');
     if (!passkeyDismissed) {
@@ -189,7 +189,7 @@ const TeacherLayout = ({ children }) => {
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [isDbBlocked]);
   
   // Güncelleme Kontrolü
   useEffect(() => {
