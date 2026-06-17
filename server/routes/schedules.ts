@@ -6,6 +6,16 @@ import { authenticateToken, authorizeRole } from '../middleware/auth.js';
 const router = express.Router();
 
 // Tüm ders programlarını getir
+/**
+ * @swagger
+ * /api/schedules:
+ *   get:
+ *     summary: GET /
+ *     tags: [Schedules]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/', (req, res) => {
   try {
     const schedules = getData('schedules') || [];
@@ -16,6 +26,16 @@ router.get('/', (req, res) => {
 });
 
 // Belirli bir sınıfın ders programını getir
+/**
+ * @swagger
+ * /api/schedules/class/{className}:
+ *   get:
+ *     summary: GET /class/{className}
+ *     tags: [Schedules]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/class/:className', (req, res) => {
   try {
     const { className } = req.params;
@@ -28,6 +48,16 @@ router.get('/class/:className', (req, res) => {
 });
 
 // Yeni ders ekle
+/**
+ * @swagger
+ * /api/schedules:
+ *   post:
+ *     summary: POST /
+ *     tags: [Schedules]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/', authorizeRole('teacher'), (req, res) => {
   try {
     const schedules = getData('schedules') || [];
@@ -47,6 +77,16 @@ router.post('/', authorizeRole('teacher'), (req, res) => {
 });
 
 // Toplu ders ekle
+/**
+ * @swagger
+ * /api/schedules/bulk:
+ *   post:
+ *     summary: POST /bulk
+ *     tags: [Schedules]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/bulk', authorizeRole('teacher'), (req, res) => {
   try {
     const schedules = getData('schedules') || [];
@@ -68,6 +108,16 @@ router.post('/bulk', authorizeRole('teacher'), (req, res) => {
 });
 
 // Ders güncelle
+/**
+ * @swagger
+ * /api/schedules/{id}:
+ *   put:
+ *     summary: PUT /{id}
+ *     tags: [Schedules]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.put('/:id', authorizeRole('teacher'), (req, res) => {
   try {
     const { id } = req.params;
@@ -92,6 +142,16 @@ router.put('/:id', authorizeRole('teacher'), (req, res) => {
 });
 
 // Ders sil
+/**
+ * @swagger
+ * /api/schedules/{id}:
+ *   delete:
+ *     summary: DELETE /{id}
+ *     tags: [Schedules]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.delete('/:id', authorizeRole('teacher'), (req, res) => {
   try {
     const { id } = req.params;

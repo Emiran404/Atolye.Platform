@@ -13,6 +13,16 @@ const __dirname = dirname(__filename);
 const router = express.Router();
 
 // Tüm teslimleri getir
+/**
+ * @swagger
+ * /api/submissions:
+ *   get:
+ *     summary: GET /
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/', (req, res) => {
   try {
     const submissions = getData('submissions') || [];
@@ -23,6 +33,16 @@ router.get('/', (req, res) => {
 });
 
 // Öğrenci teslimlerini getir
+/**
+ * @swagger
+ * /api/submissions/student/{studentId}:
+ *   get:
+ *     summary: GET /student/{studentId}
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/student/:studentId', (req, res) => {
   try {
     const { studentId } = req.params;
@@ -35,6 +55,16 @@ router.get('/student/:studentId', (req, res) => {
 });
 
 // Sınav teslimlerini getir
+/**
+ * @swagger
+ * /api/submissions/exam/{examId}:
+ *   get:
+ *     summary: GET /exam/{examId}
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/exam/:examId', (req, res) => {
   try {
     const { examId } = req.params;
@@ -47,6 +77,16 @@ router.get('/exam/:examId', (req, res) => {
 });
 
 // Tek teslim getir
+/**
+ * @swagger
+ * /api/submissions/{examId}/{studentId}:
+ *   get:
+ *     summary: GET /{examId}/{studentId}
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/:examId/:studentId', (req, res) => {
   try {
     const { examId, studentId } = req.params;
@@ -64,6 +104,16 @@ router.get('/:examId/:studentId', (req, res) => {
 });
 
 // Teslim oluştur/güncelle (dosya yüklemesi uploads route'unda)
+/**
+ * @swagger
+ * /api/submissions:
+ *   post:
+ *     summary: POST /
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/', (req, res) => {
   try {
     const {
@@ -162,6 +212,16 @@ router.post('/', (req, res) => {
 });
 
 // Quiz teslimi oluştur ve otomatik notlandır
+/**
+ * @swagger
+ * /api/submissions/quiz:
+ *   post:
+ *     summary: POST /quiz
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/quiz', (req, res) => {
   try {
     const {
@@ -261,6 +321,16 @@ router.post('/quiz', (req, res) => {
 });
 
 // Klasik sınav teslimi oluştur
+/**
+ * @swagger
+ * /api/submissions/classic:
+ *   post:
+ *     summary: POST /classic
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/classic', (req, res) => {
   try {
     const {
@@ -346,6 +416,16 @@ router.post('/classic', (req, res) => {
 });
 
 // Teslimi kilitle
+/**
+ * @swagger
+ * /api/submissions/{id}/lock:
+ *   patch:
+ *     summary: PATCH /{id}/lock
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.patch('/:id/lock', (req, res) => {
   try {
     const { id } = req.params;
@@ -367,6 +447,16 @@ router.patch('/:id/lock', (req, res) => {
 });
 
 // "Hazırım" işaretle
+/**
+ * @swagger
+ * /api/submissions/{id}/ready:
+ *   patch:
+ *     summary: PATCH /{id}/ready
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.patch('/:id/ready', (req, res) => {
   try {
     const { id } = req.params;
@@ -390,6 +480,16 @@ router.patch('/:id/ready', (req, res) => {
 });
 
 // Not ver
+/**
+ * @swagger
+ * /api/submissions/{id}/grade:
+ *   patch:
+ *     summary: PATCH /{id}/grade
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.patch('/:id/grade', authorizeRole('teacher'), (req, res) => {
   try {
     const { id } = req.params;
@@ -440,6 +540,16 @@ router.patch('/:id/grade', authorizeRole('teacher'), (req, res) => {
 });
 
 // Düzenleme izni talebi
+/**
+ * @swagger
+ * /api/submissions/{id}/edit-request:
+ *   post:
+ *     summary: POST /{id}/edit-request
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/:id/edit-request', (req, res) => {
   try {
     const { id } = req.params;
@@ -470,6 +580,16 @@ router.post('/:id/edit-request', (req, res) => {
 });
 
 // Düzenleme talebini yanıtla
+/**
+ * @swagger
+ * /api/submissions/{id}/edit-request/{requestId}:
+ *   patch:
+ *     summary: PATCH /{id}/edit-request/{requestId}
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.patch('/:id/edit-request/:requestId', authorizeRole('teacher'), (req, res) => {
   try {
     const { id, requestId } = req.params;
@@ -507,6 +627,16 @@ router.patch('/:id/edit-request/:requestId', authorizeRole('teacher'), (req, res
 });
 
 // Öğretmen direkt düzenleme izni ver (mevcut dosyaları sil)
+/**
+ * @swagger
+ * /api/submissions/{submissionId}/grant-edit-permission:
+ *   post:
+ *     summary: POST /{submissionId}/grant-edit-permission
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/:submissionId/grant-edit-permission', authorizeRole('teacher'), (req, res) => {
   try {
     const { submissionId } = req.params;
@@ -569,6 +699,16 @@ router.post('/:submissionId/grant-edit-permission', authorizeRole('teacher'), (r
 });
 
 // Benzer dosya tespiti (Hash karşılaştırması)
+/**
+ * @swagger
+ * /api/submissions/check-duplicate:
+ *   post:
+ *     summary: POST /check-duplicate
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/check-duplicate', (req, res) => {
   try {
     const { fileHash, examId, studentId } = req.body;
@@ -608,6 +748,16 @@ router.post('/check-duplicate', (req, res) => {
 });
 
 // Sınav bazında benzer dosyaları listele (Öğretmen için)
+/**
+ * @swagger
+ * /api/submissions/exam/{examId}/duplicates:
+ *   get:
+ *     summary: GET /exam/{examId}/duplicates
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/exam/:examId/duplicates', (req, res) => {
   try {
     const { examId } = req.params;
@@ -650,6 +800,16 @@ router.get('/exam/:examId/duplicates', (req, res) => {
 });
 
 // Teslimi sil
+/**
+ * @swagger
+ * /api/submissions/{id}:
+ *   delete:
+ *     summary: DELETE /{id}
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.delete('/:id', authorizeRole('teacher'), (req, res) => {
   try {
     const { id } = req.params;
@@ -683,6 +843,16 @@ router.delete('/:id', authorizeRole('teacher'), (req, res) => {
 });
 
 // Odak kaybı bildirimi kaydet
+/**
+ * @swagger
+ * /api/submissions/focus-violation:
+ *   post:
+ *     summary: POST /focus-violation
+ *     tags: [Submissions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/focus-violation', (req, res) => {
   try {
     const { examId, studentId } = req.body;

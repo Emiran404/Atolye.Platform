@@ -132,6 +132,12 @@ export const authApi = {
       body: JSON.stringify({ username, credentialId, authenticatorData, clientDataJSON, signature, rememberMe }),
     }),
 
+  passkeyRemove: (username, passkeyId) =>
+    fetchApi('/auth/passkey/remove', {
+      method: 'POST',
+      body: JSON.stringify({ username, passkeyId }),
+    }),
+
   generateRecoveryKey: (username) =>
     fetchApi('/auth/recovery-key/generate', {
       method: 'POST',
@@ -386,6 +392,7 @@ export const liveSessionApi = {
 
 // System API (Version, Update, etc.)
 export const systemApi = {
+  sendSystemControl: (action) => fetchApi('/system/control', { method: 'POST', body: JSON.stringify({ action }) }),
   getVersion: () => fetchApi('/system/version'),
   getUpdates: () => fetchApi('/system/updates'),
   checkUpdate: (force = false) => 

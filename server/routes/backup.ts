@@ -22,6 +22,16 @@ const upload = multer({
 });
 
 // GET /api/backup - Tüm verileri JSON olarak döndür
+/**
+ * @swagger
+ * /api/backup:
+ *   get:
+ *     summary: GET /
+ *     tags: [Backup]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/', (req, res) => {
   try {
     // Backend'deki gerçek verileri oku
@@ -59,6 +69,16 @@ router.get('/', (req, res) => {
 });
 
 // GET /api/backup/with-photos - ZIP olarak tüm veriler + fotoğraflar
+/**
+ * @swagger
+ * /api/backup/with-photos:
+ *   get:
+ *     summary: GET /with-photos
+ *     tags: [Backup]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/with-photos', async (req, res) => {
   try {
     // Verileri al
@@ -136,6 +156,16 @@ router.get('/with-photos', async (req, res) => {
 });
 
 // POST /api/backup/restore - Yedekten geri yükle
+/**
+ * @swagger
+ * /api/backup/restore:
+ *   post:
+ *     summary: POST /restore
+ *     tags: [Backup]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/restore', (req, res) => {
   try {
     const { data } = req.body;
@@ -185,6 +215,16 @@ router.post('/restore', (req, res) => {
 });
 
 // POST /api/backup/restore-zip - ZIP dosyasından geri yükle
+/**
+ * @swagger
+ * /api/backup/restore-zip:
+ *   post:
+ *     summary: POST /restore-zip
+ *     tags: [Backup]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/restore-zip', upload.single('backup'), async (req, res) => {
   const tempDir = path.join(__dirname, '..', 'temp');
   const extractDir = path.join(tempDir, `extract-${Date.now()}`);
@@ -319,6 +359,16 @@ router.post('/restore-zip', upload.single('backup'), async (req, res) => {
 });
 
 // GET /api/backup/list - Yerel yedek dosyalarını listele
+/**
+ * @swagger
+ * /api/backup/list:
+ *   get:
+ *     summary: GET /list
+ *     tags: [Backup]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/list', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const backupsDir = path.join(__dirname, '..', 'backups');
@@ -348,6 +398,16 @@ router.get('/list', authenticateToken, authorizeRole('teacher'), (req, res) => {
 });
 
 // GET /api/backup/download/:fileName - Yerel yedeği indir
+/**
+ * @swagger
+ * /api/backup/download/{fileName}:
+ *   get:
+ *     summary: GET /download/{fileName}
+ *     tags: [Backup]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/download/:fileName', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { fileName } = req.params;
@@ -370,6 +430,16 @@ router.get('/download/:fileName', authenticateToken, authorizeRole('teacher'), (
 });
 
 // DELETE /api/backup/:fileName - Yerel yedeği sil
+/**
+ * @swagger
+ * /api/backup/{fileName}:
+ *   delete:
+ *     summary: DELETE /{fileName}
+ *     tags: [Backup]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.delete('/:fileName', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { fileName } = req.params;
@@ -393,6 +463,16 @@ router.delete('/:fileName', authenticateToken, authorizeRole('teacher'), (req, r
 });
 
 // POST /api/backup/restore-local/:fileName - Yerel yedeği geri yükle
+/**
+ * @swagger
+ * /api/backup/restore-local/{fileName}:
+ *   post:
+ *     summary: POST /restore-local/{fileName}
+ *     tags: [Backup]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/restore-local/:fileName', authenticateToken, authorizeRole('teacher'), async (req, res) => {
   const tempDir = path.join(__dirname, '..', 'temp');
   const extractDir = path.join(tempDir, `extract-${Date.now()}`);

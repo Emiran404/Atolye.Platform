@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, LogOut, User, Sun, Moon, Settings, Check, ArrowRight } from 'lucide-react';
+import { Bell, LogOut, User, Sun, Moon, Settings, Check, ArrowRight, DownloadCloud } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { useNotificationStore } from '../../store/notificationStore';
 import { useToast } from '../ui/Toast';
 import { t } from '../../utils/i18n';
@@ -15,6 +16,7 @@ const Topbar = () => {
   const [showNotificationMenu, setShowNotificationMenu] = useState(false);
 
   const { toast } = useToast();
+  const { isInstallable, promptInstall } = usePWAInstall();
 
   const handleLogout = () => {
     navigate('/login');
@@ -34,6 +36,18 @@ const Topbar = () => {
 
       {/* Right - User Info & Actions */}
       <div className="flex items-center gap-4">
+        {/* PWA Install Button */}
+        {isInstallable && (
+          <button
+            onClick={promptInstall}
+            className="flex items-center gap-2 px-3 py-1.5 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 rounded-lg transition-colors border border-emerald-600/20"
+            title="Uygulamayı Yükle"
+          >
+            <DownloadCloud className="w-4 h-4" />
+            <span className="text-sm font-medium hidden sm:inline">Yükle</span>
+          </button>
+        )}
+
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}

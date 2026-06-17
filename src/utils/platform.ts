@@ -16,12 +16,9 @@ export const canUsePasskey = () => {
   const hasBrowserSupport = window.PublicKeyCredential && 
                             navigator.credentials && 
                             navigator.credentials.create;
-  
-  // 2. Platform requirement (Windows only for now as per user request)
-  const isCorrectPlatform = isWindows();
 
-  // 3. HTTPS requirement
+  // 2. HTTPS requirement
   const isSecure = window.isSecureContext;
 
-  return !!(hasBrowserSupport && isCorrectPlatform && isSecure);
+  return !!(hasBrowserSupport && isSecure);
 };

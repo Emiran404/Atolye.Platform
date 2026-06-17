@@ -11,6 +11,16 @@ const generateId = () => {
 };
 
 // Tüm bildirimler
+/**
+ * @swagger
+ * /api/notifications:
+ *   get:
+ *     summary: GET /
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/', (req, res) => {
   try {
     const notifications = getData('notifications') || [];
@@ -21,6 +31,16 @@ router.get('/', (req, res) => {
 });
 
 // Kullanıcıya özel bildirimler
+/**
+ * @swagger
+ * /api/notifications/user/{userType}/{userId}:
+ *   get:
+ *     summary: GET /user/{userType}/{userId}
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/user/:userType/:userId', (req, res) => {
   try {
     const { userType, userId } = req.params;
@@ -42,6 +62,16 @@ router.get('/user/:userType/:userId', (req, res) => {
 });
 
 // Bildirim oluştur
+/**
+ * @swagger
+ * /api/notifications:
+ *   post:
+ *     summary: POST /
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/', authorizeRole('teacher'), (req, res) => {
   try {
     const { type, title, message, targetType, targetId, relatedId } = req.body;
@@ -69,6 +99,16 @@ router.post('/', authorizeRole('teacher'), (req, res) => {
 });
 
 // Okundu işaretle
+/**
+ * @swagger
+ * /api/notifications/{id}/read:
+ *   patch:
+ *     summary: PATCH /{id}/read
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.patch('/:id/read', (req, res) => {
   try {
     const { id } = req.params;
@@ -90,6 +130,16 @@ router.patch('/:id/read', (req, res) => {
 });
 
 // Tümünü okundu işaretle
+/**
+ * @swagger
+ * /api/notifications/read-all/{userType}/{userId}:
+ *   patch:
+ *     summary: PATCH /read-all/{userType}/{userId}
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.patch('/read-all/:userType/:userId', (req, res) => {
   try {
     const { userType, userId } = req.params;
@@ -110,6 +160,16 @@ router.patch('/read-all/:userType/:userId', (req, res) => {
 });
 
 // Bildirim sil
+/**
+ * @swagger
+ * /api/notifications/{id}:
+ *   delete:
+ *     summary: DELETE /{id}
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.delete('/:id', authorizeRole('teacher'), (req, res) => {
   try {
     const { id } = req.params;
@@ -123,6 +183,16 @@ router.delete('/:id', authorizeRole('teacher'), (req, res) => {
   }
 });
 // Toplu bildirim gönder (İsimlendirme veya ID listesi ile)
+/**
+ * @swagger
+ * /api/notifications/bulk:
+ *   post:
+ *     summary: POST /bulk
+ *     tags: [Notifications]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/bulk', authorizeRole('teacher'), (req, res) => {
   try {
     const { target, targetType, targetIds, title, message, relatedId } = req.body;

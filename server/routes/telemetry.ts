@@ -4,6 +4,16 @@ import { getData, setData } from '../utils/storage.js';
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /api/telemetry:
+ *   post:
+ *     summary: POST /
+ *     tags: [Telemetry]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/', (req, res) => {
   try {
     const settings = getData('settings') || {};
@@ -91,6 +101,16 @@ router.post('/', (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/telemetry/export:
+ *   get:
+ *     summary: GET /export
+ *     tags: [Telemetry]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/export', (req, res) => {
   // Basit indirme endpointi
   try {

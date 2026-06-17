@@ -54,6 +54,16 @@ setInterval(() => {
 }, 60000);
 
 // Client sends heartbeat every ~15-30s during active exam
+/**
+ * @swagger
+ * /api/liveSessions/heartbeat:
+ *   post:
+ *     summary: POST /heartbeat
+ *     tags: [LiveSessions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/heartbeat', (req, res) => {
   const { examId, studentId, studentName, studentNumber, className, currentQuestion } = req.body;
   if (!examId || !studentId) return res.status(400).json({ error: 'Missing ids' });
@@ -83,6 +93,16 @@ router.post('/heartbeat', (req, res) => {
 });
 
 // Report a security warning
+/**
+ * @swagger
+ * /api/liveSessions/warning:
+ *   post:
+ *     summary: POST /warning
+ *     tags: [LiveSessions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/warning', (req, res) => {
   const { examId, studentId, type, message } = req.body;
   if (activeSessions[examId] && activeSessions[examId][studentId]) {
@@ -97,6 +117,16 @@ router.post('/warning', (req, res) => {
 });
 
 // Teacher gets active sessions
+/**
+ * @swagger
+ * /api/liveSessions/exam/{examId}:
+ *   get:
+ *     summary: GET /exam/{examId}
+ *     tags: [LiveSessions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/exam/:examId', authorizeRole('teacher'), (req, res) => {
   const { examId } = req.params;
   const sessions = activeSessions[examId] || {};
@@ -112,6 +142,16 @@ router.get('/exam/:examId', authorizeRole('teacher'), (req, res) => {
 });
 
 // End session
+/**
+ * @swagger
+ * /api/liveSessions/finish:
+ *   post:
+ *     summary: POST /finish
+ *     tags: [LiveSessions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/finish', (req, res) => {
   const { examId, studentId } = req.body;
   if (activeSessions[examId] && activeSessions[examId][studentId]) {
@@ -121,6 +161,16 @@ router.post('/finish', (req, res) => {
 });
 
 // Cancel student exam (teacher action)
+/**
+ * @swagger
+ * /api/liveSessions/cancel:
+ *   post:
+ *     summary: POST /cancel
+ *     tags: [LiveSessions]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/cancel', authorizeRole('teacher'), (req, res) => {
   const { examId, studentId } = req.body;
   const studentInfo = activeSessions[examId]?.[studentId] || {};

@@ -27,6 +27,7 @@ const initializeSqliteConnection = () => {
     const dbPath = join(dataPath, dbName);
     db = new sqliteDriver(dbPath);
     db.exec('PRAGMA journal_mode = WAL');
+    db.exec('PRAGMA busy_timeout = 5000');
     db.exec(`
       CREATE TABLE IF NOT EXISTS collections (
         key TEXT PRIMARY KEY,

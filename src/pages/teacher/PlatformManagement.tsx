@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Settings, Shield, Users, Lock, Unlock, Save, UserCheck, UserX, Trash2, Mail, BarChart3, HardDrive, FileText, Clock, Download, Database, Key, AlertTriangle, RefreshCcw, CheckCircle2, Info as InfoIcon, ClipboardList, Activity } from 'lucide-react';
+import { Settings, Shield, Users, Lock, Unlock, Save, UserCheck, UserX, Trash2, Mail, BarChart3, HardDrive, FileText, Clock, Download, Database, Key, AlertTriangle, RefreshCcw, CheckCircle2, Info as InfoIcon, ClipboardList, Activity, Terminal, Server, Power, RefreshCw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { TeacherLayout } from '../../components/layouts';
 import { useToast } from '../../components/ui/Toast';
@@ -74,6 +74,193 @@ const PlatformManagement = () => {
 
   // Veri sıfırlama error state
   const [resetError, setResetError] = useState('');
+
+  // Sistem Konsolu state'leri
+  const [systemLogs, setSystemLogs] = useState([]);
+  const [systemMetrics, setSystemMetrics] = useState(null);
+  const [consoleSocket, setConsoleSocket] = useState(null);
+  const consoleEndRef = React.useRef(null);
+
+  useEffect(() => {
+    if (activeTab === 'system' && consoleEndRef.current) {
+      consoleEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [systemLogs, activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'system' && !consoleSocket) {
+      import('socket.io-client').then(({ io }) => {
+        const url = window.location.protocol + '//' + window.location.hostname + ':3002';
+        const socket = io(url);
+        
+        socket.on('connect', () => {
+          socket.emit('join_teachers_room');
+          setSystemLogs(prev => [...prev, { type: 'success', message: 'Sunucu bağlantısı kuruldu.', timestamp: new Date().toISOString() }]);
+        });
+
+        socket.on('system_log', (log) => {
+          setSystemLogs(prev => [...prev, log].slice(-100));
+        });
+
+        socket.on('system_metrics', (metrics) => {
+          setSystemMetrics(metrics);
+        });
+
+        socket.on('disconnect', () => {
+          setSystemLogs(prev => [...prev, { type: 'error', message: 'Sunucu bağlantısı koptu. Yeniden bağlanılıyor...', timestamp: new Date().toISOString() }]);
+        });
+
+        setConsoleSocket(socket);
+      });
+    } else if (activeTab !== 'system' && consoleSocket) {
+      consoleSocket.disconnect();
+      setConsoleSocket(null);
+    }
+    
+    return () => {
+      if (consoleSocket && activeTab !== 'system') {
+        consoleSocket.disconnect();
+      }
+    };
+  }, [activeTab]);
+
+  const handleSystemControl = (action) => {
+    const isRestart = action === 'restart';
+    setConfirmModal({
+      isOpen: true,
+      title: isRestart ? 'Sistemi Yeniden Başlat' : 'Sistemi Kapat',
+      message: isRestart ? 'Sistemi yeniden başlatmak istediğinize emin misiniz? Arka plan araçlarınız ayarlı değilse sistem tekrar açılmayabilir.' : 'Sistemi kapatmak istediğinize emin misiniz? Sunucuya fiziksel erişiminiz yoksa geri açamazsınız.',
+      confirmText: isRestart ? 'Yeniden Başlat' : 'Kapat',
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          const res = await systemApi.sendSystemControl(action);
+          if (res?.success) {
+            toast.success(res.message);
+          } else {
+            toast.error('İşlem başarısız!');
+          }
+        } catch(e) {
+          toast.error('Sunucuya ulaşılamadı.');
+        }
+      }
+    });
+  };
+
+  const renderSystemConsoleTab = () => (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px', alignItems: 'start' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={styles.card}>
+          <div style={styles.cardHeader}>
+            <Activity size={24} style={{ color: '#0ea5e9' }} />
+            <h2 style={styles.cardTitle}>Sistem Durumu</h2>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text-secondary)' }}>CPU Yükü</span>
+                <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-text-primary)' }}>
+                  {systemMetrics?.cpu ? systemMetrics.cpu.toFixed(2) : '0.00'}
+                </span>
+              </div>
+              <div style={{ height: '8px', background: 'var(--color-bg-secondary)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${Math.min((systemMetrics?.cpu || 0) * 10, 100)}%`, background: '#0ea5e9', transition: 'width 0.5s' }} />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text-secondary)' }}>RAM Kullanımı (Sunucu Toplam)</span>
+                <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-text-primary)' }}>
+                  {systemMetrics ? `${((systemMetrics.totalMem - systemMetrics.freeMem) / 1024 / 1024 / 1024).toFixed(2)} GB / ${(systemMetrics.totalMem / 1024 / 1024 / 1024).toFixed(2)} GB` : '0 / 0'}
+                </span>
+              </div>
+              <div style={{ height: '8px', background: 'var(--color-bg-secondary)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${systemMetrics ? ((systemMetrics.totalMem - systemMetrics.freeMem) / systemMetrics.totalMem) * 100 : 0}%`, background: '#8b5cf6', transition: 'width 0.5s' }} />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text-secondary)' }}>Uygulama Bellek (Node.js)</span>
+                <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-text-primary)' }}>
+                  {systemMetrics?.processMem ? `${(systemMetrics.processMem / 1024 / 1024).toFixed(2)} MB` : '0 MB'}
+                </span>
+              </div>
+              <div style={{ height: '8px', background: 'var(--color-bg-secondary)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${Math.min((systemMetrics?.processMem || 0) / (1024 * 1024 * 1024) * 100, 100)}%`, background: '#10b981', transition: 'width 0.5s' }} />
+              </div>
+            </div>
+
+            <div style={{ background: 'var(--color-bg-secondary)', padding: '12px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>Çalışma Süresi:</span>
+              <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text-primary)' }}>
+                {systemMetrics ? `${Math.floor(systemMetrics.uptime / 3600)}sa ${Math.floor((systemMetrics.uptime % 3600) / 60)}dk ${Math.floor(systemMetrics.uptime % 60)}sn` : '0sa 0dk 0sn'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div style={styles.card}>
+          <div style={styles.cardHeader}>
+            <Server size={24} style={{ color: '#f59e0b' }} />
+            <h2 style={styles.cardTitle}>Sunucu Kontrolü</h2>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <button
+              onClick={() => handleSystemControl('restart')}
+              style={{
+                width: '100%', padding: '12px', borderRadius: '8px', background: '#f59e0b', color: 'white',
+                border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                fontWeight: '600', cursor: 'pointer'
+              }}
+            >
+              <RefreshCw size={18} /> Yeniden Başlat
+            </button>
+            <button
+              onClick={() => handleSystemControl('shutdown')}
+              style={{
+                width: '100%', padding: '12px', borderRadius: '8px', background: '#dc2626', color: 'white',
+                border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                fontWeight: '600', cursor: 'pointer'
+              }}
+            >
+              <Power size={18} /> Sistemi Kapat
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ ...styles.card, height: '600px', display: 'flex', flexDirection: 'column', padding: '0', overflow: 'hidden', background: '#0f172a', border: '1px solid #1e293b' }}>
+        <div style={{ padding: '16px', borderBottom: '1px solid #1e293b', display: 'flex', alignItems: 'center', gap: '12px', background: '#020617' }}>
+          <Terminal size={20} style={{ color: '#10b981' }} />
+          <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#f8fafc', margin: 0 }}>Canlı Konsol</h2>
+        </div>
+        <div style={{ flex: 1, padding: '16px', overflowY: 'auto', fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.5' }}>
+          {systemLogs.length === 0 ? (
+            <div style={{ color: '#64748b', fontStyle: 'italic' }}>Konsol bekleniyor...</div>
+          ) : (
+            systemLogs.map((log, index) => {
+              let color = '#f8fafc';
+              if (log.type === 'error') color = '#ef4444';
+              else if (log.type === 'warn') color = '#f59e0b';
+              else if (log.type === 'success') color = '#10b981';
+              else if (log.type === 'info') color = '#38bdf8';
+
+              return (
+                <div key={index} style={{ marginBottom: '4px', wordBreak: 'break-all' }}>
+                  <span style={{ color: '#64748b', marginRight: '12px' }}>[{new Date(log.timestamp).toLocaleTimeString('tr-TR')}]</span>
+                  <span style={{ color }}>{log.message}</span>
+                </div>
+              );
+            })
+          )}
+          <div ref={consoleEndRef} />
+        </div>
+      </div>
+    </div>
+  );
 
   // Masaüstü Güncellemeleri
   const [autoDownloadClientUpdates, setAutoDownloadClientUpdates] = useState(true);
@@ -3019,6 +3206,16 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
             İşlem Geçmişi
           </button>
           <button
+            style={styles.tab(activeTab === 'system')}
+            onClick={() => {
+              setActiveTab('system');
+              setSearchParams({ tab: 'system' });
+            }}
+          >
+            <Terminal size={18} />
+            Sistem Konsolu
+          </button>
+          <button
             style={{ ...styles.tab(activeTab === 'reset'), color: activeTab === 'reset' ? '#dc2626' : 'var(--color-text-muted)', borderBottomColor: activeTab === 'reset' ? '#dc2626' : 'transparent' }}
             onClick={() => setActiveTab('reset')}
           >
@@ -3036,6 +3233,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
         {activeTab === 'backup' && renderBackupTab()}
         {activeTab === 'update' && renderUpdateTab()}
         {activeTab === 'audit' && renderAuditTab()}
+        {activeTab === 'system' && renderSystemConsoleTab()}
         {activeTab === 'reset' && renderResetTab()}
         <ConfirmModal
           {...confirmModal}

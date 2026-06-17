@@ -133,16 +133,16 @@ const TeacherLogin = () => {
         return;
       }
 
-      const { challenge, credentialId } = res;
+      const { challenge, credentialIds } = res;
 
       // WebAuthn ile kimlik doğrulama
       const assertion = await navigator.credentials.get({
         publicKey: {
           challenge: Uint8Array.from(atob(challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)),
-          allowCredentials: [{
+          allowCredentials: credentialIds.map(id => ({
             type: 'public-key',
-            id: Uint8Array.from(atob(credentialId), c => c.charCodeAt(0))
-          }],
+            id: Uint8Array.from(atob(id), c => c.charCodeAt(0))
+          })),
           timeout: 60000
         }
       });
@@ -473,7 +473,7 @@ const TeacherLogin = () => {
               <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', textAlign: 'center', marginTop: '8px' }}>
                 {canUsePasskey() 
                   ? 'Windows Hello, Linux (Pardus) ve MacOS ile uyumlu.' 
-                  : 'Passkey şu an sadece Windows platformunda desteklenmektedir.'}
+                  : 'Tarayıcınız Passkey desteklemiyor.'}
               </p>
             </div>
           )}

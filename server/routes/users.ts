@@ -31,6 +31,16 @@ const saveTeachers = (teachers) => {
 };
 
 // GET /api/users/students - Tüm öğrencileri al
+/**
+ * @swagger
+ * /api/users/students:
+ *   get:
+ *     summary: GET /students
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/students', (req, res) => {
   try {
     const students = loadStudents();
@@ -50,6 +60,16 @@ router.get('/students', (req, res) => {
 });
 
 // GET /api/users/teachers - Tüm öğretmenleri al
+/**
+ * @swagger
+ * /api/users/teachers:
+ *   get:
+ *     summary: GET /teachers
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/teachers', (req, res) => {
   try {
     const teachers = loadTeachers();
@@ -69,6 +89,16 @@ router.get('/teachers', (req, res) => {
 });
 
 // DELETE /api/users/:id - Kullanıcı sil
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: DELETE /{id}
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.delete('/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -111,6 +141,16 @@ router.delete('/:id', (req, res) => {
 });
 
 // POST /api/users/:id/suspend - Kullanıcıyı askıya al/aktif et
+/**
+ * @swagger
+ * /api/users/{id}/suspend:
+ *   post:
+ *     summary: POST /{id}/suspend
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/:id/suspend', (req, res) => {
   try {
     const { id } = req.params;
@@ -155,6 +195,16 @@ router.post('/:id/suspend', (req, res) => {
 });
 
 // PATCH /api/users/:id/update - Profil ve ayarları güncelle
+/**
+ * @swagger
+ * /api/users/{id}/update:
+ *   patch:
+ *     summary: PATCH /{id}/update
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.patch('/:id/update', (req, res) => {
   try {
     const { id } = req.params;
@@ -218,6 +268,16 @@ router.patch('/:id/update', (req, res) => {
 });
 
 // Öğrencinin aktivitelerini (login, şifre değişikliği, sınav vb.) döner
+/**
+ * @swagger
+ * /api/users/students/{id}/logs:
+ *   get:
+ *     summary: GET /students/{id}/logs
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/students/:id/logs', (req, res) => {
   try {
     const { id } = req.params;

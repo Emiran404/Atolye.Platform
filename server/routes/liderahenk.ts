@@ -78,6 +78,16 @@ const getLiderAhenkSettings = () => {
 };
 
 // GET /api/liderahenk/settings
+/**
+ * @swagger
+ * /api/liderahenk/settings:
+ *   get:
+ *     summary: GET /settings
+ *     tags: [Liderahenk]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/settings', authenticateToken, authorizeRole('teacher'), (req, res) => {
   const settings = getLiderAhenkSettings();
   // Şifreyi maskele
@@ -88,6 +98,16 @@ router.get('/settings', authenticateToken, authorizeRole('teacher'), (req, res) 
 });
 
 // POST /api/liderahenk/settings
+/**
+ * @swagger
+ * /api/liderahenk/settings:
+ *   post:
+ *     summary: POST /settings
+ *     tags: [Liderahenk]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/settings', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const newSettings = req.body;
@@ -113,6 +133,16 @@ router.post('/settings', authenticateToken, authorizeRole('teacher'), (req, res)
 });
 
 // POST /api/liderahenk/test
+/**
+ * @swagger
+ * /api/liderahenk/test:
+ *   post:
+ *     summary: POST /test
+ *     tags: [Liderahenk]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/test', authenticateToken, authorizeRole('teacher'), async (req, res) => {
   try {
     const config = req.body;
@@ -131,6 +161,16 @@ router.post('/test', authenticateToken, authorizeRole('teacher'), async (req, re
 });
 
 // GET /api/liderahenk/users - LDAP kullanıcılarını listele
+/**
+ * @swagger
+ * /api/liderahenk/users:
+ *   get:
+ *     summary: GET /users
+ *     tags: [Liderahenk]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/users', authenticateToken, authorizeRole('teacher'), async (req, res) => {
   try {
     const config = getLiderAhenkSettings();
@@ -161,6 +201,16 @@ router.get('/users', authenticateToken, authorizeRole('teacher'), async (req, re
 });
 
 // POST /api/liderahenk/sync - Seçili kullanıcıları senkronize et
+/**
+ * @swagger
+ * /api/liderahenk/sync:
+ *   post:
+ *     summary: POST /sync
+ *     tags: [Liderahenk]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/sync', authenticateToken, authorizeRole('teacher'), async (req, res) => {
   try {
     const { users, targetRole } = req.body; // targetRole: 'student' or 'teacher'
@@ -248,6 +298,16 @@ router.post('/sync', authenticateToken, authorizeRole('teacher'), async (req, re
 });
 
 // GET /api/liderahenk/local-users - Platform kullanıcılarını listele
+/**
+ * @swagger
+ * /api/liderahenk/local-users:
+ *   get:
+ *     summary: GET /local-users
+ *     tags: [Liderahenk]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/local-users', authenticateToken, authorizeRole('teacher'), async (req, res) => {
   try {
     const config = getLiderAhenkSettings();
@@ -291,6 +351,16 @@ router.get('/local-users', authenticateToken, authorizeRole('teacher'), async (r
 });
 
 // POST /api/liderahenk/export - Seçili kullanıcıları LDAP'a aktar
+/**
+ * @swagger
+ * /api/liderahenk/export:
+ *   post:
+ *     summary: POST /export
+ *     tags: [Liderahenk]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/export', authenticateToken, authorizeRole('teacher'), async (req, res) => {
   try {
     const { users } = req.body;

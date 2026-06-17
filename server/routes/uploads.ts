@@ -42,8 +42,7 @@ const upload = multer({
     fileSize: 1024 * 1024 * 1024 // 1GB
   },
   fileFilter: (req, file, cb) => {
-    // İzin verilen dosya tipleri
-    const allowedTypes = [
+    const allowedExtensions = [
       '.pdf', 
       '.doc', '.docx', '.txt',
       '.jpg', '.jpeg', '.png', '.gif',
@@ -54,17 +53,53 @@ const upload = multer({
       '.ppt', '.pptx', // PowerPoint
       '.iso', '.ova' // Sanal Makine
     ];
+
+    const allowedMimeTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'video/mp4',
+      'video/x-msvideo',
+      'video/quicktime',
+      'video/x-ms-wmv',
+      'video/x-matroska',
+      'video/webm',
+      'application/zip',
+      'application/x-rar-compressed',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/x-iso9660-image',
+      'application/octet-stream' // OVA and PKT usually fallback to this
+    ];
+
     const ext = extname(file.originalname).toLowerCase();
+    const mime = file.mimetype;
     
-    if (allowedTypes.includes(ext)) {
+    if (allowedExtensions.includes(ext) && allowedMimeTypes.includes(mime)) {
       cb(null, true);
     } else {
-      cb(new Error(`Bu dosya tipi izin verilmiyor: ${ext}`));
+      cb(new Error(`Bu dosya tipi izin verilmiyor (Uzantı: ${ext}, Mime: ${mime})`));
     }
   }
 });
 
 // Dosya yükle
+/**
+ * @swagger
+ * /api/uploads:
+ *   post:
+ *     summary: POST /
+ *     tags: [Uploads]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
@@ -130,6 +165,16 @@ router.post('/', upload.single('file'), async (req, res) => {
 });
 
 // Dosya indir
+/**
+ * @swagger
+ * /api/uploads/download/*:
+ *   get:
+ *     summary: GET /download/*
+ *     tags: [Uploads]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/download/*', (req, res) => {
   try {
     const filePath = req.params[0];
@@ -146,6 +191,16 @@ router.get('/download/*', (req, res) => {
 });
 
 // Dosya görüntüle
+/**
+ * @swagger
+ * /api/uploads/view/*:
+ *   get:
+ *     summary: GET /view/*
+ *     tags: [Uploads]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/view/*', (req, res) => {
   try {
     const filePath = req.params[0];
@@ -162,6 +217,16 @@ router.get('/view/*', (req, res) => {
 });
 
 // Klasör içeriğini listele
+/**
+ * @swagger
+ * /api/uploads/list/*:
+ *   get:
+ *     summary: GET /list/*
+ *     tags: [Uploads]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/list/*', (req, res) => {
   try {
     const folderPath = req.params[0] || '';
@@ -188,6 +253,16 @@ router.get('/list/*', (req, res) => {
 });
 
 // Dosya sil
+/**
+ * @swagger
+ * /api/uploads/*:
+ *   delete:
+ *     summary: DELETE /*
+ *     tags: [Uploads]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.delete('/*', (req, res) => {
   try {
     const filePath = req.params[0];

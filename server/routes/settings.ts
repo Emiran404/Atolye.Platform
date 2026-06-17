@@ -46,6 +46,16 @@ const saveSettings = (settings) => {
 };
 
 // GET /api/settings - Ayarları al
+/**
+ * @swagger
+ * /api/settings:
+ *   get:
+ *     summary: GET /
+ *     tags: [Settings]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/', (req, res) => {
   try {
     const settings = loadSettings();
@@ -56,6 +66,16 @@ router.get('/', (req, res) => {
 });
 
 // POST /api/settings - Ayarları güncelle (Sadece Öğretmenler)
+/**
+ * @swagger
+ * /api/settings:
+ *   post:
+ *     summary: POST /
+ *     tags: [Settings]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { 
@@ -107,6 +127,16 @@ router.post('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
 });
 
 // GET /api/settings/db-status - Veritabanı durumunu al (Herkese açık)
+/**
+ * @swagger
+ * /api/settings/db-status:
+ *   get:
+ *     summary: GET /db-status
+ *     tags: [Settings]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/db-status', (req, res) => {
   try {
     const status = getDbStatus();
@@ -117,6 +147,16 @@ router.get('/db-status', (req, res) => {
 });
 
 // POST /api/settings/check-updates - Manuel olarak güncellemeleri denetle
+/**
+ * @swagger
+ * /api/settings/check-updates:
+ *   post:
+ *     summary: POST /check-updates
+ *     tags: [Settings]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/check-updates', authenticateToken, authorizeRole('teacher'), async (req, res) => {
   try {
     const result = await updateManager.checkAndDownload();
@@ -127,6 +167,16 @@ router.post('/check-updates', authenticateToken, authorizeRole('teacher'), async
 });
 
 // GET /api/settings/downloaded-updates - İndirilen güncellemeleri listele
+/**
+ * @swagger
+ * /api/settings/downloaded-updates:
+ *   get:
+ *     summary: GET /downloaded-updates
+ *     tags: [Settings]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/downloaded-updates', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const UPDATES_DIR = path.join(__dirname, '../../server/updates');
@@ -150,6 +200,16 @@ router.get('/downloaded-updates', authenticateToken, authorizeRole('teacher'), (
 });
 
 // POST /api/settings/migrate-db - JSON'dan SQLite'a geçişi başlat (Sadece Öğretmenler)
+/**
+ * @swagger
+ * /api/settings/migrate-db:
+ *   post:
+ *     summary: POST /migrate-db
+ *     tags: [Settings]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/migrate-db', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     runMigration();
@@ -162,6 +222,16 @@ router.post('/migrate-db', authenticateToken, authorizeRole('teacher'), (req, re
 // POST /api/settings/prepare-sqlite - node:sqlite durumunu kontrol et (Sadece Öğretmenler)
 // Node.js v22+ ile birlikte gelen yerleşik node:sqlite modülü kullanıldığından
 // artık harici sürücü derlemeye gerek yoktur.
+/**
+ * @swagger
+ * /api/settings/prepare-sqlite:
+ *   post:
+ *     summary: POST /prepare-sqlite
+ *     tags: [Settings]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/prepare-sqlite', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const status = getDbStatus();
@@ -176,6 +246,16 @@ router.post('/prepare-sqlite', authenticateToken, authorizeRole('teacher'), (req
 });
 
 // GET /api/settings/prepare-sqlite-status - SQLite durum sorgulama (Sadece Öğretmenler)
+/**
+ * @swagger
+ * /api/settings/prepare-sqlite-status:
+ *   get:
+ *     summary: GET /prepare-sqlite-status
+ *     tags: [Settings]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/prepare-sqlite-status', authenticateToken, authorizeRole('teacher'), (req, res) => {
   const status = getDbStatus();
   res.json({
