@@ -1,14 +1,13 @@
-# Sürüm v4.2.0 - İşlem Geçmişi, Anti-Cheat Kiosk Modu ve Bağımsız Öğretmen Değerlendirme Sistemi 🚀
+# 🎉 Atölye.Platform v4.3.0
 
-## ✨ Yeni Özellikler ve İyileştirmeler
-- **İşlem Geçmişi (Operation History)**: Platform üzerindeki kritik işlemlerin (login, sınav oluşturma, vb.) loglanarak geriye dönük izlenebilmesi sağlandı.
-- **Anti-Cheat & Kiosk Modu**: Sınav sırasında arka planda çalışan ve öğrencinin sınav dışına çıkmasını engelleyen, güvenliği en üst düzeye çıkaran Electron tabanlı Anti-Cheat Kiosk Modu entegre edildi.
-- **Bağımsız Öğretmen Değerlendirme Modülü**: Her öğretmenin aynı sınıf veya sınavı değerlendirirken bir diğerinin notlarını/rozetlerini/sayaçlarını ezmemesini sağlayan "izole değerlendirme altyapısı" eklendi.
-- **GitHub Actions Entegrasyonu**: Tüm Linux/Windows derlemelerinin ve CI/CD süreçlerinin otomatik olarak GitHub Actions üzerinden sorunsuz derlenip dağıtılması ayarlandı.
+Bu sürüm, **Canlı Sistem Konsolu** ve **Gelişmiş Otomatik Hata Kurtarma** özellikleriyle öğretmenlerin kontrolünü zirveye taşıyor.
 
-## 🛠️ Düzeltmeler (Bug Fixes)
-- Arayüzdeki renk, buton (Filtreleri Temizle) ve görsel hatalar giderildi.
-- Telemetri ve sistem analiz modüllerindeki performans sorunları iyileştirildi.
-- "Değerlendirme" sekmesinde farklı öğretmenlerin birbirlerinin oluşturduğu sınavları ve notlandırma verilerini görerek karışıklık yaşatması engellendi.
+## 🚀 Yenilikler
+* **🖥️ Canlı Sistem Konsolu**: Öğretmen panelinden sunucunun CPU/RAM kullanımı, çalışma süresi izleme ve tek tıkla canlı terminal loglarını görüntüleme özelliği eklendi.
+* **📡 Gelişmiş Auto-Reconnect**: Bağlantı koptuğunda zeki yoklamalarla (3 saniyede bir) sunucu geldiği an sayfa yenilenmeden otomatik kurtarma eklendi.
+* **🔐 Çoklu Cihaz Passkey**: Aynı hesapta macOS, Windows ve Pardus için bağımsız olarak (5 cihaza kadar) birden fazla cihazı yetkilendirme yeteneği.
+* **🔄 Kapsamlı Yeniden Başlatma**: Sistem konsolundan "Yeniden Başlat" dendiğinde artık tam kapalı kalmıyor, `tsx watch` veya sistem özelliklerine göre otomatik canlanıyor.
+* **✨ UI/UX İyileştirmeleri**: Güncelleme geçmişindeki hatalı ünlem ikonları düzeltildi ve tasarım pürüzleri giderildi.
 
-🚀 Tüm sistem Atölye ve okul laboratuvarı şartlarına uygun stabil sürümdedir.
+## 📦 İndirme
+Platformunuza uygun sürümü aşağıdaki `Assets` (Varlıklar) bölümünden indirebilirsiniz. Pardus ve Linux sistemler için `.deb`, Windows cihazlar için `.exe` paketi mevcuttur. Çevrimdışı (Offline) okullar için `.zip` arşivini kullanabilirsiniz.
