@@ -9,7 +9,7 @@
 <br/>
 
 <!-- CORE BADGES -->
-[![Version](https://img.shields.io/badge/Versiyon-4.3.0-6366f1?style=for-the-badge)](https://github.com/Emiran404/Atolye.Platform/releases)
+[![Version](https://img.shields.io/badge/Versiyon-4.3.1-6366f1?style=for-the-badge)](https://github.com/Emiran404/Atolye.Platform/releases)
 [![License](https://img.shields.io/badge/Lisans-MIT-10b981?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Pardus_%7C_Windows-ef4444?style=for-the-badge)](https://github.com/Emiran404/Atolye.Platform)
 
@@ -88,7 +88,7 @@ Derleme yapmadan, aşağıdaki hazır paketlerle saniyeler içinde kurulum yapı
 ## ✨ Temel Özellikler
 
 > [!IMPORTANT]
-> **🎉 v4.3.0 İle Gelen Dev Yenilikler**
+> **🎉 v4.3.1 İle Gelen Dev Yenilikler**
 > - 🖥️ **Canlı Sistem Konsolu**: Öğretmen panelinden sunucunun CPU/RAM kullanımı, çalışma süresi izleme ve tek tıkla canlı terminal loglarını görüntüleme.
 > - 📡 **Gelişmiş Auto-Reconnect**: Bağlantı koptuğunda zeki yoklamalarla (3 saniyede bir) sunucu geldiği an sayfa yenilenmeden otomatik kurtarma.
 > - 🔐 **Çoklu Cihaz Passkey**: Aynı hesapta macOS, Windows ve Pardus için bağımsız olarak (5 cihaza kadar) birden fazla cihazı yetkilendirme yeteneği.
@@ -331,9 +331,9 @@ Okul laboratuvarlarında kısıtlı internet bant genişliğini korumak için ta
 
 ## 🗺️ Yol Haritası
 
-- [x] ~~Sistem Konsolu ve Canlı Log İzleme (v4.3.0)~~
-- [x] ~~Çoklu Cihaz Passkey Desteği (v4.3.0)~~
-- [x] ~~Auto-Reconnect ve Hızlı Hata Kurtarma (v4.3.0)~~
+- [x] ~~Sistem Konsolu ve Canlı Log İzleme (v4.3.1)~~
+- [x] ~~Çoklu Cihaz Passkey Desteği (v4.3.1)~~
+- [x] ~~Auto-Reconnect ve Hızlı Hata Kurtarma (v4.3.1)~~
 - [x] ~~Dinamik sınıf yönetimi (API-driven)~~
 - [x] ~~Passkey / WebAuthn desteği~~
 - [x] ~~4 dilli arayüz (TR/EN/DE/RU)~~
