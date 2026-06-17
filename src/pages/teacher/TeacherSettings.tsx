@@ -208,12 +208,16 @@ const TeacherSettings = () => {
       const credentialId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
       const publicKey = btoa(String.fromCharCode(...new Uint8Array(credential.response.getPublicKey())));
 
-      await authApi.passkeyRegister(user.username, credentialId, publicKey);
+      const res = await authApi.passkeyRegister(user.username, credentialId, publicKey);
 
-      updateProfile({ passkeyEnabled: true, credentialId, publicKey });
-      toast.success('Passkey başarıyla kuruldu!');
-      setSuccessMessage('Passkey başarıyla etkinleştirildi!');
-      setShowSuccessModal(true);
+      if (res.success) {
+        updateProfile({ passkeyEnabled: true, passkeys: res.passkeys });
+        toast.success('Passkey başarıyla kuruldu!');
+        setSuccessMessage('Passkey başarıyla etkinleştirildi!');
+        setShowSuccessModal(true);
+      } else {
+        toast.error('Passkey kurulumu başarısız oldu.');
+      }
     } catch (error) {
       console.error('Passkey kurulum hatası:', error);
 
@@ -232,28 +236,32 @@ const TeacherSettings = () => {
     }
   };
 
-  const handleRemovePasskey = () => {
+  const handleRemovePasskey = (passkeyId) => {
     setConfirmModal({
       isOpen: true,
-      title: 'Passkey Kapatılsın mı?',
-      message: 'Passkey kapatılsın mı? Bir sonraki girişte şifre kullanmanız gerekecek.',
-      confirmText: 'Evet, Kapat',
+      title: 'Passkey Silinsin mi?',
+      message: 'Seçili passkey cihazını kaldırmak istediğinize emin misiniz?',
+      confirmText: 'Evet, Sil',
       type: 'danger',
       onConfirm: async () => {
         try {
           setSaving(true);
           toast.info('Passkey kaldırılıyor...');
 
-          // Backend'de passkey kaldır (endpoint eklenirse)
-          updateProfile({ passkeyEnabled: false, credentialId: null, publicKey: null });
-
-          toast.success('Passkey başarıyla kaldırıldı!');
-          setSuccessMessage('Passkey devre dışı bırakıldı.');
-          setShowSuccessModal(true);
+          const res = await authApi.passkeyRemove(user.username, passkeyId);
+          if (res.success) {
+            updateProfile({ passkeyEnabled: res.passkeyEnabled, passkeys: res.passkeys });
+            toast.success('Passkey başarıyla kaldırıldı!');
+            setSuccessMessage('Passkey cihazı başarıyla silindi.');
+            setShowSuccessModal(true);
+          } else {
+            toast.error('Passkey silinemedi!');
+          }
         } catch (error) {
-          toast.error('Passkey kaldırma başarısız: ' + error.message);
+          toast.error('Hata: ' + error.message);
         } finally {
           setSaving(false);
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
         }
       }
     });
@@ -577,8 +585,46 @@ const TeacherSettings = () => {
                 }}>
                   {canUsePasskey() 
                     ? 'Hesabınızı passkey ile koruyun. Windows Hello, Linux (Pardus) ve MacOS ile uyumlu.'
-                    : 'Passkey şu an sadece Windows platformunda desteklenmektedir.'}
+                    : 'Tarayıcınız Passkey desteklemiyor.'}
                 </div>
+
+                {/* Kayıtlı Cihazlar Listesi */}
+                {user?.passkeyEnabled && user?.passkeys && user.passkeys.length > 0 && (
+                  <div style={{ marginBottom: '24px' }}>
+                    <div style={{ fontWeight: '600', marginBottom: '12px', fontSize: '15px' }}>Kayıtlı Cihazlar ({user.passkeys.length}/5)</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {user.passkeys.map(p => (
+                        <div key={p.id} style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          padding: '12px 16px', background: '#f8fafc', borderRadius: '12px',
+                          border: '1px solid #e2e8f0'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ padding: '8px', background: '#e0e7ff', borderRadius: '8px', color: '#4f46e5' }}>
+                              <Shield size={18} />
+                            </div>
+                            <div>
+                              <div style={{ fontWeight: '600', fontSize: '14px', color: '#1e293b' }}>{p.name || 'Cihaz'}</div>
+                              <div style={{ fontSize: '12px', color: '#64748b' }}>Eklendi: {new Date(p.createdAt).toLocaleDateString('tr-TR')}</div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleRemovePasskey(p.id)}
+                            style={{
+                              background: 'transparent', border: 'none', color: '#ef4444',
+                              cursor: 'pointer', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              borderRadius: '8px', transition: 'background 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = '#fee2e2'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Durum Kartı */}
                 <div style={{
@@ -627,20 +673,20 @@ const TeacherSettings = () => {
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                   <button
                     onClick={handleSetupPasskey}
-                    disabled={user?.passkeyEnabled || saving || !canUsePasskey()}
+                    disabled={(user?.passkeys?.length >= 5) || saving || !canUsePasskey()}
                     style={{
                       flex: 1,
                       minWidth: '200px',
                       padding: '16px 24px',
                       borderRadius: '14px',
                       border: 'none',
-                      background: (user?.passkeyEnabled || !canUsePasskey())
+                      background: ((user?.passkeys?.length >= 5) || !canUsePasskey())
                         ? 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)'
                         : 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
-                      color: (user?.passkeyEnabled || !canUsePasskey()) ? '#94a3b8' : '#ffffff',
+                      color: ((user?.passkeys?.length >= 5) || !canUsePasskey()) ? '#94a3b8' : '#ffffff',
                       fontSize: '15px',
                       fontWeight: '600',
-                      cursor: (user?.passkeyEnabled || saving || !canUsePasskey()) ? 'not-allowed' : 'pointer',
+                      cursor: ((user?.passkeys?.length >= 5) || saving || !canUsePasskey()) ? 'not-allowed' : 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',

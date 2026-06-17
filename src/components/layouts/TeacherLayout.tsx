@@ -88,6 +88,17 @@ const TeacherLayout = ({ children }) => {
     fetchDbStatus();
   }, []);
 
+  // Otomatik yeniden deneme mekanizması (Hata varsa 3 saniyede bir kontrol et)
+  useEffect(() => {
+    let interval;
+    if (dbStatus.error) {
+      interval = setInterval(() => {
+        fetchDbStatus();
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [dbStatus.error]);
+
   const handleRecheckDb = async () => {
     setIsCheckingDb(true);
     try {

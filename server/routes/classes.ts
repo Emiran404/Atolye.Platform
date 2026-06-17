@@ -6,6 +6,16 @@ import { getData, setData } from '../utils/storage.js';
 const router = express.Router();
 
 // GET /api/classes - Sınıf listesini al
+/**
+ * @swagger
+ * /api/classes:
+ *   get:
+ *     summary: GET /
+ *     tags: [Classes]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/', (req, res) => {
   try {
     const classes = getData('classes') || [];
@@ -16,6 +26,16 @@ router.get('/', (req, res) => {
 });
 
 // POST /api/classes - Yeni sınıf ekle
+/**
+ * @swagger
+ * /api/classes:
+ *   post:
+ *     summary: POST /
+ *     tags: [Classes]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { name } = req.body;
@@ -41,6 +61,16 @@ router.post('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
 });
 
 // DELETE /api/classes/:name - Sınıfı sil
+/**
+ * @swagger
+ * /api/classes/{name}:
+ *   delete:
+ *     summary: DELETE /{name}
+ *     tags: [Classes]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.delete('/:name', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { name } = req.params;
@@ -76,6 +106,16 @@ router.delete('/:name', authenticateToken, authorizeRole('teacher'), (req, res) 
 });
 
 // PUT /api/classes/:oldName - Sınıf ismini güncelle
+/**
+ * @swagger
+ * /api/classes/{oldName}:
+ *   put:
+ *     summary: PUT /{oldName}
+ *     tags: [Classes]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.put('/:oldName', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { oldName } = req.params;

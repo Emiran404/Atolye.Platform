@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs';
 import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 import os from 'os';
 import { apiLimiter } from './middleware/rateLimit.js';
 import { authenticateToken, authorizeRole } from './middleware/auth.js';
@@ -53,6 +54,76 @@ import { updateManager } from './utils/updateManager.js';
 export const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3002;
+
+export const io = new SocketIOServer(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
+
+// Sistem Loglarını Yakalama
+const originalConsoleLog = console.log;
+const originalConsoleInfo = console.info;
+const originalConsoleWarn = console.warn;
+const originalConsoleError = console.error;
+
+const broadcastLog = (type, args) => {
+  try {
+    const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
+    io.to('teachers').emit('system_log', {
+      type,
+      message,
+      timestamp: new Date().toISOString()
+    });
+  } catch(e) {}
+};
+
+console.log = (...args) => {
+  originalConsoleLog.apply(console, args);
+  broadcastLog('log', args);
+};
+console.info = (...args) => {
+  originalConsoleInfo.apply(console, args);
+  broadcastLog('info', args);
+};
+console.warn = (...args) => {
+  originalConsoleWarn.apply(console, args);
+  broadcastLog('warn', args);
+};
+console.error = (...args) => {
+  originalConsoleError.apply(console, args);
+  broadcastLog('error', args);
+};
+
+// Sistem Metrikleri Yayını
+setInterval(() => {
+  try {
+    const metrics = {
+      cpu: os.loadavg()[0],
+      totalMem: os.totalmem(),
+      freeMem: os.freemem(),
+      processMem: process.memoryUsage().rss,
+      uptime: process.uptime(),
+      platform: os.platform()
+    };
+    io.to('teachers').emit('system_metrics', metrics);
+  } catch(err) {
+    console.error("Metrik gönderim hatası:", err);
+  }
+}, 5000);
+
+io.on('connection', (socket) => {
+  socket.on('join_teachers_room', () => {
+    socket.join('teachers');
+    socket.emit('system_log', {
+      type: 'info',
+      message: 'Canlı konsola bağlanıldı...',
+      timestamp: new Date().toISOString()
+    });
+  });
+});
+
 
 // Middleware
 app.use(cors({

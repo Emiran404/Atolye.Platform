@@ -558,12 +558,76 @@ router.post('/passkey/register', (req, res) => {
       return res.status(404).json({ error: 'Kullanıcı bulunamadı!' });
     }
 
-    teachers[teacherIndex].passkeyEnabled = true;
-    teachers[teacherIndex].credentialId = credentialId;
-    teachers[teacherIndex].publicKey = publicKey;
+    const teacher = teachers[teacherIndex];
+    if (!teacher.passkeys) {
+      teacher.passkeys = [];
+      if (teacher.credentialId) {
+        teacher.passkeys.push({
+          id: Date.now().toString(),
+          name: 'Cihaz 1',
+          credentialId: teacher.credentialId,
+          publicKey: teacher.publicKey,
+          createdAt: new Date().toISOString()
+        });
+      }
+    }
+
+    if (teacher.passkeys.length >= 5) {
+      return res.status(400).json({ error: 'Maksimum 5 passkey eklenebilir!' });
+    }
+
+    teacher.passkeys.push({
+      id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
+      name: `Cihaz ${teacher.passkeys.length + 1}`,
+      credentialId,
+      publicKey,
+      createdAt: new Date().toISOString()
+    });
+
+    teacher.passkeyEnabled = true;
+    teachers[teacherIndex] = teacher;
 
     setData('teachers', teachers);
-    res.json({ success: true });
+    res.json({ success: true, passkeys: teacher.passkeys });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Passkey Sil
+/**
+ * @swagger
+ * /api/auth/passkey/remove:
+ *   post:
+ *     summary: POST /passkey/remove
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
+router.post('/passkey/remove', (req, res) => {
+  try {
+    const { username, passkeyId } = req.body;
+    if (!username || !passkeyId) return res.status(400).json({ error: 'Eksik veri!' });
+
+    const teachers = getData('teachers') || [];
+    const teacherIndex = teachers.findIndex(t => t.username === username);
+
+    if (teacherIndex === -1) return res.status(404).json({ error: 'Kullanıcı bulunamadı!' });
+
+    const teacher = teachers[teacherIndex];
+    if (!teacher.passkeys) teacher.passkeys = [];
+
+    teacher.passkeys = teacher.passkeys.filter(p => p.id !== passkeyId);
+
+    if (teacher.passkeys.length === 0) {
+      teacher.passkeyEnabled = false;
+    }
+
+    teachers[teacherIndex] = teacher;
+    setData('teachers', teachers);
+
+    res.json({ success: true, passkeys: teacher.passkeys, passkeyEnabled: teacher.passkeyEnabled });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -582,8 +646,12 @@ router.post('/passkey/login-challenge', (req, res) => {
       return res.json({ success: false, error: 'Passkey aktif değil!' });
     }
 
+    const credentialIds = teacher.passkeys 
+      ? teacher.passkeys.map(p => p.credentialId) 
+      : (teacher.credentialId ? [teacher.credentialId] : []);
+
     const challenge = base64url(crypto.randomBytes(32));
-    res.json({ challenge, credentialId: teacher.credentialId });
+    res.json({ challenge, credentialIds });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -649,7 +717,10 @@ router.post('/passkey/login', (req, res) => {
 
     const teacher = teachers[teacherIndex];
 
-    if (!teacher.passkeyEnabled || teacher.credentialId !== credentialId) {
+    const passkey = teacher.passkeys?.find(p => p.credentialId === credentialId);
+    const isValid = passkey || teacher.credentialId === credentialId;
+
+    if (!teacher.passkeyEnabled || !isValid) {
       return res.status(404).json({ error: 'Passkey bulunamadı!' });
     }
 

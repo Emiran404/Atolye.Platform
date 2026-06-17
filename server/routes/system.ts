@@ -41,6 +41,16 @@ setInterval(() => {
 }, 60000);
 
 // Sürüm Bilgisi
+/**
+ * @swagger
+ * /api/system/version:
+ *   get:
+ *     summary: GET /version
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/version', (req, res) => {
   try {
     const pkgPath = path.join(__dirname, '../../package.json');
@@ -76,6 +86,16 @@ const isNewerVersion = (latest, current) => {
 };
 
 // Güncelleme Geçmişi
+/**
+ * @swagger
+ * /api/system/updates:
+ *   get:
+ *     summary: GET /updates
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/updates', (req, res) => {
   const updates = getData('updates');
   res.json({ success: true, updates: updates.sort((a, b) => new Date(b.date) - new Date(a.date)) });
@@ -90,6 +110,16 @@ let updateCache = {
 const CACHE_DURATION = 3600000; // 1 saat
 
 // Güncelleme Kontrolü (Token-free ve Önbellekli)
+/**
+ * @swagger
+ * /api/system/check-update:
+ *   post:
+ *     summary: POST /check-update
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/check-update', async (req, res) => {
   try {
     const pkgPath = path.join(__dirname, '../../package.json');
@@ -225,6 +255,16 @@ router.post('/check-update', async (req, res) => {
 
 
 // Güncelleme Yükleme (Gerçek Git Pull Entegrasyonu)
+/**
+ * @swagger
+ * /api/system/install-update:
+ *   post:
+ *     summary: POST /install-update
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/install-update', async (req, res) => {
   try {
     const { version, description } = req.body;
@@ -318,6 +358,16 @@ router.post('/install-update', async (req, res) => {
 });
 
 // Heartbeat endpoint for all logged in users
+/**
+ * @swagger
+ * /api/system/heartbeat:
+ *   post:
+ *     summary: POST /heartbeat
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/heartbeat', (req, res) => {
   const { userId, userType } = req.body;
   if (userId) {
@@ -333,6 +383,16 @@ router.post('/heartbeat', (req, res) => {
 });
 
 // Explicit logout to clear session immediately
+/**
+ * @swagger
+ * /api/system/logout:
+ *   post:
+ *     summary: POST /logout
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/logout', (req, res) => {
   const { userId } = req.body;
   if (userId) {
@@ -375,6 +435,16 @@ const getRealCpuUsage = () => {
 // Initialize CPU usage
 getRealCpuUsage();
 
+/**
+ * @swagger
+ * /api/system/metrics:
+ *   get:
+ *     summary: GET /metrics
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/metrics', (req, res) => {
   const totalMem = os.totalmem();
   const freeMem = os.freemem();
@@ -424,6 +494,16 @@ router.get('/metrics', (req, res) => {
 const reportRateLimits = new Map();
 
 // POST /api/system/report - Sorun bildir (MEB Engelini aşmak için relay desteğiyle)
+/**
+ * @swagger
+ * /api/system/report:
+ *   post:
+ *     summary: POST /report
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/report', (req, res) => {
   try {
     const { type, subject, message, context } = req.body;
@@ -497,6 +577,47 @@ router.post('/report', (req, res) => {
   } catch (error) {
     console.error('Report error:', error);
     res.status(500).json({ success: false, error: 'Rapor gönderilirken hata oluştu.' });
+  }
+});
+
+
+
+// Sistem kontrolü (Restart / Shutdown)
+/**
+ * @swagger
+ * /api/system/control:
+ *   post:
+ *     summary: POST /control
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
+router.post('/control', authenticateToken, authorizeRole('teacher'), (req, res) => {
+  const { action } = req.body;
+  
+  if (action === 'restart') {
+    res.json({ success: true, message: 'Sistem yeniden başlatılıyor...' });
+    setTimeout(() => {
+      try {
+        // Geliştirme ortamında (tsx watch) otomatik yeniden başlatma için dosyayı güncelle
+        const indexPath = path.join(__dirname, '../index.ts');
+        if (fs.existsSync(indexPath)) {
+          const now = new Date();
+          fs.utimesSync(indexPath, now, now);
+        }
+      } catch (e) {}
+
+      // Gerçek production (PM2/Docker) için fallback olarak process.exit
+      setTimeout(() => process.exit(1), 1500);
+    }, 1000);
+  } else if (action === 'shutdown') {
+    res.json({ success: true, message: 'Sistem kapatılıyor...' });
+    setTimeout(() => {
+      process.exit(0);
+    }, 2000);
+  } else {
+    res.status(400).json({ success: false, error: 'Bilinmeyen komut' });
   }
 });
 

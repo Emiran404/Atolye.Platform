@@ -6,6 +6,16 @@ import { getLogs, addLog } from '../utils/logger.js';
 const router = express.Router();
 
 // Öğretmen/Admin logları görüntüleme endpoint'i
+/**
+ * @swagger
+ * /api/logs:
+ *   get:
+ *     summary: GET /
+ *     tags: [Logs]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const logs = getLogs();
@@ -17,6 +27,16 @@ router.get('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
 });
 
 // Öğrenci tarafı Kiosk / Focus loss loglama endpoint'i
+/**
+ * @swagger
+ * /api/logs/client-event:
+ *   post:
+ *     summary: POST /client-event
+ *     tags: [Logs]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/client-event', authenticateToken, (req, res) => {
   try {
     const { type, action, details } = req.body;

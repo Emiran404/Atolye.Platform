@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import obfuscator from 'rollup-plugin-javascript-obfuscator'
 
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -37,18 +36,6 @@ export default defineConfig(({ command }) => ({
           }
         ]
       }
-    }),
-    // Sadece build aşamasında çalışan kod karıştırıcı (obfuscator)
-    command === 'build' && obfuscator({
-      compact: true,
-      controlFlowFlattening: true,
-      controlFlowFlatteningThreshold: 1,
-      numbersToExpressions: true,
-      simplify: true,
-      stringArrayThreshold: 1,
-      splitStrings: true,
-      splitStringsChunkLength: 5,
-      unicodeEscapeSequence: false
     })
   ],
   build: {

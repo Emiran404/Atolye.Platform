@@ -12,6 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { getCurrentLanguage, changeLanguage } from '../utils/i18n';
 import SystemSetupPopup from '../components/ui/SystemSetupPopup';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 import {
   Terminal, Globe, ChevronDown, Menu, GraduationCap, Users,
   ShieldCheck, Zap, Calendar, Award, SearchCheck, CloudUpload,
@@ -22,6 +23,7 @@ import {
 const LandingPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, userType } = useAuthStore();
+  const { isInstallable, promptInstall } = usePWAInstall();
   const [currentLang, setCurrentLang] = React.useState(getCurrentLanguage().toUpperCase());
   const [showLangMenu, setShowLangMenu] = React.useState(false);
   const [isSetupRequired, setIsSetupRequired] = React.useState(false);
@@ -56,7 +58,7 @@ const LandingPage = () => {
       login: 'Giriş Yap',
       getStarted: 'Başlayın',
       dashboard: 'Panel',
-      badge: 'v4.2.0 Şimdi Kullanılabilir',
+      badge: 'v4.3.0 Şimdi Kullanılabilir',
       heroTitle: 'Siber Güvenlik Uzmanları',
       heroSubtitle: 'Güçlendiriyoruz',
       nextGen: 'Yeni Nesil',
@@ -120,7 +122,7 @@ const LandingPage = () => {
       login: 'Log In',
       getStarted: 'Get Started',
       dashboard: 'Dashboard',
-      badge: 'v4.2.0 Now Available',
+      badge: 'v4.3.0 Now Available',
       heroTitle: 'Cybersecurity Experts',
       heroSubtitle: 'Empowering the',
       nextGen: 'Next Gen',
@@ -184,7 +186,7 @@ const LandingPage = () => {
       login: 'Anmelden',
       getStarted: 'Loslegen',
       dashboard: 'Dashboard',
-      badge: 'v4.2.0 Jetzt Verfügbar',
+      badge: 'v4.3.0 Jetzt Verfügbar',
       heroTitle: 'Cybersicherheitsexperten',
       heroSubtitle: 'Stärken der',
       nextGen: 'Nächsten Generation',
@@ -248,7 +250,7 @@ const LandingPage = () => {
       login: 'Войти',
       getStarted: 'Начать',
       dashboard: 'Панель',
-      badge: 'v4.2.0 Теперь Доступно',
+      badge: 'v4.3.0 Теперь Доступно',
       heroTitle: 'Экспертов по Кибербезопасности',
       heroSubtitle: 'Расширяем Возможности',
       nextGen: 'Следующего Поколения',
@@ -517,6 +519,39 @@ const LandingPage = () => {
 
             {/* Right Side */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              {/* PWA Install Button */}
+              {isInstallable && (
+                <button
+                  onClick={promptInstall}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: '#10b981',
+                    color: 'white',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    border: 'none',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 6px rgba(16, 185, 129, 0.2)',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 12px rgba(16, 185, 129, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(16, 185, 129, 0.2)';
+                  }}
+                >
+                  <Rocket style={{ width: '16px', height: '16px' }} />
+                  <span>Uygulamayı Yükle</span>
+                </button>
+              )}
+
               {/* Language Selector */}
               <div style={{ position: 'relative' }}>
                 <button

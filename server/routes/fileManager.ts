@@ -13,6 +13,16 @@ const router = express.Router();
 const UPLOADS_BASE = path.join(__dirname, '..', 'uploads_student');
 
 // uploads_student klasörünün içeriğini listele
+/**
+ * @swagger
+ * /api/fileManager/browse:
+ *   get:
+ *     summary: GET /browse
+ *     tags: [FileManager]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/browse', (req, res) => {
   try {
     // Query'den path parametresini al (örn: /10-A%20ogrenciler)
@@ -70,6 +80,16 @@ router.get('/browse', (req, res) => {
 });
 
 // Dosya silme endpoint'i
+/**
+ * @swagger
+ * /api/fileManager/delete:
+ *   delete:
+ *     summary: DELETE /delete
+ *     tags: [FileManager]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.delete('/delete', (req, res) => {
   try {
     const { path: itemPath } = req.body;
@@ -104,6 +124,16 @@ router.delete('/delete', (req, res) => {
 });
 
 // Klasör oluşturma endpoint'i
+/**
+ * @swagger
+ * /api/fileManager/create-folder:
+ *   post:
+ *     summary: POST /create-folder
+ *     tags: [FileManager]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/create-folder', (req, res) => {
   try {
     const { path: parentPath, folderName } = req.body;

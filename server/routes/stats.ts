@@ -67,6 +67,16 @@ const getDiskSpace = async (drivePath) => {
 };
 
 // GET /api/stats - Sistem istatistikleri
+/**
+ * @swagger
+ * /api/stats:
+ *   get:
+ *     summary: GET /
+ *     tags: [Stats]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/', async (req, res) => {
   try {
     const students = getData('students') || [];

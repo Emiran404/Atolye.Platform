@@ -6,6 +6,16 @@ import { authenticateToken, authorizeRole } from '../middleware/auth.js';
 const router = express.Router();
 
 // Tüm sınavları getir
+/**
+ * @swagger
+ * /api/exams:
+ *   get:
+ *     summary: GET /
+ *     tags: [Exams]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/', authenticateToken, (req, res) => {
   try {
     const { createdBy } = req.query;
@@ -22,6 +32,16 @@ router.get('/', authenticateToken, (req, res) => {
 });
 
 // Aktif sınavları getir
+/**
+ * @swagger
+ * /api/exams/active:
+ *   get:
+ *     summary: GET /active
+ *     tags: [Exams]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/active', authenticateToken, (req, res) => {
   try {
     const exams = getData('exams') || [];
@@ -40,6 +60,16 @@ router.get('/active', authenticateToken, (req, res) => {
 });
 
 // Sınıfa göre aktif sınavları getir
+/**
+ * @swagger
+ * /api/exams/active/{className}:
+ *   get:
+ *     summary: GET /active/{className}
+ *     tags: [Exams]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/active/:className', authenticateToken, (req, res) => {
   try {
     const { className } = req.params;
@@ -64,6 +94,16 @@ router.get('/active/:className', authenticateToken, (req, res) => {
 });
 
 // Tek sınav getir
+/**
+ * @swagger
+ * /api/exams/{id}:
+ *   get:
+ *     summary: GET /{id}
+ *     tags: [Exams]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.get('/:id', authenticateToken, (req, res) => {
   try {
     const { id } = req.params;
@@ -81,6 +121,16 @@ router.get('/:id', authenticateToken, (req, res) => {
 });
 
 // Yeni sınav oluştur
+/**
+ * @swagger
+ * /api/exams:
+ *   post:
+ *     summary: POST /
+ *     tags: [Exams]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.post('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const {
@@ -138,6 +188,16 @@ router.post('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
 });
 
 // Sınav güncelle
+/**
+ * @swagger
+ * /api/exams/{id}:
+ *   put:
+ *     summary: PUT /{id}
+ *     tags: [Exams]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.put('/:id', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { id } = req.params;
@@ -164,6 +224,16 @@ router.put('/:id', authenticateToken, authorizeRole('teacher'), (req, res) => {
 });
 
 // Sınav sil
+/**
+ * @swagger
+ * /api/exams/{id}:
+ *   delete:
+ *     summary: DELETE /{id}
+ *     tags: [Exams]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.delete('/:id', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { id } = req.params;
@@ -182,6 +252,16 @@ router.delete('/:id', authenticateToken, authorizeRole('teacher'), (req, res) =>
 });
 
 // Sınavı aktif/pasif yap
+/**
+ * @swagger
+ * /api/exams/{id}/toggle:
+ *   patch:
+ *     summary: PATCH /{id}/toggle
+ *     tags: [Exams]
+ *     responses:
+ *       200:
+ *         description: Başarılı işlem
+ */
 router.patch('/:id/toggle', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { id } = req.params;

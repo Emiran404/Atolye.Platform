@@ -146,6 +146,8 @@ function App() {
     const { user } = useAuthStore.getState();
     if (!user?.id) return;
 
+    let timeoutId;
+
     const sendHeartbeat = async () => {
       try {
         const currentToken = useAuthStore.getState().token;
@@ -163,21 +165,21 @@ function App() {
         
         if (response.ok) {
           setServerOnline(true);
+          timeoutId = setTimeout(sendHeartbeat, 30000);
         } else {
           setServerOnline(false);
+          timeoutId = setTimeout(sendHeartbeat, 3000);
         }
       } catch (error) {
         console.error('Heartbeat failed:', error);
         setServerOnline(false);
+        timeoutId = setTimeout(sendHeartbeat, 3000);
       }
     };
 
-    // İlk girişte hemen gönder
     sendHeartbeat();
 
-    // Sonra her 30 saniyede bir
-    const interval = setInterval(sendHeartbeat, 30000);
-    return () => clearInterval(interval);
+    return () => clearTimeout(timeoutId);
   }, [isAuthenticated]);
 
   // Apply theme
