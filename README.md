@@ -154,32 +154,54 @@ Sınav güvenliğini en üst düzeye çıkarmak için **Electron İstemcisi** ö
 
 <div align="center">
 
+### Anasayfa
+
+![Anasayfa](screenshots/other/Anasayfa.png)
+*Sistemin güçlü ve modern giriş ekranı*
+
 ### Öğretmen Paneli
 
-| Dashboard | Sınav Oluşturma |
+| Dashboard / Panel | Sınıf & Öğrenci Detayı |
 | :---: | :---: |
-| ![Dashboard](screenshots/Teacher/Dashboard.png) | ![CreateExam](screenshots/Teacher/CreateExam.png) |
-| *Canlı istatistikler ve sistem takibi* | *Esnek sınav hazırlama ekranı* |
+| ![Panel](screenshots/other/Öğretmen-Panel.png) | ![Ogrenci Detay](screenshots/other/Öğretmen-ÖğrenciDetayı.png) |
+| *Öğretmen genel paneli* | *Detaylı öğrenci analizi* |
 
-| Değerlendirme | Kullanıcı Yönetimi |
+| Aktif Sınavlar | Sınıf Raporları |
 | :---: | :---: |
-| ![Evaluation](screenshots/Teacher/Evaluation.png) | ![UserManagement](screenshots/Teacher/UserManagement.png) |
-| *Split-view notlandırma ve geri bildirim* | *Öğrenci ve öğretmen hesap yönetimi* |
+| ![Aktif Sınavlar](screenshots/other/Öğretmen-AktifSınavlar.png) | ![Sınıf Rapor](screenshots/other/Öğretmen-SınıfRapor.png) |
+| *Anlık sınav durumu ve kontrol* | *Sınıf bazlı başarı istatistikleri* |
 
-| Güvenlik Ayarları | |
+| Değerlendirme Modülü | Öğrenci Notları |
 | :---: | :---: |
-| ![Settings](screenshots/Teacher/Settings.png) | |
-| *Passkey, güvenlik ve platform ayarları* | |
+| ![Degerlendirme](screenshots/other/Öğretmen-Değerlendirme.png) | ![Notlar](screenshots/other/Öğretmen-ÖğrenciNotları.png) |
+| *Sınav kağıtlarını detaylı okuma* | *Notlandırma paneli* |
 
-| Öğrenci Dashboard | Sınav Ekranı | Soru Görüntüleyici |
-| :---: | :---: | :---: |
-| ![StudentDashboard](screenshots/Student/Dashboard.png) | ![StudentExam](screenshots/Student/Exam.png) | ![FileViewer](screenshots/Global/FileViewerModal.png) |
-| *Sade ve odaklanmış öğrenci portalı* | *Dosya yükleme ve sınav teslim arayüzü* | *Güvenli ve şık dosya izleme modalı* |
+| Quiz Değerlendirme | İstatistikler |
+| :---: | :---: |
+| ![Quiz](screenshots/other/Öğretmen-QuizDeğerlendirme.png) | ![İstatistik](screenshots/other/Öğretmen-İstatislik.png) |
+| *Kısa sınav analizi* | *Kapsamlı veri takibi* |
 
-### Ana Sayfa
+| Ayarlar | Yedek Sistem |
+| :---: | :---: |
+| ![Ayarlar](screenshots/other/Öğretmen-Ayarlar.png) | ![Yedek](screenshots/other/Öğretmen-YedekSistem.png) |
+| *Platform konfigürasyonları* | *Güvenilir veri yedeği* |
 
-![LandingPage](screenshots/Atolye.Platform-Anasayfa.png)
-*Cinematic tasarımlı ana sayfa*
+### Öğrenci Paneli
+
+| Öğrenci Dashboard | Sınav Dosya Yükleme |
+| :---: | :---: |
+| ![Öğrenci Dashboard](screenshots/other/öğrenci-panel.png) | ![Dosya Yükle](screenshots/other/Öğrenci-DosyaYükle.png) |
+| *Öğrenci genel görünüm* | *Sınav dosyası aktarım arayüzü* |
+
+| Notlarım | Optik Form |
+| :---: | :---: |
+| ![Notlarım](screenshots/other/Öğrenci-Notlarım.png) | ![Optik](screenshots/other/Öğrenci-Optik.png) |
+| *Öğrenci karne ve notlar* | *Dijital optik kağıt görünümü* |
+
+| Öğrenci Ayarları | |
+| :---: | :---: |
+| ![Ogrenci Ayarlar](screenshots/other/Öğrenci-Ayarlar.png) | |
+| *Kişisel tercih ve hesap bilgileri* | |
 
 </div>
 
