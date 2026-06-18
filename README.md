@@ -163,44 +163,44 @@ Sınav güvenliğini en üst düzeye çıkarmak için **Electron İstemcisi** ö
 
 | Dashboard / Panel | Sınıf & Öğrenci Detayı |
 | :---: | :---: |
-| ![Panel](screenshots/other/Öğretmen-Panel.png) | ![Ogrenci Detay](screenshots/other/Öğretmen-ÖğrenciDetayı.png) |
+| ![Panel](screenshots/other/Öğretmen-Panel.png) | ![Ogrenci Detay](screenshots/other/Öğretmen-ÖğrenciDetayı.png) |
 | *Öğretmen genel paneli* | *Detaylı öğrenci analizi* |
 
 | Aktif Sınavlar | Sınıf Raporları |
 | :---: | :---: |
-| ![Aktif Sınavlar](screenshots/other/Öğretmen-AktifSınavlar.png) | ![Sınıf Rapor](screenshots/other/Öğretmen-SınıfRapor.png) |
+| ![Aktif Sınavlar](screenshots/other/Öğretmen-AktifSınavlar.png) | ![Sınıf Rapor](screenshots/other/Öğretmen-SınıfRapor.png) |
 | *Anlık sınav durumu ve kontrol* | *Sınıf bazlı başarı istatistikleri* |
 
 | Değerlendirme Modülü | Öğrenci Notları |
 | :---: | :---: |
-| ![Degerlendirme](screenshots/other/Öğretmen-Değerlendirme.png) | ![Notlar](screenshots/other/Öğretmen-ÖğrenciNotları.png) |
+| ![Degerlendirme](screenshots/other/Öğretmen-Değerlendirme.png) | ![Notlar](screenshots/other/Öğretmen-ÖğrenciNotları.png) |
 | *Sınav kağıtlarını detaylı okuma* | *Notlandırma paneli* |
 
 | Quiz Değerlendirme | İstatistikler |
 | :---: | :---: |
-| ![Quiz](screenshots/other/Öğretmen-QuizDeğerlendirme.png) | ![İstatistik](screenshots/other/Öğretmen-İstatislik.png) |
+| ![Quiz](screenshots/other/Öğretmen-QuizDeğerlendirme.png) | ![İstatistik](screenshots/other/Öğretmen-İstatislik.png) |
 | *Kısa sınav analizi* | *Kapsamlı veri takibi* |
 
 | Ayarlar | Yedek Sistem |
 | :---: | :---: |
-| ![Ayarlar](screenshots/other/Öğretmen-Ayarlar.png) | ![Yedek](screenshots/other/Öğretmen-YedekSistem.png) |
+| ![Ayarlar](screenshots/other/Öğretmen-Ayarlar.png) | ![Yedek](screenshots/other/Öğretmen-YedekSistem.png) |
 | *Platform konfigürasyonları* | *Güvenilir veri yedeği* |
 
 ### Öğrenci Paneli
 
 | Öğrenci Dashboard | Sınav Dosya Yükleme |
 | :---: | :---: |
-| ![Öğrenci Dashboard](screenshots/other/öğrenci-panel.png) | ![Dosya Yükle](screenshots/other/Öğrenci-DosyaYükle.png) |
+| ![Öğrenci Dashboard](screenshots/other/öğrenci-panel.png) | ![Dosya Yükle](screenshots/other/Öğrenci-DosyaYükle.png) |
 | *Öğrenci genel görünüm* | *Sınav dosyası aktarım arayüzü* |
 
 | Notlarım | Optik Form |
 | :---: | :---: |
-| ![Notlarım](screenshots/other/Öğrenci-Notlarım.png) | ![Optik](screenshots/other/Öğrenci-Optik.png) |
+| ![Notlarım](screenshots/other/Öğrenci-Notlarım.png) | ![Optik](screenshots/other/Öğrenci-Optik.png) |
 | *Öğrenci karne ve notlar* | *Dijital optik kağıt görünümü* |
 
 | Öğrenci Ayarları | |
 | :---: | :---: |
-| ![Ogrenci Ayarlar](screenshots/other/Öğrenci-Ayarlar.png) | |
+| ![Ogrenci Ayarlar](screenshots/other/Öğrenci-Ayarlar.png) | |
 | *Kişisel tercih ve hesap bilgileri* | |
 
 </div>
