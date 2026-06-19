@@ -213,7 +213,7 @@ Sınav güvenliğini en üst düzeye çıkarmak için **Electron İstemcisi** ö
 
 | Gereksinim | Minimum |
 | :--- | :--- |
-| **Node.js** | v18.0.0+ |
+| **Node.js** | v22.0.0+ Önerilen Sürüm v24.0.0 |
 | **npm** | v9.0.0+ |
 | **İşletim Sistemi** | Pardus 21+ / Debian 11+ / Windows 10+ |
 | **RAM** | 2 GB (Sunucu) |
