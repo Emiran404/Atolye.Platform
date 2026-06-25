@@ -12,7 +12,12 @@ import crypto from 'crypto';
 
 // JWT Secret Key - .env'den al veya güvenli rastgele üret
 // ÖNEMLİ: ESM hoisting nedeniyle process.env'yi fonksiyon içinde kontrol ediyoruz
-const getJwtSecret = () => process.env.JWT_SECRET || 'teknofest-default-secret-key-2026';
+const getJwtSecret = () => {
+  if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    throw new Error('FATAL SECURITY ERROR: JWT_SECRET is not set in production!');
+  }
+  return process.env.JWT_SECRET || 'teknofest-default-secret-key-2026';
+};
 const JWT_EXPIRY = '24h'; // Token süresi
 
 /**
