@@ -44,6 +44,7 @@ import liderAhenkRoutes from './routes/liderahenk.js';
 import classesRoutes from './routes/classes.js';
 import logsRoutes from './routes/logs.js';
 import telemetryRoutes from './routes/telemetry.js';
+import polyosRoutes from './routes/polyos.js';
 
 import { startNotificationWorker } from './workers/notificationWorker.js';
 import { startBackupWorker } from './workers/backupWorker.js';
@@ -304,6 +305,7 @@ app.use('/api/liderahenk', liderAhenkRoutes);
 app.use('/api/classes', classesRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/telemetry', telemetryRoutes);
+app.use('/api/polyos', polyosRoutes);
 
 
 // Health check

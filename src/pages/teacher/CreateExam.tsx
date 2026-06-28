@@ -339,6 +339,7 @@ const CreateExam = () => {
     notifyOnStart: true,
     notifyBefore30: true,
     notifyBefore5: true,
+    notifyPolyosLab: false,
     questions: [], // Quiz soruları
     isQuiz: false,
     autoGrading: true,
@@ -510,6 +511,7 @@ const CreateExam = () => {
       notifyOnStart: formData.sendNotification ? formData.notifyOnStart : false,
       notifyBefore30: formData.sendNotification ? formData.notifyBefore30 : false,
       notifyBefore5: formData.sendNotification ? formData.notifyBefore5 : false,
+      notifyPolyosLab: formData.sendNotification ? formData.notifyPolyosLab : false,
       notificationsSent: {
         start: false,
         before30: false,
@@ -1498,7 +1500,7 @@ const CreateExam = () => {
                     <span style={{ color: 'var(--color-text-primary)' }}>30 dakika kala hatırlat</span>
                   </label>
 
-                  <label style={styles.checkboxOption(formData.notifyBefore5)}>
+                  <label style={{ ...styles.checkboxOption(formData.notifyBefore5), marginBottom: '12px' }}>
                     <input
                       type="checkbox"
                       checked={formData.notifyBefore5}
@@ -1506,6 +1508,16 @@ const CreateExam = () => {
                       style={styles.checkbox}
                     />
                     <span style={{ color: 'var(--color-text-primary)' }}>5 dakika kala hatırlat</span>
+                  </label>
+
+                  <label style={styles.checkboxOption(formData.notifyPolyosLab)}>
+                    <input
+                      type="checkbox"
+                      checked={formData.notifyPolyosLab}
+                      onChange={(e) => handleChange('notifyPolyosLab', e.target.checked)}
+                      style={styles.checkbox}
+                    />
+                    <span style={{ color: 'var(--color-text-primary)' }}>PolyOS Lab İstemcilerine Masaüstü Bildirimi Gönder (zenity)</span>
                   </label>
                 </div>
               )}

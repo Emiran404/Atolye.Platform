@@ -189,6 +189,7 @@ const ExamEdit = () => {
     notifyOnStart: false,
     notifyBefore30: false,
     notifyBefore5: false,
+    notifyPolyosLab: false,
     questionFile: null,
     originalFileName: '',
     isViewerOpen: false
@@ -233,6 +234,7 @@ const ExamEdit = () => {
           notifyOnStart: exam.notifyOnStart || false,
           notifyBefore30: exam.notifyBefore30 || false,
           notifyBefore5: exam.notifyBefore5 || false,
+          notifyPolyosLab: exam.notifyPolyosLab || false,
           originalFileName: exam.originalFileName || '',
           antiCheatEnabled: exam.antiCheatEnabled || false,
           questionFile: null
@@ -444,7 +446,8 @@ const ExamEdit = () => {
         sendNotification: formData.sendNotification,
         notifyOnStart: formData.sendNotification ? formData.notifyOnStart : false,
         notifyBefore30: formData.sendNotification ? formData.notifyBefore30 : false,
-        notifyBefore5: formData.sendNotification ? formData.notifyBefore5 : false
+        notifyBefore5: formData.sendNotification ? formData.notifyBefore5 : false,
+        notifyPolyosLab: formData.sendNotification ? formData.notifyPolyosLab : false
       };
 
       // Eğer yeni bir dosya seçildiyse önce onu yükle
@@ -1135,6 +1138,16 @@ const ExamEdit = () => {
                     style={{ width: '16px', height: '16px', accentColor: '#0d9488' }}
                   />
                   <span style={{ fontSize: '14px', color: 'var(--color-text-primary)' }}>5 dakika kala hatırlat</span>
+                </label>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', marginTop: '4px' }}>
+                  <input
+                    type="checkbox"
+                    checked={formData.notifyPolyosLab}
+                    onChange={(e) => handleChange({ target: { name: 'notifyPolyosLab', value: e.target.checked } })}
+                    style={{ width: '16px', height: '16px', accentColor: '#0d9488' }}
+                  />
+                  <span style={{ fontSize: '14px', color: 'var(--color-text-primary)' }}>PolyOS Lab İstemcilerine Masaüstü Bildirimi Gönder (zenity)</span>
                 </label>
               </div>
             )}

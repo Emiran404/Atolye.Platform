@@ -51,7 +51,8 @@ import {
   PolyOsOGA,
   LiveExams,
   Grades as TeacherGrades,
-  LiderAhenkSettings
+  LiderAhenkSettings,
+  PolyosSettings
 } from './pages/teacher';
 import TeacherSchedule from './pages/teacher/Schedule';
 import Scheduler from './pages/teacher/Scheduler';
@@ -470,6 +471,14 @@ function App() {
           element={
             <ProtectedRoute userType="teacher">
               <PolyOsOGA />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ogretmen/polyos"
+          element={
+            <ProtectedRoute userType="teacher">
+              <PolyosSettings />
             </ProtectedRoute>
           }
         />

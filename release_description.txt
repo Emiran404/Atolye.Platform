@@ -1,8 +1,9 @@
-# 🎉 Atölye.Platform v4.3.0
+# 🎉 Atölye.Platform v4.4.0
 
-Bu sürüm, **Canlı Sistem Konsolu** ve **Gelişmiş Otomatik Hata Kurtarma** özellikleriyle öğretmenlerin kontrolünü zirveye taşıyor.
+Bu sürüm, **PolyOS Lab Entegrasyonu**, **Canlı Sistem Konsolu** ve **Gelişmiş Otomatik Hata Kurtarma** özellikleriyle öğretmenlerin kontrolünü zirveye taşıyor.
 
 ## 🚀 Yenilikler
+* **📡 PolyOS Lab Entegrasyonu**: Sınav oluştururken veya düzenlerken PolyOS Lab istemcilerine anlık bildirim gönderme seçeneği eklendi. Sınav başladığında veya yaklaştığında (30 dk ve 5 dk kala) öğrenci Pardus makinelerinde otomatik masaüstü uyarıları gösterilir.
 * **🖥️ Canlı Sistem Konsolu**: Öğretmen panelinden sunucunun CPU/RAM kullanımı, çalışma süresi izleme ve tek tıkla canlı terminal loglarını görüntüleme özelliği eklendi.
 * **📡 Gelişmiş Auto-Reconnect**: Bağlantı koptuğunda zeki yoklamalarla (3 saniyede bir) sunucu geldiği an sayfa yenilenmeden otomatik kurtarma eklendi.
 * **🔐 Çoklu Cihaz Passkey**: Aynı hesapta macOS, Windows ve Pardus için bağımsız olarak (5 cihaza kadar) birden fazla cihazı yetkilendirme yeteneği.

@@ -15,3 +15,4 @@ export { default as LiderAhenkSettings } from './LiderAhenkSettings';
 export { default as PolyOsOGA } from './PolyOsOGA';
 export { default as LiveExams } from './LiveExams';
 export { default as Grades } from './Grades';
+export { default as PolyosSettings } from './PolyosSettings';

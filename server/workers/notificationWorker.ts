@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { getData, setData } from '../utils/storage.js';
+import { sendPolyosLabNotification } from '../utils/polyosHelper.js';
 
 // Random ID helper for notifications
 const generateId = () => {
@@ -74,6 +75,11 @@ export const startNotificationWorker = () => {
                 }
 
                 if (triggerType) {
+                    // Send to PolyOS Lab if enabled
+                    if (exam.notifyPolyosLab) {
+                        sendPolyosLabNotification(message);
+                    }
+
                     // Find target students
                     let targetStudentIds = [];
                     if (exam.targetType === 'all') {

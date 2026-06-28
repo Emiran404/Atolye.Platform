@@ -198,6 +198,20 @@ export const liderAhenkApi = {
   })
 };
 
+// PolyOS Lab API
+export const polyosApi = {
+  getSettings: () => fetchApi('/polyos/settings'),
+  saveSettings: (settings) => fetchApi('/polyos/settings', {
+    method: 'POST',
+    body: JSON.stringify(settings)
+  }),
+  testConnection: (serverUrl) => fetchApi('/polyos/test', {
+    method: 'POST',
+    body: JSON.stringify({ serverUrl })
+  }),
+  getClients: () => fetchApi('/polyos/clients')
+};
+
 // Exam API
 export const examApi = {
   getAll: (teacherId) => {
