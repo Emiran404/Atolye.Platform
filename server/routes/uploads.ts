@@ -2,7 +2,7 @@
 import express from 'express';
 import multer from 'multer';
 import { fileURLToPath } from 'url';
-import { dirname, join, extname } from 'path';
+import { dirname, join, extname, resolve } from 'path';
 import fs from 'fs';
 import { hashFile } from '../utils/crypto.js';
 import { authenticateToken, authorizeRole } from '../middleware/auth.js';
@@ -230,14 +230,19 @@ router.get('/view/*', (req, res) => {
 router.get('/list/*', (req, res) => {
   try {
     const folderPath = req.params[0] || '';
-    const fullPath = join(uploadsBase, folderPath);
+    const fullPath = resolve(uploadsBase, folderPath);
+    
+    // Geçiş Koruması (Path Traversal Protection)
+    if (!fullPath.startsWith(resolve(uploadsBase))) {
+      return res.status(403).json({ success: false, error: 'Yetkisiz dizin erişimi.' });
+    }
     
     if (!fs.existsSync(fullPath)) {
       return res.json({ success: true, files: [] });
     }
 
     const files = fs.readdirSync(fullPath).map(name => {
-      const fileStat = fs.statSync(join(fullPath, name));
+      const fileStat = fs.statSync(resolve(fullPath, name));
       return {
         name,
         isDirectory: fileStat.isDirectory(),
@@ -266,7 +271,12 @@ router.get('/list/*', (req, res) => {
 router.delete('/*', (req, res) => {
   try {
     const filePath = req.params[0];
-    const fullPath = join(uploadsBase, filePath);
+    const fullPath = resolve(uploadsBase, filePath);
+    
+    // Geçiş Koruması (Path Traversal Protection)
+    if (!fullPath.startsWith(resolve(uploadsBase))) {
+      return res.status(403).json({ success: false, error: 'Yetkisiz dizin erişimi.' });
+    }
     
     if (!fs.existsSync(fullPath)) {
       return res.status(404).json({ success: false, error: 'Dosya bulunamadı' });

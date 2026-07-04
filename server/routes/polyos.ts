@@ -52,6 +52,25 @@ router.post('/test', authenticateToken, authorizeRole('teacher'), async (req, re
       return res.status(400).json({ success: false, error: 'Sunucu adresi gerekli.' });
     }
 
+    // SSRF Koruması: URL'i doğrula
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(serverUrl);
+    } catch (e) {
+      return res.status(400).json({ success: false, error: 'Geçersiz sunucu adresi formatı.' });
+    }
+
+    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+      return res.status(400).json({ success: false, error: 'Yalnızca HTTP ve HTTPS protokolleri desteklenmektedir.' });
+    }
+
+    const hostname = parsedUrl.hostname;
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+    const isLocalIp = /^192\.168\./.test(hostname) || /^10\./.test(hostname) || /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
+    if (!isLocalhost && !isLocalIp) {
+      return res.status(400).json({ success: false, error: 'Güvenlik gerekçesiyle yalnızca yerel ağ veya localhost adreslerine izin verilir.' });
+    }
+
     const testUrl = `${serverUrl}/api/clients`;
     
     // PolyOS Lab yerel sunucusuna bağlanmayı dene
