@@ -291,6 +291,31 @@ export const translations = {
     completed: 'Tamamlandı',
     inProgress: 'Devam Ediyor',
 
+    // Auth / Student Login
+    studentLogin: 'Öğrenci Girişi',
+    welcomeToAtolyePlatform: 'Atölye Sınav Platformuna hoş geldiniz',
+    securityWarning: 'Güvenlik Uyarısı',
+    securityWarningDesc: 'Güvenliğiniz için şifrenizi tarayıcıya kaydetmeyin. Her oturumda manuel olarak giriş yapmanızı öneririz.',
+    studentNumberPlaceholder: '1234 (örn: 181 → 0181)',
+    rememberMe: 'Beni hatırla',
+    forgotPassword: 'Şifrenizi mi unuttunuz?',
+    dontHaveAccount: 'Hesabınız yok mu?',
+    signUp: 'Kayıt Ol',
+
+    // Auth / Student Login / Register
+    studentRegister: 'Öğrenci Kaydı',
+    signUpForAtolye: 'Atölye Sınav Platformuna kayıt ol',
+    studentNumberRegisterPlaceholder: 'Örn: 181 → 0181 (otomatik tamamlanır)',
+    fullNamePlaceholder: 'Ali Yılmaz',
+    selectClass: 'Seçiniz...',
+    alreadyHaveAccount: 'Zaten hesabınız var mı?',
+    signIn: 'Giriş Yap',
+    forgotPasswordModalTitle: 'Şifrenizi mi Unuttunuz?',
+    forgotPasswordModalDesc: 'Şifrenizi sıfırlamak için lütfen öğretmeninizle iletişime geçin.',
+    forgotPasswordModalNote: 'Öğretmeniniz sizin için yeni bir şifre oluşturabilir veya mevcut şifrenizi sıfırlayabilir.',
+    note: 'Not',
+    iUnderstand: 'Anladım',
+
     // Sidebar Menu Items
     home: 'Ana Sayfa',
     fileSubmit: 'Dosya Gönder',
@@ -777,6 +802,31 @@ export const translations = {
     inactive: 'Inactive',
     completed: 'Completed',
     inProgress: 'In Progress',
+
+    // Auth / Student Login
+    studentLogin: 'Student Login',
+    welcomeToAtolyePlatform: 'Welcome to Atolye Exam Platform',
+    securityWarning: 'Security Warning',
+    securityWarningDesc: 'For your security, do not save your password in the browser. We recommend logging in manually in each session.',
+    studentNumberPlaceholder: '1234 (e.g. 181 → 0181)',
+    rememberMe: 'Remember me',
+    forgotPassword: 'Forgot password?',
+    dontHaveAccount: "Don't have an account?",
+    signUp: 'Sign Up',
+
+    // Auth / Student Login / Register
+    studentRegister: 'Student Register',
+    signUpForAtolye: 'Sign up for Atolye Exam Platform',
+    studentNumberRegisterPlaceholder: 'e.g. 181 → 0181 (auto-padded)',
+    fullNamePlaceholder: 'Ali Yilmaz',
+    selectClass: 'Select...',
+    alreadyHaveAccount: 'Already have an account?',
+    signIn: 'Sign In',
+    forgotPasswordModalTitle: 'Forgot Password?',
+    forgotPasswordModalDesc: 'Please contact your teacher to reset your password.',
+    forgotPasswordModalNote: 'Your teacher can create a new password for you or reset your current password.',
+    note: 'Note',
+    iUnderstand: 'I understand',
 
     // Sidebar Menu Items
     home: 'Home',
@@ -1280,6 +1330,31 @@ export const translations = {
     completed: 'Завершено',
     inProgress: 'В процессе',
 
+    // Auth / Student Login
+    studentLogin: 'Вход для студентов',
+    welcomeToAtolyePlatform: 'Добро пожаловать на экзаменационную платформу Atolye',
+    securityWarning: 'Предупреждение о безопасности',
+    securityWarningDesc: 'В целях безопасности не сохраняйте пароль в браузере. Рекомендуется вводить его вручную при каждом входе.',
+    studentNumberPlaceholder: '1234 (например, 181 → 0181)',
+    rememberMe: 'Запомнить меня',
+    forgotPassword: 'Забыли пароль?',
+    dontHaveAccount: 'Нет учетной записи?',
+    signUp: 'Зарегистрироваться',
+
+    // Auth / Student Login / Register
+    studentRegister: 'Регистрация студентов',
+    signUpForAtolye: 'Зарегистрироваться на экзаменационной платформе Atolye',
+    studentNumberRegisterPlaceholder: 'например, 181 → 0181 (автозаполнение)',
+    fullNamePlaceholder: 'Иван Иванов',
+    selectClass: 'Выберите...',
+    alreadyHaveAccount: 'Уже есть аккаунт?',
+    signIn: 'Войти',
+    forgotPasswordModalTitle: 'Забыли пароль?',
+    forgotPasswordModalDesc: 'Пожалуйста, свяжитесь с вашим учителем для сброса пароля.',
+    forgotPasswordModalNote: 'Ваш учитель может создать для вас новый пароль или сбросить текущий.',
+    note: 'Примечание',
+    iUnderstand: 'Понятно',
+
     // Sidebar Menu Items
     home: 'Главная',
     fileSubmit: 'Отправить файл',
@@ -1765,6 +1840,31 @@ export const translations = {
     inactive: 'Inaktiv',
     completed: 'Abgeschlossen',
     inProgress: 'In Bearbeitung',
+
+    // Auth / Student Login
+    studentLogin: 'Studenten-Login',
+    welcomeToAtolyePlatform: 'Willkommen auf der Atolye Prüfungsplattform',
+    securityWarning: 'Sicherheitswarnung',
+    securityWarningDesc: 'Speichern Sie Ihr Passwort aus Sicherheitsgründen nicht im Browser. Wir empfehlen, sich bei jeder Sitzung manuell anzumelden.',
+    studentNumberPlaceholder: '1234 (z.B. 181 → 0181)',
+    rememberMe: 'Angemeldet bleiben',
+    forgotPassword: 'Passwort vergessen?',
+    dontHaveAccount: 'Kein Konto?',
+    signUp: 'Registrieren',
+
+    // Auth / Student Login / Register
+    studentRegister: 'Studenten-Registrierung',
+    signUpForAtolye: 'Registrieren Sie sich für die Atolye Prüfungsplattform',
+    studentNumberRegisterPlaceholder: 'z.B. 181 → 0181 (automatisch vervollständigt)',
+    fullNamePlaceholder: 'Max Mustermann',
+    selectClass: 'Auswählen...',
+    alreadyHaveAccount: 'Bereits ein Konto?',
+    signIn: 'Einloggen',
+    forgotPasswordModalTitle: 'Passwort vergessen?',
+    forgotPasswordModalDesc: 'Bitte wenden Sie sich an Ihren Lehrer, um Ihr Passwort zurückzusetzen.',
+    forgotPasswordModalNote: 'Ihr Lehrer kann ein neues Passwort für Sie erstellen oder Ihr aktuelles Passwort zurücksetzen.',
+    note: 'Hinweis',
+    iUnderstand: 'Verstanden',
 
     // Sidebar Menu Items
     home: 'Startseite',

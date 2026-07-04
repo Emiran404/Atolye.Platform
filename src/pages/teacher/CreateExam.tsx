@@ -1519,6 +1519,9 @@ const CreateExam = () => {
                     />
                     <span style={{ color: 'var(--color-text-primary)' }}>PolyOS Lab İstemcilerine Masaüstü Bildirimi Gönder (zenity)</span>
                   </label>
+                  <p style={{ fontSize: '12px', color: '#d97706', marginTop: '6px', marginLeft: '28px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    ⚠️ Entegre Sistemler'de PolyOS Lab'ın bağlı olması gerekmektedir.
+                  </p>
                 </div>
               )}
             </div>

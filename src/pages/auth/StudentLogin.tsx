@@ -183,11 +183,11 @@ const StudentLogin = () => {
             <GraduationCap style={{ width: '32px', height: '32px', color: 'white' }} />
           </div>
           <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-            Öğrenci Girişi
+            {t('studentLogin')}
           </h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>Atölye Sınav Platformuna hoş geldiniz</p>
+          <p style={{ color: 'var(--color-text-muted)' }}>{t('welcomeToAtolyePlatform')}</p>
         </div>
-
+ 
         <div style={{
           backgroundColor: 'var(--color-surface)',
           borderRadius: '16px',
@@ -209,32 +209,32 @@ const StudentLogin = () => {
             <ShieldAlert style={{ width: '20px', height: '20px', color: '#d97706', flexShrink: 0, marginTop: '2px' }} />
             <div>
               <p style={{ fontSize: '14px', fontWeight: '600', color: '#92400e', marginBottom: '4px' }}>
-                Güvenlik Uyarısı
+                {t('securityWarning')}
               </p>
               <p style={{ fontSize: '13px', color: '#78350f', lineHeight: '1.5' }}>
-                Güvenliğiniz için şifrenizi tarayıcıya kaydetmeyin. Her oturumda manuel olarak giriş yapmanızı öneririz.
+                {t('securityWarningDesc')}
               </p>
             </div>
           </div>
-
+ 
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {!resetMode ? (
                 <>
                   <Input
-                    label="Okul Numarası"
+                    label={t('studentNumber')}
                     icon={Hash}
                     type="text"
-                    placeholder="1234 (örn: 181 → 0181)"
+                    placeholder={t('studentNumberPlaceholder')}
                     value={formData.studentNumber}
                     onChange={(e) => handleChange('studentNumber', e.target.value)}
                     onBlur={handleStudentNumberBlur}
                     error={errors.studentNumber}
                     required
                   />
-
+ 
                   <Input
-                    label="Şifre"
+                    label={t('password')}
                     icon={Lock}
                     type="password"
                     placeholder="••••••••"
@@ -243,17 +243,8 @@ const StudentLogin = () => {
                     error={errors.password}
                     required
                   />
-
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={formData.rememberMe}
-                        onChange={(e) => handleChange('rememberMe', e.target.checked)}
-                        style={{ width: '16px', height: '16px', accentColor: '#3b82f6' }}
-                      />
-                      <span style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>Beni hatırla</span>
-                    </label>
+ 
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                     <button
                       type="button"
                       onClick={() => setShowForgotPassword(true)}
@@ -270,7 +261,7 @@ const StudentLogin = () => {
                       onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
                       onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
                     >
-                      Şifrenizi mi unuttunuz?
+                      {t('forgotPassword')}
                     </button>
                   </div>
                 </>
@@ -288,7 +279,7 @@ const StudentLogin = () => {
                       Lütfen yeni şifrenizi belirleyin.
                     </p>
                   </div>
-
+ 
                   <Input
                     label="Yeni Şifre"
                     icon={Lock}
@@ -299,7 +290,7 @@ const StudentLogin = () => {
                     error={errors.newPassword}
                     required
                   />
-
+ 
                   <Input
                     label="Yeni Şifre (Tekrar)"
                     icon={Lock}
@@ -312,22 +303,22 @@ const StudentLogin = () => {
                   />
                 </>
               )}
-
+ 
               <Button type="submit" fullWidth loading={loading}>
-                {resetMode ? 'Şifremi Yenile' : 'Giriş Yap'}
+                {resetMode ? 'Şifremi Yenile' : t('signIn')}
               </Button>
             </div>
           </form>
-
+ 
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
             <p style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
-              Hesabınız yok mu?{' '}
+              {t('dontHaveAccount')}{' '}
               <Link to="/ogrenci/kayit" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: '500' }}>
-                Kayıt Ol
+                {t('signUp')}
               </Link>
             </p>
           </div>
-        </div >
+        </div>
 
         <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--color-text-muted)', marginTop: '24px' }}>
           Öğretmen misiniz?{' '}
@@ -382,10 +373,10 @@ const StudentLogin = () => {
                   <Lock style={{ width: '32px', height: '32px', color: '#f59e0b' }} />
                 </div>
                 <h2 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-                  Şifrenizi mi Unuttunuz?
+                  {t('forgotPasswordModalTitle')}
                 </h2>
                 <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', lineHeight: '1.6' }}>
-                  Şifrenizi sıfırlamak için lütfen öğretmeninizle iletişime geçin.
+                  {t('forgotPasswordModalDesc')}
                 </p>
               </div>
               <div
@@ -397,7 +388,7 @@ const StudentLogin = () => {
                 }}
               >
                 <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: '1.6', margin: 0 }}>
-                  💡 <strong>Not:</strong> Öğretmeniniz sizin için yeni bir şifre oluşturabilir veya mevcut şifrenizi sıfırlayabilir.
+                  💡 <strong>{t('note')}:</strong> {t('forgotPasswordModalNote')}
                 </p>
               </div>
               <button
@@ -417,7 +408,7 @@ const StudentLogin = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
               >
-                Anladım
+                {t('iUnderstand')}
               </button>
             </div>
           </div>

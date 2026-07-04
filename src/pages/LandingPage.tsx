@@ -62,7 +62,7 @@ const LandingPage = () => {
       heroTitle: 'Siber Güvenlik Uzmanları',
       heroSubtitle: 'Güçlendiriyoruz',
       nextGen: 'Yeni Nesil',
-      heroDescription: 'Alanya Mesleki ve Teknik Anadolu Lisesi için resmi güvenli gönderi ve laboratuvar yönetim platformu.',
+      heroDescription: 'Alanya MTAL Tarafından geliştirilmiş güvenli gönderi ve laboratuvar yönetim platformu',
       studentPortal: 'Öğrenci Portalı',
       instructorPortal: 'Öğretmen Portalı',
       secureEnvironment: 'Güvenli Ortam',
@@ -490,7 +490,7 @@ const LandingPage = () => {
                   Atölye<span style={{ color: '#2463eb' }}>.Platform</span>
                 </span>
                 <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: '500', letterSpacing: '0.05em', marginTop: '2px' }}>
-                  Developed by Emirhan Gök
+                  Developed by PolyOS
                 </span>
               </div>
             </div>
@@ -717,24 +717,7 @@ const LandingPage = () => {
       {/* Hero Section */}
       <div className="hero-mesh" style={{ position: 'relative', paddingTop: '128px', paddingBottom: '80px', overflow: 'hidden' }}>
         <div style={{ position: 'relative', maxWidth: '1280px', margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', zIndex: 10 }}>
-          {/* Badge */}
-          <div className="animate-fade-in-up" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '8px 12px',
-            borderRadius: '100px',
-            background: 'rgba(36, 99, 235, 0.1)',
-            color: '#2463eb',
-            fontSize: '12px',
-            fontWeight: '700',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            marginBottom: '32px'
-          }}>
-            <span className="animate-pulse-dot" style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2463eb' }}></span>
-            {t.badge}
-          </div>
+
 
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-[56px] font-extrabold text-slate-900 mb-6" style={{
@@ -1368,23 +1351,7 @@ const LandingPage = () => {
               <div style={{ margin: 0 }}>© 2026 Atölye Platform. {t.allRightsReserved} - <PolyOSBadge color="#94a3b8" /></div>
             </div>
 
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'rgba(255,255,255,0.05)',
-              padding: '8px 20px 8px 16px',
-              borderRadius: '9999px',
-              border: '1px solid rgba(255,255,255,0.05)',
-              backdropFilter: 'blur(12px)'
-            }}>
-              <span style={{ fontSize: '13px', fontWeight: 500, opacity: 0.7 }}>{t.designedBy}</span>
-              <div style={{ height: '16px', width: '1px', background: 'rgba(255,255,255,0.2)' }} />
-              <span style={{ color: 'white', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Code style={{ width: '18px', height: '18px', color: '#fca5a5' }} />
-                Emirhan Gök
-              </span>
-            </div>
+
           </div>
         </div>
       </footer>

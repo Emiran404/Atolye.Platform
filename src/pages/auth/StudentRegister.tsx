@@ -5,6 +5,7 @@ import { Button, Input, Select } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
 import { useAuthStore } from '../../store/authStore';
 import { checkPasswordStrength } from '../../utils/crypto';
+import { t } from '../../utils/i18n';
 
 const StudentRegister = () => {
   const navigate = useNavigate();
@@ -233,9 +234,9 @@ const StudentRegister = () => {
             <GraduationCap style={{ width: '32px', height: '32px', color: 'white' }} />
           </div>
           <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-            Öğrenci Kaydı
+            {t('studentRegister')}
           </h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>Atölye Sınav Platformuna kayıt ol</p>
+          <p style={{ color: 'var(--color-text-muted)' }}>{t('signUpForAtolye')}</p>
         </div>
 
         <div style={{
@@ -259,10 +260,10 @@ const StudentRegister = () => {
             <ShieldAlert style={{ width: '20px', height: '20px', color: '#d97706', flexShrink: 0, marginTop: '2px' }} />
             <div>
               <p style={{ fontSize: '14px', fontWeight: '600', color: '#92400e', marginBottom: '4px' }}>
-                Güvenlik Uyarısı
+                {t('securityWarning')}
               </p>
               <p style={{ fontSize: '13px', color: '#78350f', lineHeight: '1.5' }}>
-                Güvenliğiniz için şifrenizi tarayıcıya kaydetmeyin. Her oturumda manuel olarak giriş yapmanızı öneririz.
+                {t('securityWarningDesc')}
               </p>
             </div>
           </div>
@@ -270,10 +271,10 @@ const StudentRegister = () => {
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <Input
-                label="Okul Numarası"
+                label={t('studentNumber')}
                 icon={Hash}
                 type="text"
-                placeholder="Örn: 181 → 0181 (otomatik tamamlanır)"
+                placeholder={t('studentNumberRegisterPlaceholder')}
                 value={formData.studentNumber}
                 onChange={(e) => handleChange('studentNumber', e.target.value)}
                 onBlur={handleStudentNumberBlur}
@@ -282,10 +283,10 @@ const StudentRegister = () => {
               />
 
               <Input
-                label="Ad Soyad"
+                label={t('fullName')}
                 icon={User}
                 type="text"
-                placeholder="Ali Yılmaz"
+                placeholder={t('fullNamePlaceholder')}
                 value={formData.fullName}
                 onChange={(e) => handleChange('fullName', e.target.value)}
                 error={errors.fullName}
@@ -293,8 +294,9 @@ const StudentRegister = () => {
               />
 
               <Select
-                label="Sınıf"
+                label={t('className')}
                 options={classOptions}
+                placeholder={t('selectClass')}
                 value={formData.className}
                 onChange={(e) => handleChange('className', e.target.value)}
                 error={errors.className}
@@ -303,7 +305,7 @@ const StudentRegister = () => {
 
               <div>
                 <Input
-                  label="Şifre"
+                  label={t('password')}
                   icon={Lock}
                   type="password"
                   placeholder="••••••••"
@@ -337,7 +339,7 @@ const StudentRegister = () => {
               </div>
 
               <Input
-                label="Şifre Tekrar"
+                label={t('confirmPassword')}
                 icon={Lock}
                 type="password"
                 placeholder="••••••••"
@@ -348,16 +350,16 @@ const StudentRegister = () => {
               />
 
               <Button type="submit" fullWidth loading={loading}>
-                Kayıt Ol
+                {t('signUp')}
               </Button>
             </div>
           </form>
 
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
             <p style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
-              Zaten hesabınız var mı?{' '}
+              {t('alreadyHaveAccount')}{' '}
               <Link to="/ogrenci/giris" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: '500' }}>
-                Giriş Yap
+                {t('signIn')}
               </Link>
             </p>
           </div>

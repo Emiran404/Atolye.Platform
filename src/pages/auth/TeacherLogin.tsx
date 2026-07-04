@@ -396,31 +396,22 @@ const TeacherLogin = () => {
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (hasPasskey && !mnComboPressed) {
-                  return;
-                }
-                setActiveTab('password');
-              }}
-              disabled={hasPasskey && !mnComboPressed}
+              onClick={() => setActiveTab('password')}
               style={{
                 flex: 1,
                 padding: '12px',
                 borderRadius: '10px',
                 border: activeTab === 'password' ? '2px solid #6366f1' : '2px solid #e2e8f0',
-                background: (hasPasskey && !mnComboPressed)
-                  ? 'var(--color-border)'
-                  : activeTab === 'password'
-                    ? 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)'
-                    : 'var(--color-background)',
-                color: (hasPasskey && !mnComboPressed) ? '#94a3b8' : activeTab === 'password' ? '#fff' : '#6366f1',
+                background: activeTab === 'password'
+                  ? 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)'
+                  : 'var(--color-background)',
+                color: activeTab === 'password' ? '#fff' : '#6366f1',
                 fontWeight: '600',
-                cursor: (hasPasskey && !mnComboPressed) ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s',
-                opacity: (hasPasskey && !mnComboPressed) ? 0.6 : 1
+                cursor: 'pointer',
+                transition: 'all 0.2s'
               }}
             >
-              Parolayla Aç {hasPasskey && !mnComboPressed && '🔒'}
+              Parolayla Aç
             </button>
           </div>
 

@@ -388,7 +388,7 @@ const Documentation = () => {
                   Atölye<span style={{ color: '#2463eb' }}>.Platform</span>
                 </span>
                 <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: '500', letterSpacing: '0.05em', marginTop: '2px' }}>
-                  Developed by Emirhan Gök
+                  Developed by PolyOS
                 </span>
               </div>
             </div>
@@ -804,14 +804,7 @@ const Documentation = () => {
               <div style={{ margin: 0 }}>© 2026 Atölye Platform. {t.allRightsReserved} - <PolyOSBadge color="#94a3b8" /></div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '8px 20px', borderRadius: '9999px', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(12px)' }}>
-              <span style={{ fontSize: '13px', fontWeight: 500, opacity: 0.7 }}>{t.designedBy}</span>
-              <div style={{ height: '16px', width: '1px', background: 'rgba(255,255,255,0.2)' }} />
-              <span style={{ color: 'white', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Code style={{ width: '18px', height: '18px', color: '#fca5a5' }} />
-                Emirhan Gök
-              </span>
-            </div>
+
           </div>
         </div>
       </footer>

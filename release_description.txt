@@ -8,7 +8,10 @@ Bu sürüm, **PolyOS Lab Entegrasyonu**, **Canlı Sistem Konsolu** ve **Gelişmi
 * **📡 Gelişmiş Auto-Reconnect**: Bağlantı koptuğunda zeki yoklamalarla (3 saniyede bir) sunucu geldiği an sayfa yenilenmeden otomatik kurtarma eklendi.
 * **🔐 Çoklu Cihaz Passkey**: Aynı hesapta macOS, Windows ve Pardus için bağımsız olarak (5 cihaza kadar) birden fazla cihazı yetkilendirme yeteneği.
 * **🔄 Kapsamlı Yeniden Başlatma**: Sistem konsolundan "Yeniden Başlat" dendiğinde artık tam kapalı kalmıyor, `tsx watch` veya sistem özelliklerine göre otomatik canlanıyor.
-* **✨ UI/UX İyileştirmeleri**: Güncelleme geçmişindeki hatalı ünlem ikonları düzeltildi ve tasarım pürüzleri giderildi.
+* **🌐 Dinamik Dil & UX Güncellemeleri**: Öğrenci Giriş ve Kayıt sayfaları tamamen dinamik dil desteğine (Türkçe, İngilizce, Almanca, Rusça) kavuştu. Güvenlik ve gizlilik sebebiyle öğrenci giriş ekranındaki "Beni Hatırla" seçeneği kaldırıldı.
+* **🔐 Kolaylaştırılmış Öğretmen Girişi**: Passkey tanımlı öğretmenler için şifreyle giriş sekmesi kilidi kaldırılarak doğrudan erişim sağlandı.
+* **📢 Entegrasyon Uyarıları**: PolyOS Lab istemcilerine zenity bildirimi gönderme seçeneğine, sistemin çalışması için PolyOS Lab'ın bağlı olması gerektiğini belirten uyarı notu eklendi.
+* **🏷️ Logo & Kredi Güncellemeleri**: Arayüz logolarındaki geliştirici imzaları "Developed by PolyOS" olarak güncellendi ve footer alanındaki kişisel tasarım kredileri temizlendi.
 
 ## 📦 İndirme
 Platformunuza uygun sürümü aşağıdaki `Assets` (Varlıklar) bölümünden indirebilirsiniz. Pardus ve Linux sistemler için `.deb`, Windows cihazlar için `.exe` paketi mevcuttur. Çevrimdışı (Offline) okullar için `.zip` arşivini kullanabilirsiniz.
