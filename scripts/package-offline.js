@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.join(__dirname, '..');
 
-const VERSION = "4.1.0";
+const VERSION = fs.readJsonSync(path.join(root, 'package.json')).version;
 const PKG_NAME = "atolye-platform-offline";
 const STAGE_DIR = path.join(root, 'build_offline_stage');
 const OUTPUT_ZIP = path.join(root, `${PKG_NAME}_v${VERSION}.zip`);

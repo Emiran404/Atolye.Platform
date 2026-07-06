@@ -1,13 +1,13 @@
 import path from 'path';
 import fs from 'fs-extra';
-import tar from 'tar';
+import * as tar from 'tar';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.join(__dirname, '..');
 
-const VERSION = "4.1.0";
+const VERSION = fs.readJsonSync(path.join(root, 'package.json')).version;
 const PKG_NAME = "atolye-platform-client";
 const STAGE_DIR = path.join(root, 'build_client_deb_stage');
 
