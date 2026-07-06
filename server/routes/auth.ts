@@ -4,7 +4,7 @@ import express from 'express';
 import { getData, setData, generateId } from '../utils/storage.js';
 import { hashPassword, verifyPassword } from '../utils/crypto.js';
 import { generateToken, authenticateToken, authorizeRole } from '../middleware/auth.js';
-import { loginLimiter } from '../middleware/rateLimit.js';
+import { loginLimiter, recoveryKeyLimiter } from '../middleware/rateLimit.js';
 import base64url from 'base64url';
 import crypto from 'crypto';
 import { authenticateLDAP, updateLDAPPassword } from '../utils/ldap.js';
@@ -746,7 +746,7 @@ router.post('/passkey/login', (req, res) => {
 // GÜVENLİK: Kurtarma anahtarı yalnızca giriş yapmış öğretmen tarafından, kendi hesabı için
 // üretilebilir. (Önceden auth'suzdu; bir saldırgan başka bir öğretmen için anahtar üretip
 // hesabı ele geçirebiliyordu.)
-router.post('/recovery-key/generate', loginLimiter, authenticateToken, authorizeRole('teacher'), (req, res) => {
+router.post('/recovery-key/generate', recoveryKeyLimiter, authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { username } = req.body;
     if (!username) return res.status(400).json({ error: 'Kullanıcı adı gerekli!' });
@@ -785,7 +785,7 @@ router.post('/recovery-key/generate', loginLimiter, authenticateToken, authorize
 
 // Recovery Key ile Şifre Sıfırla
 // GÜVENLİK: loginLimiter ile brute-force'a karşı korunur; anahtar tek kullanımlıktır.
-router.post('/recovery-key/reset', loginLimiter, (req, res) => {
+router.post('/recovery-key/reset', recoveryKeyLimiter, (req, res) => {
   try {
     const { username, recoveryKey, newPassword } = req.body;
 
