@@ -18,7 +18,7 @@ import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import os from 'os';
 import { apiLimiter } from './middleware/rateLimit.js';
-import { authenticateToken, authorizeRole } from './middleware/auth.js';
+import { authenticateToken, authorizeRole, verifyToken } from './middleware/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -115,7 +115,19 @@ setInterval(() => {
 }, 5000);
 
 io.on('connection', (socket) => {
-  socket.on('join_teachers_room', () => {
+  socket.on('join_teachers_room', (token) => {
+    // GÜVENLİK: Canlı sistem logu ve metrikleri hassas veri (IP'ler, hata
+    // stack'leri) içerir. Yalnızca geçerli öğretmen token'ı olan istemciler katılabilir.
+    const decoded = verifyToken(token);
+    if (!decoded || decoded.userType !== 'teacher') {
+      socket.emit('system_log', {
+        type: 'error',
+        message: 'Yetkisiz: Canlı konsola erişim reddedildi.',
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+
     socket.join('teachers');
     socket.emit('system_log', {
       type: 'info',
@@ -138,8 +150,11 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json({ limit: '1024mb' }));
-app.use(express.urlencoded({ extended: true, limit: '1024mb' }));
+// GÜVENLİK: JSON gövde limiti DoS'a karşı 50mb'a düşürüldü (önceden 1024mb idi;
+// tek istek Node belleğini şişirebiliyordu). Büyük dosyalar multipart/multer yolundan
+// gider, JSON gövdesinden değil.
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Global Rate Limiter
 app.use('/api/', apiLimiter);

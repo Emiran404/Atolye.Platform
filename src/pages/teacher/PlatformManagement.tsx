@@ -16,7 +16,8 @@ import {
   notificationApi, 
   backupApi,
   classApi,
-  logsApi
+  logsApi,
+  getAuthToken
 } from '../../services/api';
 
 const PlatformManagement = () => {
@@ -94,7 +95,9 @@ const PlatformManagement = () => {
         const socket = io(url);
         
         socket.on('connect', () => {
-          socket.emit('join_teachers_room');
+          // GÜVENLİK: Canlı sistem konsolu/metrikleri hassas veri içerir; odaya
+          // yalnızca geçerli öğretmen token'ı ile katılınabilir.
+          socket.emit('join_teachers_room', getAuthToken());
           setSystemLogs(prev => [...prev, { type: 'success', message: 'Sunucu bağlantısı kuruldu.', timestamp: new Date().toISOString() }]);
         });
 

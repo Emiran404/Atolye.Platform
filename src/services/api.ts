@@ -2,7 +2,7 @@
 const API_BASE = '/api';
 
 // Token'ı storage'dan al
-function getAuthToken() {
+export function getAuthToken() {
   try {
     const local = localStorage.getItem('auth-storage');
     const session = sessionStorage.getItem('auth-storage');
