@@ -52,6 +52,7 @@
     "react-barcode": "^1.6.1",
     "react-dom": "^19.2.0",
     "react-dropzone": "^15.0.0",
+    "react-is": "^19.2.0",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.12.0",
     "recharts": "^3.6.0",
