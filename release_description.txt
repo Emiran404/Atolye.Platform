@@ -1,17 +1,69 @@
-# 🎉 Atölye.Platform v4.4.0
+# 🔒 Atölye.Platform v4.3.5 — Acil Güvenlik Yaması
 
-Bu sürüm, **PolyOS Lab Entegrasyonu**, **Canlı Sistem Konsolu** ve **Gelişmiş Otomatik Hata Kurtarma** özellikleriyle öğretmenlerin kontrolünü zirveye taşıyor.
+> ⚠️ **ACİL — DERHAL GÜNCELLEYİN.** Bu sürüm, bir sınav laboratuvarında
+> öğrencilerin **sınav cevaplarına önceden erişmesine** ve **öğretmen
+> hesaplarını ele geçirmesine** olanak tanıyan kritik güvenlik açıklarını
+> kapatır. Sınav döneminde çalışan tüm kurulumların bir an önce bu sürüme
+> geçmesi şiddetle önerilir.
 
-## 🚀 Yenilikler
-* **📡 PolyOS Lab Entegrasyonu**: Sınav oluştururken veya düzenlerken PolyOS Lab istemcilerine anlık bildirim gönderme seçeneği eklendi. Sınav başladığında veya yaklaştığında (30 dk ve 5 dk kala) öğrenci Pardus makinelerinde otomatik masaüstü uyarıları gösterilir.
-* **🖥️ Canlı Sistem Konsolu**: Öğretmen panelinden sunucunun CPU/RAM kullanımı, çalışma süresi izleme ve tek tıkla canlı terminal loglarını görüntüleme özelliği eklendi.
-* **📡 Gelişmiş Auto-Reconnect**: Bağlantı koptuğunda zeki yoklamalarla (3 saniyede bir) sunucu geldiği an sayfa yenilenmeden otomatik kurtarma eklendi.
-* **🔐 Çoklu Cihaz Passkey**: Aynı hesapta macOS, Windows ve Pardus için bağımsız olarak (5 cihaza kadar) birden fazla cihazı yetkilendirme yeteneği.
-* **🔄 Kapsamlı Yeniden Başlatma**: Sistem konsolundan "Yeniden Başlat" dendiğinde artık tam kapalı kalmıyor, `tsx watch` veya sistem özelliklerine göre otomatik canlanıyor.
-* **🌐 Dinamik Dil & UX Güncellemeleri**: Öğrenci Giriş ve Kayıt sayfaları tamamen dinamik dil desteğine (Türkçe, İngilizce, Almanca, Rusça) kavuştu. Güvenlik ve gizlilik sebebiyle öğrenci giriş ekranındaki "Beni Hatırla" seçeneği kaldırıldı.
-* **🔐 Kolaylaştırılmış Öğretmen Girişi**: Passkey tanımlı öğretmenler için şifreyle giriş sekmesi kilidi kaldırılarak doğrudan erişim sağlandı.
-* **📢 Entegrasyon Uyarıları**: PolyOS Lab istemcilerine zenity bildirimi gönderme seçeneğine, sistemin çalışması için PolyOS Lab'ın bağlı olması gerektiğini belirten uyarı notu eklendi.
-* **🏷️ Logo & Kredi Güncellemeleri**: Arayüz logolarındaki geliştirici imzaları "Developed by PolyOS" olarak güncellendi ve footer alanındaki kişisel tasarım kredileri temizlendi.
+## 🚨 Bu Sürümün Aciliyeti
+
+Önceki sürümlerde, laboratuvar ağına bağlı bir öğrencinin **yalnızca tarayıcı
+ile** yapabildiği saldırılar tespit edildi:
+
+* **Sınav cevaplarını sınavdan önce okuma** — Sunucu, öğrenciye giden sınav
+  verisinde her sorunun doğru şıkkını da gönderiyordu. Bir öğrenci sınav
+  başlamadan tüm cevap anahtarını görebiliyordu. **(Sınav bütünlüğü riski)**
+* **Öğretmen hesabını ele geçirme** — Kurtarma anahtarı üretme ucu kimlik
+  doğrulaması istemiyordu; bir saldırgan başka bir öğretmenin şifresini
+  sıfırlayıp hesabı devralabiliyordu. **(Tam hesap ele geçirme)**
+* **Canlı sunucu loglarını dinleme** — Herhangi bir kullanıcı, öğretmene özel
+  canlı sistem konsoluna (IP adresleri, hata kayıtları, sistem metrikleri)
+  yetkisiz erişebiliyordu.
+
+Bu açıklar özellikle **aktif sınav dönemlerinde** doğrudan sınav güvenliğini ve
+öğretmen yetkilerini tehdit ettiği için bu yama **düşük riskli değildir.**
+
+## 🛡️ Kapatılan Açıklar
+
+* **Sınav cevap anahtarı sızıntısı:** Doğru şık bilgisi (`correctIndex`) artık
+  öğrenciye giden hiçbir sınav yanıtında yer almıyor. Öğretmenler tam veriyi
+  görmeye devam eder; öğrenci puanlaması sunucu tarafında yapılır.
+* **Kurtarma anahtarı ile hesap ele geçirme:** Kurtarma anahtarı üretimi artık
+  giriş yapmış öğretmen gerektiriyor ve yalnızca kendi hesabı için mümkün.
+  Anahtarlar tek kullanımlık hâle getirildi ve bu uçlara gerçek rate-limit eklendi.
+* **Sabit (hardcoded) JWT imza anahtarı kaldırıldı:** Kaynağı bilen herkesin
+  sahte öğretmen oturum jetonu üretebilmesini sağlayan gömülü varsayılan anahtar
+  temizlendi. Ortam değişkeni tanımlı değilse güvenli, kalıcı rastgele bir anahtar
+  otomatik üretilir.
+* **Canlı sistem konsolu yetkilendirmesi:** Canlı log/metrik akışına artık
+  yalnızca geçerli öğretmen oturumuyla erişilebiliyor.
+* **Hizmet dışı bırakma (DoS) sertleştirmesi:** Aşırı büyük istek gövdeleriyle
+  sunucu belleğini şişirme yolu sınırlandırıldı.
+* **İstemci senkronizasyon hatası düzeltildi:** PolyOS Lab istemci kaydında sessizce
+  başarısız olan "engellenen siteler" senkronizasyonu tekrar çalışıyor.
+
+## 🐛 Diğer Düzeltmeler
+
+* **Tekrarlayan bildirim baloncuğu:** Okunmamış bir bildirim varken her sayfa
+  yenilemesinde (F5) aynı bildirimin tekrar tekrar görünmesi düzeltildi. Artık
+  yalnızca oturum sırasında gelen yeni bildirimler baloncuk gösterir.
+
+## ⬆️ Güncelleme ve Geçiş Notları
+
+* **Oturumlar:** `JWT_SECRET` ortam değişkeni tanımlı kurulumlarda (varsayılan
+  `.env` kullanan sunucular) davranış değişmez, kimse yeniden giriş yapmak zorunda
+  kalmaz. Bu değişkenin hiç tanımlı olmadığı kurulumlarda, yükseltmeden sonra
+  kullanıcılar bir defaya mahsus yeniden giriş yapar.
+* **PolyOS Lab sunucusu:** İstemci senkronizasyon düzeltmesi PolyOS Lab sunucu
+  bileşenini içerir; bu bileşeni ayrıca güncellemeyi unutmayın.
 
 ## 📦 İndirme
-Platformunuza uygun sürümü aşağıdaki `Assets` (Varlıklar) bölümünden indirebilirsiniz. Pardus ve Linux sistemler için `.deb`, Windows cihazlar için `.exe` paketi mevcuttur. Çevrimdışı (Offline) okullar için `.zip` arşivini kullanabilirsiniz.
+
+Platformunuza uygun sürümü `Assets` (Varlıklar) bölümünden indirebilirsiniz.
+Pardus ve Linux sistemler için `.deb`, Windows için `.exe`, çevrimdışı okullar için
+`.zip` arşivi mevcuttur.
+
+---
+*Bu bir güvenlik yamasıdır. Sorumlu ifşa ilkesi gereği açıkların teknik istismar
+adımları burada paylaşılmamıştır.*
