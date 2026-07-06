@@ -80,6 +80,10 @@ dev-dist/
 sw.js
 workbox-*.js
 
+# Secrets (asla commit edilmemeli)
+server/data/.jwt_secret
+**/.jwt_secret
+
 # AI Scratch files
 scratch/
 
