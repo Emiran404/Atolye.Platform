@@ -5,6 +5,30 @@ import { authenticateToken, authorizeRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
+/**
+ * Öğrenciye giden sınav objelerinden cevap anahtarını (correctIndex) ve
+ * diğer hassas alanları temizler. Öğretmenler tam objeyi görmeye devam eder.
+ *
+ * NOT: Quiz istemcisi (Quiz.tsx) sınav sırasında correctIndex'e ihtiyaç duymaz;
+ * doğru/yanlış bilgisi teslim sonrası sunucudan (submissions) döner.
+ */
+const sanitizeExamForStudent = (exam) => {
+  if (!exam) return exam;
+  const { questions, ...rest } = exam;
+  if (!Array.isArray(questions)) return exam;
+  return {
+    ...rest,
+    questions: questions.map(({ correctIndex, explanation, ...q }) => q)
+  };
+};
+
+const sanitizeExamsForRequester = (exams, req) => {
+  if (req.user?.userType === 'student') {
+    return exams.map(sanitizeExamForStudent);
+  }
+  return exams;
+};
+
 // Tüm sınavları getir
 /**
  * @swagger
@@ -25,7 +49,7 @@ router.get('/', authenticateToken, (req, res) => {
       exams = exams.filter(e => e.createdBy === createdBy);
     }
     
-    res.json({ success: true, exams });
+    res.json({ success: true, exams: sanitizeExamsForRequester(exams, req) });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -53,7 +77,7 @@ router.get('/active', authenticateToken, (req, res) => {
       return exam.isActive && now >= startDate && now <= endDate;
     });
 
-    res.json({ success: true, exams: activeExams });
+    res.json({ success: true, exams: sanitizeExamsForRequester(activeExams, req) });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -87,7 +111,7 @@ router.get('/active/:className', authenticateToken, (req, res) => {
       return exam.targetType === 'all' || (exam.targetClasses && exam.targetClasses.includes(className));
     });
 
-    res.json({ success: true, exams: activeExams });
+    res.json({ success: true, exams: sanitizeExamsForRequester(activeExams, req) });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -114,7 +138,7 @@ router.get('/:id', authenticateToken, (req, res) => {
       return res.status(404).json({ success: false, error: 'Sınav bulunamadı' });
     }
 
-    res.json({ success: true, exam });
+    res.json({ success: true, exam: req.user?.userType === 'student' ? sanitizeExamForStudent(exam) : exam });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
