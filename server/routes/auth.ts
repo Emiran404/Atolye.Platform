@@ -746,7 +746,7 @@ router.post('/passkey/login', (req, res) => {
 // GÜVENLİK: Kurtarma anahtarı yalnızca giriş yapmış öğretmen tarafından, kendi hesabı için
 // üretilebilir. (Önceden auth'suzdu; bir saldırgan başka bir öğretmen için anahtar üretip
 // hesabı ele geçirebiliyordu.)
-router.post('/recovery-key/generate', authenticateToken, authorizeRole('teacher'), (req, res) => {
+router.post('/recovery-key/generate', loginLimiter, authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { username } = req.body;
     if (!username) return res.status(400).json({ error: 'Kullanıcı adı gerekli!' });
