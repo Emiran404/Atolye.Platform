@@ -4,7 +4,7 @@ import express from 'express';
 import { getData, setData, generateId } from '../utils/storage.js';
 import { hashPassword, verifyPassword } from '../utils/crypto.js';
 import { generateToken, authenticateToken, authorizeRole } from '../middleware/auth.js';
-import { loginLimiter } from '../middleware/rateLimit.js';
+import { loginLimiter, recoveryKeyLimiter } from '../middleware/rateLimit.js';
 import base64url from 'base64url';
 import crypto from 'crypto';
 import { authenticateLDAP, updateLDAPPassword } from '../utils/ldap.js';
@@ -743,10 +743,18 @@ router.post('/passkey/login', (req, res) => {
 });
 
 // Master Recovery Key Oluştur
-router.post('/recovery-key/generate', (req, res) => {
+// GÜVENLİK: Kurtarma anahtarı yalnızca giriş yapmış öğretmen tarafından, kendi hesabı için
+// üretilebilir. (Önceden auth'suzdu; bir saldırgan başka bir öğretmen için anahtar üretip
+// hesabı ele geçirebiliyordu.)
+router.post('/recovery-key/generate', recoveryKeyLimiter, authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
     const { username } = req.body;
     if (!username) return res.status(400).json({ error: 'Kullanıcı adı gerekli!' });
+
+    // Sadece kendi hesabı için anahtar üretebilir
+    if (req.user.username !== username) {
+      return res.status(403).json({ error: 'Yalnızca kendi hesabınız için kurtarma anahtarı oluşturabilirsiniz.' });
+    }
 
     const teachers = getData('teachers') || [];
     const teacherIndex = teachers.findIndex(t => t.username === username);
@@ -776,7 +784,8 @@ router.post('/recovery-key/generate', (req, res) => {
 });
 
 // Recovery Key ile Şifre Sıfırla
-router.post('/recovery-key/reset', (req, res) => {
+// GÜVENLİK: loginLimiter ile brute-force'a karşı korunur; anahtar tek kullanımlıktır.
+router.post('/recovery-key/reset', recoveryKeyLimiter, (req, res) => {
   try {
     const { username, recoveryKey, newPassword } = req.body;
 
@@ -808,8 +817,10 @@ router.post('/recovery-key/reset', (req, res) => {
     const hashedNewPassword = hashPassword(newPassword, username);
     teachers[teacherIndex].password = hashedNewPassword;
 
-    // Opsiyonel: Anahtarı tek kullanımlık yapmak isterseniz burayı açın
-    // teachers[teacherIndex].recoveryKeyHash = null; 
+    // Anahtarı tek kullanımlık yap: kullanıldıktan sonra geçersiz kıl.
+    // Yeni bir kurtarma anahtarı, giriş yaptıktan sonra tekrar üretilebilir.
+    teachers[teacherIndex].recoveryKeyHash = null;
+    teachers[teacherIndex].recoveryKeyUsedAt = new Date().toISOString();
 
     setData('teachers', teachers);
 
