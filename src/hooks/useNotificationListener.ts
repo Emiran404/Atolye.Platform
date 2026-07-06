@@ -23,6 +23,11 @@ export const useNotificationListener = () => {
   const prevUnreadCountRef = useRef(0);
   const lastProcessedNotifIdRef = useRef(null);
   const isRefreshingRef = useRef(false);
+  // İlk yükleme bayrağı: sayfa açıldığında/yenilendiğinde zaten var olan
+  // okunmamış bildirimler için toast ATILMAZ; yalnızca oturum sırasında gelen
+  // YENİ bildirimler toast tetikler. (Aksi halde okunmamış bir bildirim varken
+  // her F5'te aynı toast tekrar çıkıyordu.)
+  const isInitialLoadRef = useRef(true);
 
   // Sync push enabled state with browser permission on mount
   useEffect(() => {
@@ -63,6 +68,15 @@ export const useNotificationListener = () => {
 
     // Determine the latest unread notification
     const unreadNotifications = notifications.filter(n => !n.isRead);
+
+    // İlk yükleme: mevcut okunmamış bildirimleri sessizce "işlenmiş" say ve çık.
+    // Böylece sayfa yenilendiğinde eski bir okunmamış bildirim tekrar toast atmaz.
+    if (isInitialLoadRef.current) {
+      isInitialLoadRef.current = false;
+      lastProcessedNotifIdRef.current = unreadNotifications[0]?.id ?? null;
+      prevUnreadCountRef.current = unreadCount;
+      return;
+    }
 
     if (unreadNotifications.length > 0) {
       const latestNotif = unreadNotifications[0];
