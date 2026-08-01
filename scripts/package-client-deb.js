@@ -101,6 +101,7 @@ Section: utils
 Priority: optional
 Architecture: ${architecture}
 Maintainer: Emirhan Gok <emirhangok@example.com>
+Depends: libnss3, libatk1.0-0, libatk-bridge2.0-0, libcups2, libgtk-3-0, libgbm1, libasound2, libxss1
 Description: Atolye Platform Smart Client for students and teachers.
 `;
     await fs.writeFile(path.join(debianPath, 'control'), controlContent);
