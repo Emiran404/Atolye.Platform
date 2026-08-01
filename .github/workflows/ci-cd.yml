@@ -31,8 +31,8 @@ jobs:
         cd server && npm install
         cd ../client-electron && npm install
         
-    - name: Build Frontend
-      run: npm run build
+    - name: Build All (Frontend & Backend)
+      run: npm run build:all
 
   release:
     runs-on: ubuntu-latest
@@ -53,8 +53,8 @@ jobs:
         cd server && npm install
         cd ../client-electron && npm install
         
-    - name: Build Frontend
-      run: npm run build
+    - name: Build All (Frontend & Backend)
+      run: npm run build:all
       
     - name: Package Server
       run: npm run package:server
