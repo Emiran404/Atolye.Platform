@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=/opt/atolye-server
-ExecStart=/usr/bin/node /opt/atolye-server/server/index.js
+ExecStart=/usr/bin/node /opt/atolye-server/server/dist/index.js
 Restart=always
 RestartSec=10
 Environment=NODE_ENV=production
