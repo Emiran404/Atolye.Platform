@@ -1,14 +1,10 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import { Bonjour } from 'bonjour-service';
-import dgram from 'dgram';
-import http from 'http';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import os from 'os';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { app, BrowserWindow, ipcMain } = require('electron');
+const { autoUpdater } = require('electron-updater');
+const { Bonjour } = require('bonjour-service');
+const dgram = require('dgram');
+const http = require('http');
+const path = require('path');
+const os = require('os');
 
 let mainWindow;
 let splashWindow;
