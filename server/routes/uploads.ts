@@ -2,10 +2,15 @@
 import express from 'express';
 import multer from 'multer';
 import { fileURLToPath } from 'url';
-import { dirname, join, extname, resolve } from 'path';
+import { dirname, join, extname, relative, sep } from 'path';
 import fs from 'fs';
 import { hashFile } from '../utils/crypto.js';
 import { authenticateToken, authorizeRole } from '../middleware/auth.js';
+import {
+  INVALID_PATH_CODE,
+  resolveExistingPathWithinRoot,
+  resolvePathForCreationWithinRoot
+} from '../utils/safePath.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -14,6 +19,7 @@ const router = express.Router();
 
 // Upload klasörü
 const uploadsBase = join(__dirname, '../../src/uploads_student');
+const routeErrorStatus = (error) => error?.code === INVALID_PATH_CODE ? 403 : 500;
 
 // Multer konfigürasyonu
 const storage = multer.diskStorage({
@@ -115,25 +121,32 @@ router.post('/', upload.single('file'), async (req, res) => {
     }
     
     // Hedef klasörü oluştur
-    const targetFolder = join(uploadsBase, folderPath);
+    const targetFolder = resolvePathForCreationWithinRoot(uploadsBase, folderPath);
     if (!fs.existsSync(targetFolder)) {
       fs.mkdirSync(targetFolder, { recursive: true });
     }
+    const safeTargetFolder = resolveExistingPathWithinRoot(uploadsBase, folderPath);
     
     // Orijinal dosya adını kullan, çakışma varsa numara ekle
-    const originalName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
+    const decodedName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
+    const originalName = decodedName.split(/[\\/]/).pop();
+    if (!originalName || originalName.includes('\0') || originalName === '.' || originalName === '..') {
+      const error = new Error('Geçersiz dosya adı.');
+      error.code = INVALID_PATH_CODE;
+      throw error;
+    }
     const ext = extname(originalName);
     const baseName = originalName.slice(0, -ext.length);
     
     let finalName = originalName;
     let counter = 1;
-    while (fs.existsSync(join(targetFolder, finalName))) {
+    while (fs.existsSync(join(safeTargetFolder, finalName))) {
       finalName = `${baseName}_${counter}${ext}`;
       counter++;
     }
     
     // Dosyayı hedef klasöre taşı
-    const targetPath = join(targetFolder, finalName);
+    const targetPath = join(safeTargetFolder, finalName);
     fs.renameSync(req.file.path, targetPath);
     
     // Dosya hash hesapla
@@ -141,7 +154,8 @@ router.post('/', upload.single('file'), async (req, res) => {
     const fileHash = hashFile(fileBuffer);
 
     // Relative path oluştur (frontend için)
-    const relativePath = `/uploads/${folderPath}/${finalName}`.replace(/\\/g, '/');
+    const storedRelativePath = relative(uploadsBase, targetPath).split(sep).join('/');
+    const relativePath = `/uploads/${storedRelativePath}`;
 
     res.json({
       success: true,
@@ -150,9 +164,8 @@ router.post('/', upload.single('file'), async (req, res) => {
         fileSize: req.file.size,
         fileType: req.file.mimetype,
         filePath: relativePath,
-        fullPath: targetPath,
         fileHash,
-        folderPath
+        folderPath: relative(uploadsBase, safeTargetFolder).split(sep).join('/')
       }
     });
   } catch (error) {
@@ -160,7 +173,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
-    res.status(500).json({ success: false, error: error.message });
+    res.status(routeErrorStatus(error)).json({ success: false, error: error.message });
   }
 });
 
@@ -178,7 +191,7 @@ router.post('/', upload.single('file'), async (req, res) => {
 router.get('/download/*', (req, res) => {
   try {
     const filePath = req.params[0];
-    const fullPath = join(uploadsBase, filePath);
+    const fullPath = resolveExistingPathWithinRoot(uploadsBase, filePath);
     
     if (!fs.existsSync(fullPath)) {
       return res.status(404).json({ success: false, error: 'Dosya bulunamadı' });
@@ -186,7 +199,7 @@ router.get('/download/*', (req, res) => {
 
     res.download(fullPath);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(routeErrorStatus(error)).json({ success: false, error: error.message });
   }
 });
 
@@ -204,7 +217,7 @@ router.get('/download/*', (req, res) => {
 router.get('/view/*', (req, res) => {
   try {
     const filePath = req.params[0];
-    const fullPath = join(uploadsBase, filePath);
+    const fullPath = resolveExistingPathWithinRoot(uploadsBase, filePath);
     
     if (!fs.existsSync(fullPath)) {
       return res.status(404).json({ success: false, error: 'Dosya bulunamadı' });
@@ -212,7 +225,7 @@ router.get('/view/*', (req, res) => {
 
     res.sendFile(fullPath);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(routeErrorStatus(error)).json({ success: false, error: error.message });
   }
 });
 
@@ -230,30 +243,26 @@ router.get('/view/*', (req, res) => {
 router.get('/list/*', (req, res) => {
   try {
     const folderPath = req.params[0] || '';
-    const fullPath = resolve(uploadsBase, folderPath);
-    
-    // Geçiş Koruması (Path Traversal Protection)
-    if (!fullPath.startsWith(resolve(uploadsBase))) {
-      return res.status(403).json({ success: false, error: 'Yetkisiz dizin erişimi.' });
-    }
+    const fullPath = resolveExistingPathWithinRoot(uploadsBase, folderPath);
     
     if (!fs.existsSync(fullPath)) {
       return res.json({ success: true, files: [] });
     }
 
     const files = fs.readdirSync(fullPath).map(name => {
-      const fileStat = fs.statSync(resolve(fullPath, name));
+      const fileStat = fs.lstatSync(join(fullPath, name));
+      if (fileStat.isSymbolicLink()) return null;
       return {
         name,
         isDirectory: fileStat.isDirectory(),
         size: fileStat.size,
         modified: fileStat.mtime
       };
-    });
+    }).filter(Boolean);
 
     res.json({ success: true, files });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(routeErrorStatus(error)).json({ success: false, error: error.message });
   }
 });
 
@@ -271,12 +280,7 @@ router.get('/list/*', (req, res) => {
 router.delete('/*', (req, res) => {
   try {
     const filePath = req.params[0];
-    const fullPath = resolve(uploadsBase, filePath);
-    
-    // Geçiş Koruması (Path Traversal Protection)
-    if (!fullPath.startsWith(resolve(uploadsBase))) {
-      return res.status(403).json({ success: false, error: 'Yetkisiz dizin erişimi.' });
-    }
+    const fullPath = resolveExistingPathWithinRoot(uploadsBase, filePath);
     
     if (!fs.existsSync(fullPath)) {
       return res.status(404).json({ success: false, error: 'Dosya bulunamadı' });
@@ -285,7 +289,7 @@ router.delete('/*', (req, res) => {
     fs.unlinkSync(fullPath);
     res.json({ success: true, message: 'Dosya silindi' });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(routeErrorStatus(error)).json({ success: false, error: error.message });
   }
 });
 
