@@ -1,0 +1,54 @@
+{
+  "name": "atolye-platform-control-panel",
+  "version": "4.4.0",
+  "description": "Atolye Platform teacher computer control panel",
+  "main": "main.js",
+  "type": "commonjs",
+  "author": {
+    "name": "PolyOS Team",
+    "email": "1tune-going@icloud.com"
+  },
+  "homepage": "https://github.com/Emiran404/Atolye.Platform",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --linux deb --x64",
+    "build:linux-dir": "electron-builder --linux dir --x64"
+  },
+  "devDependencies": {
+    "electron": "^43.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.atolye.platform.controlpanel",
+    "productName": "Atolye Platform Control Panel",
+    "artifactName": "atolye-platform-control-panel_${version}_${arch}.${ext}",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "renderer.js",
+      "styles.css",
+      "tray-icon.svg"
+    ],
+    "linux": {
+      "target": ["deb"],
+      "category": "Education",
+      "executableName": "atolye-control-panel"
+    },
+    "deb": {
+      "depends": [
+        "libgtk-3-0",
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "pkexec | policykit-1"
+      ]
+    },
+    "directories": {
+      "output": "dist"
+    }
+  }
+}

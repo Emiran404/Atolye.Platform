@@ -1,69 +1,53 @@
-# 🔒 Atölye.Platform v4.3.5 — Acil Güvenlik Yaması
+# Atolye Platform v4.4.0
 
-> ⚠️ **ACİL — DERHAL GÜNCELLEYİN.** Bu sürüm, bir sınav laboratuvarında
-> öğrencilerin **sınav cevaplarına önceden erişmesine** ve **öğretmen
-> hesaplarını ele geçirmesine** olanak tanıyan kritik güvenlik açıklarını
-> kapatır. Sınav döneminde çalışan tüm kurulumların bir an önce bu sürüme
-> geçmesi şiddetle önerilir.
+Atolye Platform v4.4.0, öğretmen bilgisayarlarında kurulum ve günlük kullanımını
+kolaylaştıran yeni **Atolye Platform Control Panel** uygulamasını sunuyor.
 
-## 🚨 Bu Sürümün Aciliyeti
+## Atolye Platform Control Panel
 
-Önceki sürümlerde, laboratuvar ağına bağlı bir öğrencinin **yalnızca tarayıcı
-ile** yapabildiği saldırılar tespit edildi:
+Yeni beyaz ve minimal masaüstü paneliyle öğretmenler terminal kullanmadan
+platformun durumunu görebilir ve temel sistem işlemlerini yönetebilir.
 
-* **Sınav cevaplarını sınavdan önce okuma** — Sunucu, öğrenciye giden sınav
-  verisinde her sorunun doğru şıkkını da gönderiyordu. Bir öğrenci sınav
-  başlamadan tüm cevap anahtarını görebiliyordu. **(Sınav bütünlüğü riski)**
-* **Öğretmen hesabını ele geçirme** — Kurtarma anahtarı üretme ucu kimlik
-  doğrulaması istemiyordu; bir saldırgan başka bir öğretmenin şifresini
-  sıfırlayıp hesabı devralabiliyordu. **(Tam hesap ele geçirme)**
-* **Canlı sunucu loglarını dinleme** — Herhangi bir kullanıcı, öğretmene özel
-  canlı sistem konsoluna (IP adresleri, hata kayıtları, sistem metrikleri)
-  yetkisiz erişebiliyordu.
+- Atolye Platform servisinin çalışma durumu
+- Başlatma, durdurma ve yeniden başlatma kontrolleri
+- SQLite/JSON veritabanı durumu
+- Sunucu ve sistem çalışma süresi
+- CPU yükü, RAM ve disk kullanımı
+- Öğrencilerin bağlanacağı yerel IP adresleri
+- Bağlı öğrenci sayısı
+- Gerçek zamanlı servis günlükleri
+- İnternet, yerel ağ, API ve port kontrolleri
+- Sınav öncesi sistem hazırlık özeti
+- Güvenli yedek oluşturma ve geri yükleme
+- Tanılama raporu dışa aktarma
+- Yeni sürüm kontrolü
+- Servis ve düşük disk alanı bildirimleri
+- Sistem tepsisi ve bilgisayar açılışında otomatik çalışma
 
-Bu açıklar özellikle **aktif sınav dönemlerinde** doğrudan sınav güvenliğini ve
-öğretmen yetkilerini tehdit ettiği için bu yama **düşük riskli değildir.**
+## Sunucu ve Paketleme İyileştirmeleri
 
-## 🛡️ Kapatılan Açıklar
+- Sağlık API’sine veritabanı modu, sunucu uptime bilgisi ve aktif öğrenci sayısı eklendi.
+- Sunucu `.deb` paketi artık geliştirme verilerini, gizli anahtarları, `.env`
+  dosyasını ve öğrenci yüklemelerini içermez.
+- Mevcut kurulum verilerinin paket yükseltmesinde üzerine yazılma riski giderildi.
+- Sunucu, Linux istemcisi ve Control Panel paketlerinin geliştirici bilgileri
+  `PolyOS Team <1tune-going@icloud.com>` olarak birleştirildi.
+- Yeni Debian/Ubuntu sürümleri için `pkexec | policykit-1` uyumluluğu sağlandı.
 
-* **Sınav cevap anahtarı sızıntısı:** Doğru şık bilgisi (`correctIndex`) artık
-  öğrenciye giden hiçbir sınav yanıtında yer almıyor. Öğretmenler tam veriyi
-  görmeye devam eder; öğrenci puanlaması sunucu tarafında yapılır.
-* **Kurtarma anahtarı ile hesap ele geçirme:** Kurtarma anahtarı üretimi artık
-  giriş yapmış öğretmen gerektiriyor ve yalnızca kendi hesabı için mümkün.
-  Anahtarlar tek kullanımlık hâle getirildi ve bu uçlara gerçek rate-limit eklendi.
-* **Sabit (hardcoded) JWT imza anahtarı kaldırıldı:** Kaynağı bilen herkesin
-  sahte öğretmen oturum jetonu üretebilmesini sağlayan gömülü varsayılan anahtar
-  temizlendi. Ortam değişkeni tanımlı değilse güvenli, kalıcı rastgele bir anahtar
-  otomatik üretilir.
-* **Canlı sistem konsolu yetkilendirmesi:** Canlı log/metrik akışına artık
-  yalnızca geçerli öğretmen oturumuyla erişilebiliyor.
-* **Hizmet dışı bırakma (DoS) sertleştirmesi:** Aşırı büyük istek gövdeleriyle
-  sunucu belleğini şişirme yolu sınırlandırıldı.
-* **İstemci senkronizasyon hatası düzeltildi:** PolyOS Lab istemci kaydında sessizce
-  başarısız olan "engellenen siteler" senkronizasyonu tekrar çalışıyor.
+## İndirme ve Kurulum
 
-## 🐛 Diğer Düzeltmeler
+Pardus, Debian ve Ubuntu tabanlı öğretmen bilgisayarlarında önce sunucu paketi,
+ardından Control Panel kurulmalıdır:
 
-* **Tekrarlayan bildirim baloncuğu:** Okunmamış bir bildirim varken her sayfa
-  yenilemesinde (F5) aynı bildirimin tekrar tekrar görünmesi düzeltildi. Artık
-  yalnızca oturum sırasında gelen yeni bildirimler baloncuk gösterir.
+```bash
+sudo apt install ./atolye-platform-server_4.4.0_all.deb
+sudo apt install ./atolye-platform-control-panel_4.4.0_amd64.deb
+```
 
-## ⬆️ Güncelleme ve Geçiş Notları
+Öğrenci veya ayrı öğretmen bilgisayarlarında Linux istemci paketi kullanılabilir:
 
-* **Oturumlar:** `JWT_SECRET` ortam değişkeni tanımlı kurulumlarda (varsayılan
-  `.env` kullanan sunucular) davranış değişmez, kimse yeniden giriş yapmak zorunda
-  kalmaz. Bu değişkenin hiç tanımlı olmadığı kurulumlarda, yükseltmeden sonra
-  kullanıcılar bir defaya mahsus yeniden giriş yapar.
-* **PolyOS Lab sunucusu:** İstemci senkronizasyon düzeltmesi PolyOS Lab sunucu
-  bileşenini içerir; bu bileşeni ayrıca güncellemeyi unutmayın.
+```bash
+sudo apt install ./atolye-platform-client_4.4.0_amd64.deb
+```
 
-## 📦 İndirme
-
-Platformunuza uygun sürümü `Assets` (Varlıklar) bölümünden indirebilirsiniz.
-Pardus ve Linux sistemler için `.deb`, Windows için `.exe`, çevrimdışı okullar için
-`.zip` arşivi mevcuttur.
-
----
-*Bu bir güvenlik yamasıdır. Sorumlu ifşa ilkesi gereği açıkların teknik istismar
-adımları burada paylaşılmamıştır.*
+> Yükseltme öncesinde önemli sınav verilerinizin güncel bir yedeğini bulundurmanız önerilir.

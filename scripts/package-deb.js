@@ -51,19 +51,19 @@ async function build() {
     await fs.copy(path.join(root, 'server'), path.join(optPath, 'server'), {
       filter: (src) => {
         const relative = path.relative(path.join(root, 'server'), src);
-        return !relative.startsWith('temp') && 
-               !relative.startsWith('backups') && 
-               !relative.startsWith('data/'); // Exclude developer databases/files
+        return !relative.startsWith('temp') &&
+               !relative.startsWith('backups') &&
+               !relative.startsWith('data/') &&
+               !relative.startsWith('dist/data/') &&
+               relative !== '.env'; // Exclude databases, secrets and runtime files
       }
     });
-    await fs.copy(path.join(root, 'src'), path.join(optPath, 'src'));
+    await fs.copy(path.join(root, 'src'), path.join(optPath, 'src'), {
+      filter: (src) => !path.relative(path.join(root, 'src'), src).startsWith('uploads_student')
+    });
     await fs.copy(path.join(root, 'dist'), path.join(optPath, 'dist')); // Frontend dist dahil
     await fs.copy(path.join(root, 'package.json'), path.join(optPath, 'package.json'));
     
-    if (await fs.pathExists(path.join(root, '.env'))) {
-      await fs.copy(path.join(root, '.env'), path.join(optPath, '.env'));
-    }
-
     // Meta veriler
     const controlSrc = path.join(root, 'deploy', 'deb-server', 'DEBIAN', 'control');
     const postinstSrc = path.join(root, 'deploy', 'deb-server', 'DEBIAN', 'postinst');

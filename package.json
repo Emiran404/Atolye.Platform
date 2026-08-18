@@ -1,6 +1,6 @@
 {
   "name": "sinav-gonderme-platformu",
-  "version": "4.3.9",
+  "version": "4.4.0",
   "description": "Modern exam and assignment management platform for Alanya Mesleki ve Teknik Anadolu Lisesi",
   "author": "Emirhan Gök <https://github.com/Emiran404>",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/Emiran404/Atolye.Platform.git"
   },
-  "notes": "## 📥 İndir (v4.0.3 Hazır Paketler)\n![Version](https://img.shields.io/badge/version-4.0.3-blue?style=for-the-badge)",
+  "notes": "## Atolye Platform v4.4.0\nAtolye Platform Control Panel, canlı sistem izleme, güvenli yedekleme ve öğretmen bilgisayarı yönetim araçları.",
   "keywords": [
     "exam-platform",
     "education",
@@ -35,6 +35,8 @@
     "preview": "vite preview",
     "preview:full": "concurrently \"npm run preview\" \"npm run dev:backend\" \"node scripts/multi-port-bridge.js 80 4173\"",
     "package:client": "cd client-electron && npm run build:linux-dir && cd .. && node scripts/package-client-deb.js",
+    "control-panel:start": "cd control-panel && npm start",
+    "package:control-panel": "cd control-panel && npm run build",
     "package:client-win": "cd client-electron && npx electron-builder --win nsis && cd ..",
     "package:client-all": "npm run package:client && npm run package:client-win",
     "install:all": "npm install && cd server && npm install",

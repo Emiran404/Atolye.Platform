@@ -1,15 +1,18 @@
 {
   "name": "atolye-platform-client",
-  "version": "4.3.9",
+  "version": "4.4.0",
   "type": "commonjs",
   "description": "Atolye Platform Smart Client with Auto-Discovery",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
-    "build:linux-dir": "electron-builder --linux dir"
+    "build:linux-dir": "electron-builder --linux dir --x64"
   },
-  "author": "Emirhan Gök",
+  "author": {
+    "name": "PolyOS Team",
+    "email": "1tune-going@icloud.com"
+  },
   "license": "MIT",
   "dependencies": {
     "bonjour-service": "^1.2.1",

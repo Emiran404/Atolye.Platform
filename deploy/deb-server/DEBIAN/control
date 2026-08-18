@@ -1,9 +1,9 @@
 Package: atolye-platform-server
-Version: 4.3.8
+Version: 4.4.0
 Section: utils
 Priority: optional
 Architecture: all
-Maintainer: Emirhan Gök <https://github.com/Emiran404>
+Maintainer: PolyOS Team <1tune-going@icloud.com>
 Depends: nodejs (>= 22.0.0), npm
 Description: Modern exam and assignment management platform server.
  This package installs the Atolye Platform backend as a system service

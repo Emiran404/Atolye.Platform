@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'">
+  <title>Atolye Platform Control Panel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">ÖĞRETMEN BİLGİSAYARI</p>
+        <h1>Atolye Platform <span>Control Panel</span></h1>
+      </div>
+      <div class="header-actions">
+        <span id="lastUpdate" class="last-update">Kontrol ediliyor…</span>
+        <button id="refreshButton" class="button subtle">Yenile</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="status-orb"><span id="statusDot"></span></div>
+      <div class="hero-copy">
+        <p id="statusLabel" class="status-label">DURUM KONTROL EDİLİYOR</p>
+        <h2 id="statusTitle">Atolye Platform inceleniyor…</h2>
+        <p id="statusDetail">Servis ve ağ bağlantısı kontrol ediliyor.</p>
+      </div>
+      <div class="hero-actions">
+        <button id="openButton" class="button primary">Platformu Aç</button>
+        <button id="restartButton" class="button warning">Yeniden Başlat</button>
+      </div>
+    </section>
+
+    <section class="cards">
+      <article class="card"><p>Servis</p><strong id="serviceState">—</strong><small id="serviceMeta">—</small></article>
+      <article class="card"><p>Veritabanı</p><strong id="databaseState">—</strong><small id="databaseMeta">—</small></article>
+      <article class="card"><p>Sunucu Çalışma Süresi</p><strong id="uptime">—</strong><small id="hostname">—</small></article>
+      <article class="card"><p>Bellek Kullanımı</p><strong id="memory">—</strong><small id="load">—</small></article>
+      <article class="card"><p>Bağlı Öğrenci</p><strong id="activeStudents">—</strong><small id="studentMeta">Canlı sınav oturumları</small></article>
+      <article class="card"><p>Disk Kullanımı</p><strong id="disk">—</strong><small id="diskMeta">—</small></article>
+      <article class="card"><p>İnternet</p><strong id="internet">—</strong><small>Yerel ağ internet olmadan çalışır</small></article>
+      <article class="card"><p>Hazırlık Durumu</p><strong id="readiness">—</strong><small id="readinessMeta">—</small></article>
+    </section>
+
+    <section class="grid">
+      <article class="panel connection-panel">
+        <div class="panel-heading"><div><p class="eyebrow">ÖĞRENCİ BAĞLANTISI</p><h3>Ağ adresleri</h3></div></div>
+        <div id="addresses" class="addresses"><p>Adresler bulunuyor…</p></div>
+        <p id="platformInfo" class="muted">—</p>
+      </article>
+      <article class="panel controls-panel">
+        <div class="panel-heading"><div><p class="eyebrow">SERVİS KONTROLÜ</p><h3>Hızlı işlemler</h3></div></div>
+        <div class="control-buttons">
+          <button id="startButton" class="control start">Başlat</button>
+          <button id="stopButton" class="control stop">Durdur</button>
+          <button id="restartButtonSecondary" class="control restart">Yeniden Başlat</button>
+        </div>
+        <p id="actionMessage" class="action-message"></p>
+      </article>
+    </section>
+
+    <section class="panel tools-panel">
+      <div class="panel-heading"><div><p class="eyebrow">BAKIM VE GÜVENLİK</p><h3>Yönetim araçları</h3></div></div>
+      <div class="tool-buttons">
+        <button id="backupButton" class="button">Yedek Oluştur</button>
+        <button id="restoreButton" class="button">Yedeği Geri Yükle</button>
+        <button id="diagnosticsButton" class="button">Tanılama Raporu</button>
+        <button id="updateButton" class="button">Güncelleme Kontrolü</button>
+        <label class="toggle"><input id="autostartToggle" type="checkbox"><span>Açılışta çalıştır</span></label>
+      </div>
+      <p id="toolMessage" class="action-message"></p>
+    </section>
+
+    <section class="panel console-panel">
+      <div class="panel-heading"><div><p class="eyebrow">SİSTEM GÜNLÜĞÜ</p><h3>Canlı servis kayıtları</h3></div><span class="live-badge">CANLI</span></div>
+      <pre id="logs">Günlükler yükleniyor…</pre>
+    </section>
+  </main>
+  <script src="renderer.js"></script>
+</body>
+</html>

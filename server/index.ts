@@ -19,6 +19,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import os from 'os';
 import { apiLimiter } from './middleware/rateLimit.js';
 import { authenticateToken, authorizeRole, verifyToken } from './middleware/auth.js';
+import { getActiveSessionCount } from './routes/liveSessions.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -325,7 +326,19 @@ app.use('/api/polyos', polyosRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  let database = { dbType: 'unknown', isMigrated: false };
+  try {
+    database = getDbStatus();
+  } catch (error) {
+    console.warn('[Health] Veritabanı durumu okunamadı:', error.message);
+  }
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    activeStudents: getActiveSessionCount(),
+    database
+  });
 });
 
 // Reset all data endpoint (Sadece öğretmenler)
