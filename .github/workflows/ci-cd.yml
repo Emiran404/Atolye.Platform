@@ -30,6 +30,7 @@ jobs:
         npm install
         cd server && npm install
         cd ../client-electron && npm install
+        cd ../control-panel && npm install
         
     - name: Build All (Frontend & Backend)
       run: npm run build:all
@@ -52,6 +53,7 @@ jobs:
         npm install
         cd server && npm install
         cd ../client-electron && npm install
+        cd ../control-panel && npm install
         
     - name: Build All (Frontend & Backend)
       run: npm run build:all
@@ -64,6 +66,9 @@ jobs:
       
     - name: Package Client (Linux .deb)
       run: npm run package:client
+
+    - name: Package Control Panel (Linux .deb)
+      run: npm run package:control-panel
       
     - name: Install Wine for Windows Build
       run: |
@@ -83,9 +88,9 @@ jobs:
         name: "Atolye Platform ${{ github.ref_name }} - Sürüm Açıklaması"
         files: |
           *.deb
+          control-panel/dist/*.deb
           *.zip
           client-electron/dist/*.exe
           client-electron/dist/latest.yml
           client-electron/dist/latest-linux.yml
         body_path: release_description.txt
-
