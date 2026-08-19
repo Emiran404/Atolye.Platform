@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Terminal, X, Code, Network } from 'lucide-react';
+import { Terminal, X, Network } from 'lucide-react';
+import packageJson from '../../../package.json';
 
 const SystemSetupPopup = () => {
   const [minimized, setMinimized] = useState(false);
   const navigate = useNavigate();
+
+  // Güvenli olmayan HTTP bağlantılarında ilk kurulum penceresini gösterme.
+  if (window.location.protocol === 'http:') {
+    return null;
+  }
 
   if (minimized) {
     return (
@@ -52,7 +58,7 @@ const SystemSetupPopup = () => {
           <div className="flex-1 p-8 md:p-10 flex flex-col justify-between">
               <div>
                   <div className="flex items-center gap-2 mb-4">
-                      <span className="px-2 py-1 bg-[#0ea5e9]/10 text-[#0ea5e9] text-[10px] font-bold uppercase tracking-wider rounded">v4.3.3 Stable</span>
+                      <span className="px-2 py-1 bg-[#0ea5e9]/10 text-[#0ea5e9] text-[10px] font-bold uppercase tracking-wider rounded">v{packageJson.version} Stable</span>
                       <span className="px-2 py-1 bg-[#ec5b13]/10 text-[#ec5b13] text-[10px] font-bold uppercase tracking-wider rounded">Yeni Kurulum</span>
                   </div>
                   <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-4 tracking-tight">
@@ -77,12 +83,11 @@ const SystemSetupPopup = () => {
                       </a>
                   </div>
                   <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-6">
-                      <div className="flex items-center gap-2 text-slate-400">
-                          <Terminal size={16} />
+                      <div className="flex items-center text-slate-400">
                           <p className="text-[11px] font-medium uppercase tracking-widest">Tech-focused Infrastructure</p>
                       </div>
                       <p className="text-slate-500 text-xs font-medium">
-                          Developed by <span className="text-[#ec5b13]">Emirhan Gök</span>
+                          Developed by <span className="text-[#ec5b13]">PolyOS Team</span>
                       </p>
                   </div>
               </div>

@@ -38,7 +38,7 @@ async function refresh() {
     $('memory').textContent = `${bytes(data.system.memoryUsed)} / ${bytes(data.system.memoryTotal)}`;
     $('load').textContent = `Sistem yükü: ${data.system.load.toFixed(2)}`;
     $('activeStudents').textContent = data.activeStudents === null ? '—' : String(data.activeStudents);
-    $('studentMeta').textContent = data.activeStudents === null ? 'Sunucu güncellemesi gerekiyor' : 'Canlı sınav oturumları';
+    $('studentMeta').textContent = data.activeStudents === null ? 'Sunucu güncellemesi gerekiyor' : 'Aktif portal oturumları';
     $('disk').textContent = data.disk.total ? `%${data.disk.percent}` : '—';
     $('diskMeta').textContent = data.disk.total ? `${bytes(data.disk.available)} boş alan` : 'Disk bilgisi alınamadı';
     $('internet').textContent = data.internet ? 'Bağlı' : 'Çevrimdışı';

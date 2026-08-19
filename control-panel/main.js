@@ -92,10 +92,10 @@ async function command(program, args, timeout = 5000) {
   }
 }
 
-function healthProbe() {
+function apiProbe(endpoint = '/api/health') {
   return new Promise((resolve) => {
     const started = Date.now();
-    const req = http.get(`http://127.0.0.1:${SERVER_PORT}/api/health`, { timeout: 1500 }, (res) => {
+    const req = http.get(`http://localhost:${SERVER_PORT}${endpoint}`, { timeout: 1500 }, (res) => {
       let body = '';
       res.setEncoding('utf8');
       res.on('data', (chunk) => { if (body.length < 65536) body += chunk; });
@@ -109,6 +109,8 @@ function healthProbe() {
     req.on('timeout', () => { req.destroy(); resolve({ ok: false, latency: null }); });
   });
 }
+
+function healthProbe() { return apiProbe('/api/health'); }
 
 function networkAddresses() {
   return Object.values(os.networkInterfaces())
@@ -186,7 +188,8 @@ async function checkUpdate() {
 }
 
 function backupEntries() {
-  return ['server/data', 'src/uploads_student'].filter((entry) => fs.existsSync(path.join('/opt/atolye-server', entry)));
+  return ['server/data', 'server/dist/data', 'src/uploads_student']
+    .filter((entry) => fs.existsSync(path.join('/opt/atolye-server', entry)));
 }
 
 async function createBackup() {
@@ -199,11 +202,21 @@ async function createBackup() {
   if (result.canceled || !result.filePath) return { canceled: true };
   const entries = backupEntries();
   if (!entries.length) throw new Error('Yedeklenecek sunucu verisi bulunamadı.');
+  const serviceWasActive = (await command('systemctl', ['is-active', SERVICE])) === 'active';
+  if (serviceWasActive) {
+    await execFileAsync('pkexec', ['systemctl', 'stop', SERVICE], { timeout: 120000 });
+  }
   try {
-    await execFileAsync('tar', ['-czf', result.filePath, '-C', '/opt/atolye-server', ...entries], { timeout: 10 * 60 * 1000 });
-  } catch (_) {
-    await execFileAsync('pkexec', ['tar', '-czf', result.filePath, '-C', '/opt/atolye-server', ...entries], { timeout: 10 * 60 * 1000 });
-    await execFileAsync('pkexec', ['chown', `${process.getuid()}:${process.getgid()}`, result.filePath], { timeout: 120000 });
+    try {
+      await execFileAsync('tar', ['-czf', result.filePath, '-C', '/opt/atolye-server', ...entries], { timeout: 10 * 60 * 1000 });
+    } catch (_) {
+      await execFileAsync('pkexec', ['tar', '-czf', result.filePath, '-C', '/opt/atolye-server', ...entries], { timeout: 10 * 60 * 1000 });
+      await execFileAsync('pkexec', ['chown', `${process.getuid()}:${process.getgid()}`, result.filePath], { timeout: 120000 });
+    }
+  } finally {
+    if (serviceWasActive) {
+      await execFileAsync('pkexec', ['systemctl', 'start', SERVICE], { timeout: 120000 });
+    }
   }
   return { ok: true, path: result.filePath };
 }
@@ -214,7 +227,7 @@ async function restoreBackup() {
   const backupPath = result.filePaths[0];
   const listing = await command('tar', ['-tzf', backupPath], 30000);
   const entries = listing.split('\n').filter(Boolean);
-  if (!entries.length || entries.some((entry) => entry.startsWith('/') || entry.includes('..') || (!entry.startsWith('server/data') && !entry.startsWith('src/uploads_student')))) {
+  if (!entries.length || entries.some((entry) => entry.startsWith('/') || entry.includes('..') || (!entry.startsWith('server/data') && !entry.startsWith('server/dist/data') && !entry.startsWith('src/uploads_student')))) {
     throw new Error('Bu dosya geçerli bir Atolye Platform yedeği değil.');
   }
   const confirmation = await dialog.showMessageBox({
@@ -270,9 +283,10 @@ function setAutostart(enabled) {
 }
 
 async function getStatus() {
-  const [properties, health, logs, disk, internet] = await Promise.all([
+  const [properties, health, metrics, logs, disk, internet] = await Promise.all([
     command('systemctl', ['show', SERVICE, '--no-page', '--property=ActiveState,SubState,MainPID,ExecMainStartTimestamp,ActiveEnterTimestamp,NRestarts']),
     healthProbe(),
+    apiProbe('/api/system/metrics'),
     command('journalctl', ['-u', SERVICE, '-n', '80', '--no-pager', '--output=short-iso'], 8000),
     diskStatus(),
     internetProbe()
@@ -307,7 +321,9 @@ async function getStatus() {
       ? { ok: true, type: 'unknown', migrated: false, label: 'Sunucu sürümü veritabanı bilgisini paylaşmıyor' }
       : { ok: false, type: 'unknown', migrated: false, label: 'Sunucuya ulaşılamıyor' }),
     serverUptime: health.details?.uptime || 0,
-    activeStudents: Number.isFinite(health.details?.activeStudents) ? health.details.activeStudents : null,
+    activeStudents: Number.isFinite(metrics.details?.metrics?.breakdown?.students)
+      ? metrics.details.metrics.breakdown.students
+      : (Number.isFinite(health.details?.activeStudents) ? health.details.activeStudents : null),
     disk,
     internet,
     system: {

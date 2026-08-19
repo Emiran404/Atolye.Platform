@@ -1,7 +1,7 @@
 /**
  * Sınav Gönderme Platformu - Landing Page
  * 
- * Copyright (c) 2026-2027 Emirhan Gök (@Emiran404)
+ * Copyright (c) 2026-2027 PolyOS Team
  * Alanya Mesleki ve Teknik Anadolu Lisesi
  * 
  * Licensed under the MIT License
@@ -13,6 +13,7 @@ import { useAuthStore } from '../store/authStore';
 import { getCurrentLanguage, changeLanguage } from '../utils/i18n';
 import SystemSetupPopup from '../components/ui/SystemSetupPopup';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import packageJson from '../../package.json';
 import {
   Terminal, Globe, ChevronDown, Menu, GraduationCap, Users,
   ShieldCheck, Zap, Calendar, Award, SearchCheck, CloudUpload,
@@ -58,7 +59,7 @@ const LandingPage = () => {
       login: 'Giriş Yap',
       getStarted: 'Başlayın',
       dashboard: 'Panel',
-      badge: 'v4.3.3 Şimdi Kullanılabilir',
+      badge: `v${packageJson.version} Şimdi Kullanılabilir`,
       heroTitle: 'Siber Güvenlik Uzmanları',
       heroSubtitle: 'Güçlendiriyoruz',
       nextGen: 'Yeni Nesil',
@@ -122,7 +123,7 @@ const LandingPage = () => {
       login: 'Log In',
       getStarted: 'Get Started',
       dashboard: 'Dashboard',
-      badge: 'v4.3.3 Now Available',
+      badge: `v${packageJson.version} Now Available`,
       heroTitle: 'Cybersecurity Experts',
       heroSubtitle: 'Empowering the',
       nextGen: 'Next Gen',
@@ -186,7 +187,7 @@ const LandingPage = () => {
       login: 'Anmelden',
       getStarted: 'Loslegen',
       dashboard: 'Dashboard',
-      badge: 'v4.3.3 Jetzt Verfügbar',
+      badge: `v${packageJson.version} Jetzt Verfügbar`,
       heroTitle: 'Cybersicherheitsexperten',
       heroSubtitle: 'Stärken der',
       nextGen: 'Nächsten Generation',
@@ -250,7 +251,7 @@ const LandingPage = () => {
       login: 'Войти',
       getStarted: 'Начать',
       dashboard: 'Панель',
-      badge: 'v4.3.3 Теперь Доступно',
+      badge: `v${packageJson.version} Теперь Доступно`,
       heroTitle: 'Экспертов по Кибербезопасности',
       heroSubtitle: 'Расширяем Возможности',
       nextGen: 'Следующего Поколения',
@@ -1087,7 +1088,7 @@ const LandingPage = () => {
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
             <p style={{ color: '#94a3b8', fontSize: '14px', fontWeight: '500' }}>
-              Built with pride for <span style={{ color: 'var(--color-border)' }}>Alanya Mesleki ve Teknik Anadolu Lisesi</span> by <span style={{ color: '#2463eb', fontWeight: '700' }}>Emirhan Gök</span>
+              Built with pride for <span style={{ color: 'var(--color-border)' }}>Alanya Mesleki ve Teknik Anadolu Lisesi</span> by <span style={{ color: '#2463eb', fontWeight: '700' }}>PolyOS Team</span>
             </p>
           </div>
         </div>

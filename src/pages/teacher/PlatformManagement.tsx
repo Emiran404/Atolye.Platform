@@ -2940,7 +2940,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
             <span style={{ color: 'var(--color-text-muted)' }}>Geliştirici</span>
-            <span style={{ fontWeight: '500', color: 'var(--color-text-primary)' }}>Emirhan Gök</span>
+            <span style={{ fontWeight: '500', color: 'var(--color-text-primary)' }}>PolyOS Team</span>
           </div>
         </div>
       </div>

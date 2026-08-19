@@ -9,7 +9,7 @@
 <br/>
 
 <!-- CORE BADGES -->
-[![Version](https://img.shields.io/badge/Versiyon-4.4.0-6366f1?style=for-the-badge)](https://github.com/Emiran404/Atolye.Platform/releases)
+[![Version](https://img.shields.io/badge/Versiyon-4.4.1-6366f1?style=for-the-badge)](https://github.com/Emiran404/Atolye.Platform/releases)
 [![License](https://img.shields.io/badge/Lisans-MIT-10b981?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Pardus_%7C_Windows-ef4444?style=for-the-badge)](https://github.com/Emiran404/Atolye.Platform)
 

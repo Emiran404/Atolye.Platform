@@ -1,6 +1,6 @@
 {
   "name": "atolye-platform-control-panel",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "Atolye Platform teacher computer control panel",
   "main": "main.js",
   "type": "commonjs",
@@ -32,7 +32,9 @@
       "tray-icon.svg"
     ],
     "linux": {
-      "target": ["deb"],
+      "target": [
+        "deb"
+      ],
       "category": "Education",
       "executableName": "atolye-control-panel"
     },

@@ -25,7 +25,7 @@ npm run package:control-panel
 Paket `control-panel/dist/` altında `amd64` mimarisi için oluşturulur. Kurulum:
 
 ```bash
-sudo apt install ./control-panel/dist/atolye-platform-control-panel_4.4.0_amd64.deb
+sudo apt install ./control-panel/dist/atolye-platform-control-panel_4.4.1_amd64.deb
 ```
 
 Servis başlatma, durdurma ve yeniden başlatma işlemleri Linux yönetici onayı

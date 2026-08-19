@@ -1,53 +1,11 @@
-# Atolye Platform v4.4.0
+# Atolye Platform v4.4.1
 
-Atolye Platform v4.4.0, öğretmen bilgisayarlarında kurulum ve günlük kullanımını
-kolaylaştıran yeni **Atolye Platform Control Panel** uygulamasını sunuyor.
+Bu sürüm güvenlik, kararlılık ve Control Panel iyileştirmeleri içerir.
 
-## Atolye Platform Control Panel
+- Upload yollarında ek güvenlik kontrolleri
+- Güncel ve güvenli bağımlılık sürümleri
+- SQLite yedekleme ve aktif öğrenci oturumu iyileştirmeleri
+- Control Panel canlı log ve bağlantı düzenlemeleri
+- Sürüm ve PolyOS Team bilgilerinin güncellenmesi
 
-Yeni beyaz ve minimal masaüstü paneliyle öğretmenler terminal kullanmadan
-platformun durumunu görebilir ve temel sistem işlemlerini yönetebilir.
-
-- Atolye Platform servisinin çalışma durumu
-- Başlatma, durdurma ve yeniden başlatma kontrolleri
-- SQLite/JSON veritabanı durumu
-- Sunucu ve sistem çalışma süresi
-- CPU yükü, RAM ve disk kullanımı
-- Öğrencilerin bağlanacağı yerel IP adresleri
-- Bağlı öğrenci sayısı
-- Gerçek zamanlı servis günlükleri
-- İnternet, yerel ağ, API ve port kontrolleri
-- Sınav öncesi sistem hazırlık özeti
-- Güvenli yedek oluşturma ve geri yükleme
-- Tanılama raporu dışa aktarma
-- Yeni sürüm kontrolü
-- Servis ve düşük disk alanı bildirimleri
-- Sistem tepsisi ve bilgisayar açılışında otomatik çalışma
-
-## Sunucu ve Paketleme İyileştirmeleri
-
-- Sağlık API’sine veritabanı modu, sunucu uptime bilgisi ve aktif öğrenci sayısı eklendi.
-- Sunucu `.deb` paketi artık geliştirme verilerini, gizli anahtarları, `.env`
-  dosyasını ve öğrenci yüklemelerini içermez.
-- Mevcut kurulum verilerinin paket yükseltmesinde üzerine yazılma riski giderildi.
-- Sunucu, Linux istemcisi ve Control Panel paketlerinin geliştirici bilgileri
-  `PolyOS Team <1tune-going@icloud.com>` olarak birleştirildi.
-- Yeni Debian/Ubuntu sürümleri için `pkexec | policykit-1` uyumluluğu sağlandı.
-
-## İndirme ve Kurulum
-
-Pardus, Debian ve Ubuntu tabanlı öğretmen bilgisayarlarında önce sunucu paketi,
-ardından Control Panel kurulmalıdır:
-
-```bash
-sudo apt install ./atolye-platform-server_4.4.0_all.deb
-sudo apt install ./atolye-platform-control-panel_4.4.0_amd64.deb
-```
-
-Öğrenci veya ayrı öğretmen bilgisayarlarında Linux istemci paketi kullanılabilir:
-
-```bash
-sudo apt install ./atolye-platform-client_4.4.0_amd64.deb
-```
-
-> Yükseltme öncesinde önemli sınav verilerinizin güncel bir yedeğini bulundurmanız önerilir.
+> Mevcut kurulumunuzu güncellemeden önce yedek almanız önerilir.

@@ -206,7 +206,7 @@ const StudentSidebar = () => {
               Developed by
             </p>
             <p style={{ fontSize: '14px', color: 'var(--color-text-primary)', fontWeight: '700', lineHeight: '1.2' }}>
-              Emirhan Gök
+              PolyOS Team
             </p>
           </div>
         </div>
