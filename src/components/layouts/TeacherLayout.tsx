@@ -21,12 +21,7 @@ import {
   Award,
   AlertTriangle,
   ArrowUpCircle,
-  AlertCircle,
   ArrowLeft,
-  Database,
-  Loader2,
-  CheckCircle2,
-  RefreshCw
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import PasskeyModal from '../ui/PasskeyModal';
@@ -35,7 +30,7 @@ import { canUsePasskey } from '../../utils/platform';
 const TeacherLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, token, theme, setTheme } = useAuthStore();
+  const { user, logout, theme, setTheme } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showPasskeyModal, setShowPasskeyModal] = useState(false);
@@ -50,136 +45,9 @@ const TeacherLayout = ({ children }) => {
     document.documentElement.classList.remove('dark');
   }, [theme, setTheme]);
 
-  // Veritabanı geçiş durumları
-  const [dbStatus, setDbStatus] = useState({
-    dbType: 'json',
-    isMigrated: false,
-    checking: true,
-    error: null
-  });
-  const [migrationStatus, setMigrationStatus] = useState('idle'); // 'idle' | 'migrating' | 'success' | 'error'
-  const [migrationLogs, setMigrationLogs] = useState([]);
-  const [migrationProgress, setMigrationProgress] = useState(0);
-  const [migrationError, setMigrationError] = useState(null);
-  const [isCheckingDb, setIsCheckingDb] = useState(false);
-
-  // Veritabanı durumu yükle
-  const fetchDbStatus = async () => {
-    try {
-      const response = await fetch('/api/settings/db-status');
-      const data = await response.json();
-      if (data.success) {
-        setDbStatus({
-          dbType: data.dbType,
-          isMigrated: data.isMigrated,
-          checking: false,
-          error: null
-        });
-      } else {
-        setDbStatus(prev => ({ ...prev, checking: false, error: data.error || 'Bilinmeyen hata' }));
-      }
-    } catch (error) {
-      console.error('Veritabanı durum kontrol hatası:', error);
-      setDbStatus(prev => ({ ...prev, checking: false, error: 'Bağlantı Hatası: Sunucuya ulaşılamıyor. (' + error.message + ')' }));
-    }
-  };
-
-  useEffect(() => {
-    fetchDbStatus();
-  }, []);
-
-  // Otomatik yeniden deneme mekanizması (Hata varsa 3 saniyede bir kontrol et)
-  useEffect(() => {
-    let interval;
-    if (dbStatus.error) {
-      interval = setInterval(() => {
-        fetchDbStatus();
-      }, 3000);
-    }
-    return () => clearInterval(interval);
-  }, [dbStatus.error]);
-
-  const handleRecheckDb = async () => {
-    setIsCheckingDb(true);
-    try {
-      const response = await fetch('/api/settings/db-status');
-      const data = await response.json();
-      if (data.success) {
-        setDbStatus({
-          dbType: data.dbType,
-          isMigrated: data.isMigrated,
-          checking: false
-        });
-      }
-    } catch (error) {
-      console.error('Veritabanı durum kontrol hatası:', error);
-    } finally {
-      setIsCheckingDb(false);
-    }
-  };
-
-  const handleMigrate = async () => {
-    setMigrationStatus('migrating');
-    setMigrationProgress(10);
-    setMigrationLogs(['🔍 JSON yedek dosyaları analiz ediliyor...']);
-    
-    const steps = [
-      { progress: 25, log: '📂 JSON sınıflar (classes.json) okunuyor...' },
-      { progress: 45, log: '📂 Sınavlar ve öğrenci kayıtları taşınıyor...' },
-      { progress: 70, log: '📂 Sınav teslimleri (submissions.json) SQLite veritabanına aktarılıyor...' },
-      { progress: 90, log: '⚙️ SQLite şeması doğrulanıyor ve indeksler oluşturuluyor...' }
-    ];
-
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      setMigrationProgress(steps[i].progress);
-      setMigrationLogs(prev => [...prev, steps[i].log]);
-    }
-
-    try {
-      const response = await fetch('/api/settings/migrate-db', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-      
-      if (data.success) {
-        setMigrationProgress(100);
-        setMigrationLogs(prev => [...prev, '✅ Veritabanı geçişi başarıyla tamamlandı! 💾 atolye.db dosyası güncellendi.']);
-        setMigrationStatus('success');
-      } else {
-        setMigrationStatus('error');
-        setMigrationError(data.error || 'Bilinmeyen bir hata oluştu.');
-        setMigrationLogs(prev => [...prev, `❌ Hata: ${data.error || 'Geçiş başarısız oldu.'}`]);
-      }
-    } catch (error) {
-      setMigrationStatus('error');
-      setMigrationError(error.message);
-      setMigrationLogs(prev => [...prev, `❌ Sunucu bağlantı hatası: ${error.message}`]);
-    }
-  };
-
-  const handleFinishMigration = async () => {
-    await fetchDbStatus();
-    setMigrationStatus('idle');
-    setMigrationProgress(0);
-    setMigrationLogs([]);
-  };
-
-  const handleBypassSqlite = () => {
-    localStorage.setItem('sqlite_bypass', 'true');
-    fetchDbStatus();
-  };
-
-  const isDbBlocked = !dbStatus.checking && (dbStatus.error || dbStatus.dbType === 'json' || !dbStatus.isMigrated) && localStorage.getItem('sqlite_bypass') !== 'true';
-
   // Passkey modal kontrolü - giriş yapıldığında göster
   useEffect(() => {
-    // Sadece desteklenen platformlarda (Windows) göster ve DB bloku kalktıysa göster
-    if (!canUsePasskey() || isDbBlocked) return;
+    if (!canUsePasskey()) return;
 
     const passkeyDismissed = localStorage.getItem('passkey_modal_dismissed');
     if (!passkeyDismissed) {
@@ -189,7 +57,7 @@ const TeacherLayout = ({ children }) => {
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [isDbBlocked]);
+  }, []);
   
   // Güncelleme Kontrolü
   useEffect(() => {
@@ -256,142 +124,6 @@ const TeacherLayout = ({ children }) => {
       -webkit-text-fill-color: transparent;
       animation: textShimmer 4s linear infinite;
     }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    .spin-icon {
-      animation: spin 1s linear infinite;
-    }
-    .wizard-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(15, 23, 42, 0.45);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-    .wizard-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 20px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      padding: 32px;
-      max-width: 600px;
-      width: 100%;
-      position: relative;
-      animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .wizard-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 9999px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .wizard-badge.success {
-      background-color: #f0fdf4;
-      color: #16a34a;
-      border: 1px solid #bbf7d0;
-    }
-    .wizard-badge.warning {
-      background-color: #fffbeb;
-      color: #d97706;
-      border: 1px solid #fde68a;
-    }
-    .wizard-btn-primary {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 700;
-      color: #ffffff;
-      background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
-    .wizard-btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
-    }
-    .wizard-btn-primary:active {
-      transform: translateY(0);
-    }
-    .wizard-btn-primary:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-    .wizard-btn-secondary {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      color: #475569;
-      background-color: #ffffff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
-    .wizard-btn-secondary:hover {
-      background-color: #f8fafc;
-      border-color: #cbd5e1;
-    }
-    .wizard-code {
-      background-color: #1e293b;
-      color: #f8fafc;
-      border-radius: 8px;
-      padding: 12px;
-      font-family: ui-monospace, monospace;
-      font-size: 12px;
-      overflow-x: auto;
-      margin: 8px 0;
-      text-align: left;
-    }
-    .step-log {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 13px;
-      color: #334155;
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 12px;
-      margin-top: 16px;
-      max-height: 120px;
-      overflow-y: auto;
-      text-align: left;
-    }
   `;
 
   const menuItems = [
@@ -412,7 +144,6 @@ const TeacherLayout = ({ children }) => {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem('sqlite_bypass');
     logout();
     navigate('/');
   };
@@ -705,10 +436,7 @@ const TeacherLayout = ({ children }) => {
       {/* Mobile Header */}
       <div 
         className="teacher-mobile-header" 
-        style={{
-          ...sidebarStyles.mobileHeader,
-          ...(isDbBlocked ? { pointerEvents: 'none', filter: 'blur(2px)', opacity: 0.7 } : {})
-        }}
+        style={sidebarStyles.mobileHeader}
       >
         <button
           className="teacher-mobile-menu-btn"
@@ -729,10 +457,7 @@ const TeacherLayout = ({ children }) => {
       {/* Sidebar */}
       <aside 
         className="teacher-sidebar" 
-        style={{
-          ...sidebarStyles.sidebar,
-          ...(isDbBlocked ? { pointerEvents: 'none', filter: 'blur(3px)', opacity: 0.6 } : {})
-        }}
+        style={sidebarStyles.sidebar}
       >
         {/* Logo */}
         <div style={sidebarStyles.logo}>
@@ -837,10 +562,7 @@ const TeacherLayout = ({ children }) => {
       {/* Main Content */}
       <main 
         className="teacher-main" 
-        style={{
-          ...sidebarStyles.main,
-          ...(isDbBlocked ? { pointerEvents: 'none', filter: 'blur(4px)', opacity: 0.5 } : {})
-        }}
+        style={sidebarStyles.main}
       >
         <div style={sidebarStyles.content}>
           {/* Sürüm Güncelleme Bildirimi */}
@@ -901,232 +623,6 @@ const TeacherLayout = ({ children }) => {
         onGoToSettings={() => navigate('/ogretmen/ayarlar')}
       />
 
-      {/* Veritabanı Geçiş Sihirbazı Overlay */}
-      {isDbBlocked && (
-        <div className="wizard-overlay">
-          <div className={`wizard-card ${dbStatus.dbType === 'sqlite' ? 'sqlite-ready' : 'sqlite-missing'}`}>
-            
-            {/* Sürücü Durumu Rozeti */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Database size={24} style={{ color: dbStatus.dbType === 'sqlite' ? '#0d9488' : '#f59e0b' }} />
-                <h2 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--color-text-primary)', margin: 0 }}>
-                  Yeni Sistem Veritabanı Geçişi
-                </h2>
-              </div>
-              <span className={`wizard-badge ${dbStatus.dbType === 'sqlite' ? 'success' : 'warning'}`}>
-                {dbStatus.error ? (
-                  <>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444' }} />
-                    Bağlantı Koptu
-                  </>
-                ) : dbStatus.dbType === 'sqlite' ? (
-                  <>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }} />
-                    SQLite Hazır
-                  </>
-                ) : (
-                  <>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
-                    JSON Modu (Kısıtlı)
-                  </>
-                )}
-              </span>
-            </div>
-
-            {/* Sunucu Bağlantı Hatası */}
-            {dbStatus.error && (
-              <div>
-                <div style={{ backgroundColor: 'var(--color-background-secondary)', border: '1px solid #fca5a5', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                    <AlertTriangle size={20} style={{ color: '#ef4444', flexShrink: 0, marginTop: '2px' }} />
-                    <div>
-                      <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#991b1b', margin: '0 0 6px 0' }}>
-                        Sunucu ile İletişim Koptu
-                      </h4>
-                      <p style={{ fontSize: '13px', color: '#991b1b', lineHeight: '1.6', margin: 0 }}>
-                        {dbStatus.error} <br/>
-                        Lütfen arka planda sunucunun (`npm run dev` veya node) çalıştığından ve 3002 portunun açık olduğundan emin olun.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                  <button 
-                    className="btn btn-primary" 
-                    onClick={() => {
-                      setIsCheckingDb(true);
-                      fetchDbStatus();
-                      setTimeout(() => setIsCheckingDb(false), 800);
-                    }}
-                    disabled={isCheckingDb}
-                  >
-                    Tekrar Dene
-                  </button>
-                  <button 
-                    className="btn" 
-                    onClick={handleBypassSqlite}
-                    style={{ width: 'auto' }}
-                  >
-                    Geç
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* SQLite Modülü Yüklenemedi (Çok nadir - eski Node.js sürümü) */}
-            {!dbStatus.error && dbStatus.dbType === 'json' && (
-              <div>
-                <div style={{ backgroundColor: 'var(--color-background-secondary)', border: '1px solid #fde68a', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                    <AlertTriangle size={20} style={{ color: '#d97706', flexShrink: 0, marginTop: '2px' }} />
-                    <div>
-                      <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#92400e', margin: '0 0 6px 0' }}>
-                        Node.js Sürümü Uyumsuz
-                      </h4>
-                      <p style={{ fontSize: '13px', color: '#92400e', lineHeight: '1.6', margin: 0 }}>
-                        Sisteminiz şu anda <strong>JSON dosya tabanlı geçici modda</strong> çalışmaktadır. 
-                        Node.js yerleşik <strong>node:sqlite</strong> modülü yüklenemedi. 
-                        Bu genellikle Node.js sürümünüzün v22'den eski olması durumunda gerçekleşir.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: '1.6', marginBottom: '20px' }}>
-                  Lütfen Node.js sürümünüzü <strong>v22 veya üstüne</strong> güncelleyin ve sunucuyu yeniden başlatın.
-                </p>
-
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <button
-                    className="wizard-btn-primary"
-                    onClick={handleRecheckDb}
-                    disabled={isCheckingDb}
-                    style={{ background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)', boxShadow: '0 4px 12px rgba(13, 148, 136, 0.3)' }}
-                  >
-                    {isCheckingDb ? <Loader2 size={18} className="spin-icon" /> : <RefreshCw size={18} />}
-                    {isCheckingDb ? 'Kontrol Ediliyor...' : 'Tekrar Kontrol Et'}
-                  </button>
-                  <button
-                    className="wizard-btn-secondary"
-                    onClick={handleBypassSqlite}
-                    style={{ width: 'auto' }}
-                  >
-                    JSON ile Devam Et (Test)
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* SQLite Sürücüsü Hazır, Göç Bekleniyor Durumu */}
-            {!dbStatus.error && dbStatus.dbType === 'sqlite' && !dbStatus.isMigrated && (
-              <div>
-                {migrationStatus === 'idle' && (
-                  <div>
-                    <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: '1.6', marginBottom: '20px' }}>
-                      SQLite veritabanı modülü sisteminizde aktif. 
-                      Şimdi mevcut tüm JSON dosyalarınızdaki verileri (sınıflar, öğrenciler, sınavlar, teslimler vb.) 
-                      güvenli bir şekilde yeni veritabanına aktarmamız gerekiyor.
-                    </p>
-
-                    <div style={{ backgroundColor: 'var(--color-background-secondary)', border: '1px solid #ccfbf1', borderRadius: '12px', padding: '16px', marginBottom: '24px' }}>
-                      <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#0f766e', margin: '0 0 8px 0' }}>
-                        Taşınacak Veriler:
-                      </h4>
-                      <ul style={{ fontSize: '13px', color: '#0f766e', margin: 0, paddingLeft: '20px', lineHeight: '1.8' }}>
-                        <li>Sınıf tanımlamaları ve platform ayarları</li>
-                        <li>Öğrenci ve öğretmen kayıtları</li>
-                        <li>Oluşturulan sınavlar ve öğrenci teslim dosyaları</li>
-                        <li>İstatistikler, bildirimler ve arşiv kayıtları</li>
-                      </ul>
-                    </div>
-
-                    <button className="wizard-btn-primary" onClick={handleMigrate}>
-                      <Database size={18} /> Verileri Güvenle Aktar ve Başlat
-                    </button>
-                  </div>
-                )}
-
-                {migrationStatus === 'migrating' && (
-                  <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                    <Loader2 size={40} className="spin-icon" style={{ color: '#0d9488', margin: '0 auto 16px auto' }} />
-                    <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-                      Veriler Aktarılıyor...
-                    </h3>
-                    <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: '16px' }}>
-                      Lütfen işlemi bölmeyin veya sayfayı kapatmayın.
-                    </p>
-
-                    {/* Progress Bar */}
-                    <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--color-border)', borderRadius: '4px', overflow: 'hidden', marginBottom: '20px' }}>
-                      <div style={{ width: `${migrationProgress}%`, height: '100%', background: 'linear-gradient(90deg, #0d9488, #3b82f6)', transition: 'width 0.4s ease' }} />
-                    </div>
-
-                    {/* Console Logs */}
-                    <div className="step-log">
-                      {migrationLogs.map((log, index) => (
-                        <div key={index} style={{ marginBottom: '4px', color: log.startsWith('❌') ? '#dc2626' : log.startsWith('✅') ? '#0d9488' : 'var(--color-text-secondary)' }}>
-                          {log}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {migrationStatus === 'success' && (
-                  <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                    <CheckCircle2 size={56} style={{ color: '#22c55e', margin: '0 auto 16px auto' }} />
-                    <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-                      Veri Geçişi Başarılı!
-                    </h3>
-                    <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: '1.6', marginBottom: '24px' }}>
-                      Tüm JSON verileriniz kayıpsız bir şekilde SQLite veritabanına taşındı. 
-                      Sisteminiz artık en yüksek performanslı ve güvenli modda çalışmaya hazır.
-                    </p>
-
-                    <button className="wizard-btn-primary" onClick={handleFinishMigration} style={{ background: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)', boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)' }}>
-                      <CheckCircle2 size={18} /> Sistemi Kullanmaya Başla
-                    </button>
-                  </div>
-                )}
-
-                {migrationStatus === 'error' && (
-                  <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                    <AlertCircle size={56} style={{ color: '#ef4444', margin: '0 auto 16px auto' }} />
-                    <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-                      Geçiş Sırasında Hata Oluştu
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#ef4444', marginBottom: '16px' }}>
-                      {migrationError || 'Bilinmeyen bir hata oluştu.'}
-                    </p>
-
-                    <div className="step-log" style={{ marginBottom: '20px' }}>
-                      {migrationLogs.map((log, index) => (
-                        <div key={index} style={{ marginBottom: '4px', color: '#ef4444' }}>
-                          {log}
-                        </div>
-                      ))}
-                    </div>
-
-                    <button className="wizard-btn-primary" onClick={handleMigrate} style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)' }}>
-                      <RefreshCw size={18} /> Tekrar Dene
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
-
-      {/* Passkey Modal */}
-      <PasskeyModal
-        isOpen={showPasskeyModal}
-        onClose={() => setShowPasskeyModal(false)}
-        userName={user?.fullName}
-        onGoToSettings={() => navigate('/ogretmen/ayarlar')}
-      />
     </div>
   );
 };

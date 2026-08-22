@@ -1,9 +1,9 @@
-# Atolye Platform v4.4.3
+# Atolye Platform v4.4.4 Beta
 
-Küçük hata düzeltmeleri ve kullanım iyileştirmeleri:
+Bu sürüm test amaçlı bir beta sürümüdür.
 
-- HTTP/yerel ağ bağlantılarında ilk öğretmen hesabı kurulum penceresi yeniden gösteriliyor.
-- SQLite modunda JSON yedek geri yükleme uyumluluğu geliştirildi.
-- Eski ve farklı JSON yedek biçimleri desteklendi.
-- Debian paketine geliştirme verilerinin dahil edilmesi engellendi.
-- Sunucu testlerinin doğru şekilde keşfedilmesi sağlandı.
+- Yeni kurulumlar doğrudan SQLite veritabanıyla başlar.
+- JSON depolama modu ve manuel veritabanı göç ekranı kaldırıldı.
+- Eski JSON verileri başlangıçta otomatik olarak SQLite'a aktarılır.
+- JSON yedekler doğrudan SQLite veritabanına geri yüklenir.
+- Debian kurulumu ve kontrol paneli SQLite-only yapıya uyarlandı.

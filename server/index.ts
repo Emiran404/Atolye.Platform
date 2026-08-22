@@ -50,7 +50,7 @@ import polyosRoutes from './routes/polyos.js';
 import { startNotificationWorker } from './workers/notificationWorker.js';
 import { startBackupWorker } from './workers/backupWorker.js';
 import { startDiscovery } from './utils/discovery.js';
-import { getDbStatus, setData } from './utils/storage.js';
+import { getData, getDbStatus, setData } from './utils/storage.js';
 import { updateManager } from './utils/updateManager.js';
 
 export const app = express();
@@ -220,82 +220,47 @@ if (!fs.existsSync(backupsPath)) {
   fs.mkdirSync(backupsPath, { recursive: true });
 }
 
-const initializeDataFiles = () => {
-  // SQLite veritabanı aktif ve göç tamamlanmışsa JSON dosyalarının oluşturulmasını atla
-  try {
-    const dbStatus = getDbStatus();
-    if (dbStatus.dbType === 'sqlite' && dbStatus.isMigrated) {
-      console.log('💾 SQLite veritabanı aktif ve göç tamamlanmış. JSON dosyalarının oluşturulması atlanıyor.');
-      return;
-    }
-  } catch (err) {
-    // Hata durumunda devam et
-  }
-
-  const dataFiles = [
-    'students.json',
-    'teachers.json',
-    'exams.json',
-    'submissions.json',
-    'notifications.json',
-    'schedules.json',
-    'classes.json',
-    'settings.json',
-    'reports.json',
-    'updates.json'
+const initializeDatabase = () => {
+  const allowedClasses = [
+    '9-A', '9-B', '9-C', '9-D', '9-E', '9-F',
+    '10-A', '10-B', '10-C', '10-D', '10-E', '10-F',
+    '11-A', '11-B', '11-C', '11-D', '11-E', '11-F',
+    '12-A', '12-B', '12-C', '12-D', '12-E', '12-F'
   ];
-
-  dataFiles.forEach(file => {
-    const filePath = join(dataPath, file);
-    if (!fs.existsSync(filePath)) {
-      let content = [];
-      
-      if (file === 'classes.json') {
-        content = [
-          "9-A", "9-B", "9-C", "9-D", "9-E", "9-F",
-          "10-A", "10-B", "10-C", "10-D", "10-E", "10-F",
-          "11-A", "11-B", "11-C", "11-D", "11-E", "11-F",
-          "12-A", "12-B", "12-C", "12-D", "12-E", "12-F"
-        ];
-      } else if (file === 'settings.json') {
-        content = {
-          registrationEnabled: true,
-          teacherRegistrationEnabled: true,
-          allowedClasses: [
-            "9-A", "9-B", "9-C", "9-D", "9-E", "9-F",
-            "10-A", "10-B", "10-C", "10-D", "10-E", "10-F",
-            "11-A", "11-B", "11-C", "11-D", "11-E", "11-F",
-            "12-A", "12-B", "12-C", "12-D", "12-E", "12-F"
-          ],
-          autoBackupEnabled: false,
-          autoBackupInterval: 24,
-          autoBackupIncludePhotos: false,
-          autoBackupWizardConfigured: false,
-          lastAutoBackupTime: null,
-          liderAhenk: {
-            enabled: false,
-            url: "ldap://localhost:389",
-            baseDN: "dc=example,dc=com",
-            bindDN: "cn=admin,dc=example,dc=com",
-            bindPassword: "",
-            userDNPattern: "uid={{username}},ou=users,dc=example,dc=com",
-            searchFilter: "(uid={{username}})",
-            syncInterval: 0
-          }
-        };
-      } else if (file === 'reports.json' || file === 'updates.json') {
-        content = [];
-      } else {
-        content = [];
+  const defaults = {
+    students: [], teachers: [], exams: [], submissions: [], notifications: [],
+    schedules: [], classes: allowedClasses, reports: [], updates: [],
+    settings: {
+      registrationEnabled: true,
+      teacherRegistrationEnabled: true,
+      allowedClasses,
+      autoBackupEnabled: false,
+      autoBackupInterval: 24,
+      autoBackupIncludePhotos: false,
+      autoBackupWizardConfigured: false,
+      lastAutoBackupTime: null,
+      liderAhenk: {
+        enabled: false,
+        url: 'ldap://localhost:389',
+        baseDN: 'dc=example,dc=com',
+        bindDN: 'cn=admin,dc=example,dc=com',
+        bindPassword: '',
+        userDNPattern: 'uid={{username}},ou=users,dc=example,dc=com',
+        searchFilter: '(uid={{username}})',
+        syncInterval: 0
       }
-      
-      fs.writeFileSync(filePath, JSON.stringify(content, null, 2), 'utf-8');
-      console.log(`📄 ${file} oluşturuldu`);
     }
-  });
+  };
+
+  for (const [key, value] of Object.entries(defaults)) {
+    if (getData(key) === null && !setData(key, value)) {
+      throw new Error(`${key} başlangıç verisi SQLite veritabanına yazılamadı.`);
+    }
+  }
+  console.log('💾 SQLite başlangıç koleksiyonları hazır.');
 };
 
-initializeDataFiles();
+initializeDatabase();
 
 // Bildirim servisini baslat
 startNotificationWorker();
@@ -326,7 +291,7 @@ app.use('/api/polyos', polyosRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  let database = { dbType: 'unknown', isMigrated: false };
+  let database = { dbType: 'sqlite', ready: false };
   try {
     database = getDbStatus();
   } catch (error) {

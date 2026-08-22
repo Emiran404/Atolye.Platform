@@ -1,6 +1,6 @@
 {
   "name": "sinav-platformu-backend",
-  "version": "4.4.3",
+  "version": "4.4.4-beta.0",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,6 @@
     "adm-zip": "^0.6.0",
     "archiver": "^7.0.1",
     "base64url": "^3.0.1",
-    "better-sqlite3": "^12.10.0",
     "bonjour-service": "^1.2.1",
     "check-disk-space": "^3.4.0",
     "cors": "^2.8.5",

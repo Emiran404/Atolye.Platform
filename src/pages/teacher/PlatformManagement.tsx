@@ -271,7 +271,7 @@ const PlatformManagement = () => {
 
   // Güncelleme state'leri
   const [currentVersion, setCurrentVersion] = useState('1.0.0');
-  const [dbStatus, setDbStatus] = useState({ dbType: 'json', isMigrated: false });
+  const [dbStatus, setDbStatus] = useState({ dbType: 'sqlite', ready: false });
   const [updateHistory, setUpdateHistory] = useState([]);
   const [checkingUpdate, setCheckingUpdate] = useState(false);
   const [availableUpdate, setAvailableUpdate] = useState(null);
@@ -484,7 +484,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
         const dbRes = await fetch('/api/settings/db-status');
         const dbData = await dbRes.json();
         if (dbData?.success) {
-          setDbStatus({ dbType: dbData.dbType, isMigrated: dbData.isMigrated });
+          setDbStatus({ dbType: dbData.dbType, ready: dbData.ready === true });
         }
       } catch (dbErr) {
         console.error('Veritabanı durumu alınamadı:', dbErr);
@@ -2922,9 +2922,9 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
             <span style={{ color: 'var(--color-text-muted)' }}>Kullanılan Veritabanı</span>
             <span style={{ 
               fontWeight: '600', 
-              color: dbStatus.dbType === 'sqlite' ? '#10b981' : '#f59e0b' 
+              color: dbStatus.ready ? '#10b981' : '#ef4444'
             }}>
-              {dbStatus.dbType === 'sqlite' ? 'SQLite (Aktif / SQL Modu)' : 'JSON Modu (Kısıtlı)'}
+              {dbStatus.ready ? 'SQLite (Aktif)' : 'SQLite (Bağlantı Hatası)'}
             </span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--color-border)' }}>

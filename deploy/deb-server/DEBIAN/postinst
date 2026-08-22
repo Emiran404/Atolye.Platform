@@ -46,16 +46,7 @@ for admin_group in sudo wheel; do
     fi
 done
 
-# Bağımlılıkları kontrol et ve yerel mimariye göre derle/rebuild yap
-if command -v npm &> /dev/null; then
-    echo "better-sqlite3 modülü yerel mimari için yapılandırılıyor..."
-    cd "$INSTALL_DIR/server"
-    # Eşleşmeyen native binary'leri temizle ve yerel olarak yeniden derlemeyi dene
-    # Hata durumunda kurulumun yarıda kalmaması için exit code 0 ile devam edilmesini sağlıyoruz
-    npm rebuild better-sqlite3 || echo "⚠️ better-sqlite3 yerel olarak derlenemedi. Sunucu hibrit JSON modunda çalışacaktır."
-fi
-
-# npm rebuild sonrasında oluşan dosyaları da servis grubuna teslim et.
+# Paket dosyalarını servis grubuna teslim et.
 chown -R root:"$SERVICE_GROUP" "$INSTALL_DIR"
 chmod -R g+rwX "$INSTALL_DIR"
 find "$INSTALL_DIR" -type d -exec chmod g+s {} +

@@ -1,6 +1,6 @@
 {
   "name": "atolye-platform-client",
-  "version": "4.4.3",
+  "version": "4.4.4-beta.0",
   "type": "commonjs",
   "description": "Atolye Platform Smart Client with Auto-Discovery",
   "main": "main.js",

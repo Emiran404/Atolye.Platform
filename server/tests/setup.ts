@@ -26,7 +26,7 @@ beforeAll(() => {
   }
   
   // Test için başlangıç durumunu ayarla
-  storage.setData('settings', { dbMigrated: true, systemName: 'Test Platform' });
+  storage.setData('settings', { systemName: 'Test Platform' });
   storage.setData('teachers', []);
   storage.setData('students', []);
   storage.setData('exams', []);

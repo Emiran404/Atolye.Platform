@@ -128,7 +128,7 @@ function localDatabaseStatus() {
   const sqlitePath = candidates.find((candidate) => {
     try { return fs.statSync(candidate).size > 0; } catch (_) { return false; }
   });
-  return sqlitePath ? { ok: true, type: 'sqlite', migrated: true, label: 'SQLite aktif' } : null;
+  return sqlitePath ? { ok: true, type: 'sqlite', label: 'SQLite aktif' } : null;
 }
 
 async function diskStatus() {
@@ -311,15 +311,12 @@ async function getStatus() {
     },
     health,
     database: localDatabaseStatus() || (health.details?.database ? {
-      ok: true,
+      ok: health.details.database.ready === true,
       type: health.details.database.dbType || 'unknown',
-      migrated: Boolean(health.details.database.isMigrated),
-      label: health.details.database.dbType === 'sqlite' && health.details.database.isMigrated
-        ? 'SQLite aktif'
-        : 'JSON depolama modu'
+      label: health.details.database.ready === true ? 'SQLite aktif' : 'SQLite hazır değil'
     } : health.ok
-      ? { ok: true, type: 'unknown', migrated: false, label: 'Sunucu sürümü veritabanı bilgisini paylaşmıyor' }
-      : { ok: false, type: 'unknown', migrated: false, label: 'Sunucuya ulaşılamıyor' }),
+      ? { ok: true, type: 'unknown', label: 'Sunucu sürümü veritabanı bilgisini paylaşmıyor' }
+      : { ok: false, type: 'unknown', label: 'Sunucuya ulaşılamıyor' }),
     serverUptime: health.details?.uptime || 0,
     activeStudents: Number.isFinite(metrics.details?.metrics?.breakdown?.students)
       ? metrics.details.metrics.breakdown.students

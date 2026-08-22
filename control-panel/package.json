@@ -1,6 +1,6 @@
 {
   "name": "atolye-platform-control-panel",
-  "version": "4.4.3",
+  "version": "4.4.4-beta.0",
   "description": "Atolye Platform teacher computer control panel",
   "main": "main.js",
   "type": "commonjs",

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import express from 'express';
 import { authenticateToken, authorizeRole } from '../middleware/auth.js';
-import { getData, setData, getDbStatus, runMigration } from '../utils/storage.js';
+import { getData, setData, getDbStatus } from '../utils/storage.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,8 +10,6 @@ import { updateManager } from '../utils/updateManager.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const router = express.Router();
-
-const SETTINGS_FILE = path.join(__dirname, '../data/settings.json');
 
 // Ayarları yükle
 const loadSettings = () => {
@@ -197,75 +195,6 @@ router.get('/downloaded-updates', authenticateToken, authorizeRole('teacher'), (
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
-});
-
-// POST /api/settings/migrate-db - JSON'dan SQLite'a geçişi başlat (Sadece Öğretmenler)
-/**
- * @swagger
- * /api/settings/migrate-db:
- *   post:
- *     summary: POST /migrate-db
- *     tags: [Settings]
- *     responses:
- *       200:
- *         description: Başarılı işlem
- */
-router.post('/migrate-db', authenticateToken, authorizeRole('teacher'), (req, res) => {
-  try {
-    runMigration();
-    res.json({ success: true, message: 'Veritabanı geçişi başarıyla tamamlandı.' });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// POST /api/settings/prepare-sqlite - node:sqlite durumunu kontrol et (Sadece Öğretmenler)
-// Node.js v22+ ile birlikte gelen yerleşik node:sqlite modülü kullanıldığından
-// artık harici sürücü derlemeye gerek yoktur.
-/**
- * @swagger
- * /api/settings/prepare-sqlite:
- *   post:
- *     summary: POST /prepare-sqlite
- *     tags: [Settings]
- *     responses:
- *       200:
- *         description: Başarılı işlem
- */
-router.post('/prepare-sqlite', authenticateToken, authorizeRole('teacher'), (req, res) => {
-  try {
-    const status = getDbStatus();
-    if (status.dbType === 'sqlite') {
-      return res.json({ success: true, message: 'SQLite zaten aktif. Node.js yerleşik node:sqlite modülü kullanılıyor.' });
-    }
-    // Eğer hala JSON modundaysa sunucu yeniden başlatılmalı
-    res.json({ success: false, error: 'SQLite modülü başlatılamadı. Sunucuyu yeniden başlatmayı deneyin.' });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// GET /api/settings/prepare-sqlite-status - SQLite durum sorgulama (Sadece Öğretmenler)
-/**
- * @swagger
- * /api/settings/prepare-sqlite-status:
- *   get:
- *     summary: GET /prepare-sqlite-status
- *     tags: [Settings]
- *     responses:
- *       200:
- *         description: Başarılı işlem
- */
-router.get('/prepare-sqlite-status', authenticateToken, authorizeRole('teacher'), (req, res) => {
-  const status = getDbStatus();
-  res.json({
-    success: true,
-    status: status.dbType === 'sqlite' ? 'success' : 'idle',
-    logs: status.dbType === 'sqlite' 
-      ? ['[Sistem] Node.js yerleşik SQLite modülü (node:sqlite) aktif.', '✅ Harici derleme gerekmiyor.']
-      : ['[Sistem] SQLite henüz aktif değil.'],
-    error: null
-  });
 });
 
 export default router;

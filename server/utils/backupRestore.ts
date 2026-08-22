@@ -63,15 +63,11 @@ export const normalizeBackupData = (payload) => {
 
 export const restoreBackupData = (payload, getData, setData) => {
   const data = normalizeBackupData(payload);
-  const currentSettings = getData('settings') || {};
   let restoredCollections = 0;
 
   for (const key of Object.keys(COLLECTION_TYPES)) {
     if (data[key] === undefined) continue;
-    const value = key === 'settings'
-      ? { ...data.settings, dbMigrated: currentSettings.dbMigrated === true }
-      : data[key];
-    if (setData(key, value) !== true) {
+    if (setData(key, data[key]) !== true) {
       throw new Error(`${key} verisi veritabanına yazılamadı.`);
     }
     restoredCollections += 1;

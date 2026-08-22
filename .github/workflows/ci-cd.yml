@@ -86,6 +86,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         name: "Atolye Platform ${{ github.ref_name }} - Sürüm Açıklaması"
+        prerelease: ${{ contains(github.ref_name, '-') }}
         files: |
           *.deb
           control-panel/dist/*.deb

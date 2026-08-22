@@ -14,17 +14,16 @@ describe('JSON backup restore', () => {
     expect(normalizeBackupData(payload)).toEqual({ students: [] });
   });
 
-  it('keeps SQLite migration enabled while restoring settings', () => {
+  it('restores settings without migration metadata', () => {
     const setData = vi.fn(() => true);
     restoreBackupData(
-      { data: { settings: { schoolName: 'Atölye', dbMigrated: false } } },
-      () => ({ dbMigrated: true }),
+      { data: { settings: { schoolName: 'Atölye' } } },
+      () => ({}),
       setData
     );
 
     expect(setData).toHaveBeenCalledWith('settings', {
-      schoolName: 'Atölye',
-      dbMigrated: true
+      schoolName: 'Atölye'
     });
   });
 
