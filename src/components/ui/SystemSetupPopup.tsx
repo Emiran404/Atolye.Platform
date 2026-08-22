@@ -7,11 +7,6 @@ const SystemSetupPopup = () => {
   const [minimized, setMinimized] = useState(false);
   const navigate = useNavigate();
 
-  // Güvenli olmayan HTTP bağlantılarında ilk kurulum penceresini gösterme.
-  if (window.location.protocol === 'http:') {
-    return null;
-  }
-
   if (minimized) {
     return (
       <div 

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION="4.4.2"
+VERSION="4.4.3"
 PKG_NAME="atolye-platform-server"
 BUILD_DIR="build_deb_tmp"
 
@@ -23,6 +23,14 @@ cp -r server ${BUILD_DIR}/opt/atolye-server/
 cp -r src ${BUILD_DIR}/opt/atolye-server/
 cp package.json ${BUILD_DIR}/opt/atolye-server/
 cp .env ${BUILD_DIR}/opt/atolye-server/ 2>/dev/null || :
+
+# Geliştirme makinesindeki kullanıcı verileri ve sırlar pakete girmemeli.
+find ${BUILD_DIR}/opt/atolye-server/server/data -type f ! -name '.gitkeep' -delete 2>/dev/null || :
+rm -rf ${BUILD_DIR}/opt/atolye-server/server/backups/* \
+       ${BUILD_DIR}/opt/atolye-server/server/temp/* \
+       ${BUILD_DIR}/opt/atolye-server/server/uploads/* \
+       ${BUILD_DIR}/opt/atolye-server/src/uploads_student/*
+rm -f ${BUILD_DIR}/opt/atolye-server/.env
 
 # İzinleri Düzenle
 chmod 755 ${BUILD_DIR}/DEBIAN/postinst

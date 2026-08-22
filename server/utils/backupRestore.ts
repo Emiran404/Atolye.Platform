@@ -12,7 +12,34 @@ const COLLECTION_TYPES = {
 };
 
 export const normalizeBackupData = (payload) => {
-  const data = payload?.backup?.data ?? payload?.data ?? payload;
+  let parsedPayload = payload;
+
+  // Bazı eski istemciler JSON dosyasının içeriğini istek gövdesinde metin
+  // olarak gönderiyordu. Mevcut nesne biçimlerinin yanında bunu da kabul et.
+  for (let depth = 0; depth < 3 && typeof parsedPayload === 'string'; depth += 1) {
+    try {
+      parsedPayload = JSON.parse(parsedPayload.replace(/^\uFEFF/, '').trim());
+    } catch (_) {
+      throw new Error('Geçersiz JSON yedek biçimi.');
+    }
+  }
+
+  // API yanıtı ({ success, backup }), indirilen yedek ({ data }) ve doğrudan
+  // koleksiyon nesnesi biçimlerini geriye dönük uyumlu şekilde aç.
+  let data = parsedPayload;
+  for (let depth = 0; depth < 3; depth += 1) {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) break;
+    if (data.backup !== undefined) {
+      data = data.backup;
+      continue;
+    }
+    if (data.data !== undefined) {
+      data = data.data;
+      continue;
+    }
+    break;
+  }
+
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     throw new Error('Geçersiz JSON yedek biçimi.');
   }

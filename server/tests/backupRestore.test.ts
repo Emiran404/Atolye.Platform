@@ -6,7 +6,10 @@ describe('JSON backup restore', () => {
   it.each([
     { students: [] },
     { data: { students: [] } },
-    { backup: { data: { students: [] } } }
+    { backup: { data: { students: [] } } },
+    { success: true, backup: { data: { students: [] } } },
+    JSON.stringify({ data: { students: [] } }),
+    JSON.stringify(JSON.stringify({ data: { students: [] } }))
   ])('accepts supported backup shapes', (payload) => {
     expect(normalizeBackupData(payload)).toEqual({ students: [] });
   });

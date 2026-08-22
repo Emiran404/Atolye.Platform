@@ -1,11 +1,9 @@
-# Atolye Platform v4.4.2
+# Atolye Platform v4.4.3
 
 Küçük hata düzeltmeleri ve kullanım iyileştirmeleri:
 
-- SQLite modunda JSON yedek geri yükleme düzeltildi.
+- HTTP/yerel ağ bağlantılarında ilk öğretmen hesabı kurulum penceresi yeniden gösteriliyor.
+- SQLite modunda JSON yedek geri yükleme uyumluluğu geliştirildi.
 - Eski ve farklı JSON yedek biçimleri desteklendi.
-- Geri yükleme hata mesajları iyileştirildi.
-- Debian kurulumunda `/opt/atolye-server` erişimi kolaylaştırıldı.
-- Sunucu servisi ayrı ve sınırlı bir sistem kullanıcısına taşındı.
-
-> Paket güncellemesinden sonra yeni grup izni için oturumu kapatıp yeniden açın.
+- Debian paketine geliştirme verilerinin dahil edilmesi engellendi.
+- Sunucu testlerinin doğru şekilde keşfedilmesi sağlandı.

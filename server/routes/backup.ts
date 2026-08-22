@@ -169,7 +169,9 @@ router.get('/with-photos', async (req, res) => {
  */
 router.post('/restore', (req, res) => {
   try {
-    const restoredCollections = restoreBackupData(req.body?.data ?? req.body, getData, setData);
+    // Biçim çözümlemesini tek yerde yap; burada erken `data` açmak eski ve yeni
+    // yedek sarmalayıcılarının birbirine karışmasına neden olabiliyordu.
+    const restoredCollections = restoreBackupData(req.body, getData, setData);
 
     res.json({ success: true, message: `${restoredCollections} veri grubu başarıyla geri yüklendi` });
   } catch (error) {

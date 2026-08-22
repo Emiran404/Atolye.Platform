@@ -1,6 +1,6 @@
 {
   "name": "sinav-gonderme-platformu",
-  "version": "4.4.2",
+  "version": "4.4.3",
   "description": "Modern exam and assignment management platform for Alanya Mesleki ve Teknik Anadolu Lisesi",
   "author": "PolyOS Team <1tune-going@icloud.com>",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/Emiran404/Atolye.Platform.git"
   },
-  "notes": "## Atolye Platform v4.4.2\nJSON yedek geri yükleme ve Debian dosya erişimi iyileştirmeleri.",
+  "notes": "## Atolye Platform v4.4.3\nİlk kurulum algılama ve JSON yedek geri yükleme düzeltmeleri.",
   "keywords": [
     "exam-platform",
     "education",

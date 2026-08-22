@@ -6,8 +6,8 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     fileParallelism: false,
-    include: ['**/*.{test,spec}.js'],
-    setupFiles: ['./tests/setup.js'],
+    include: ['**/*.{test,spec}.{js,ts}'],
+    setupFiles: ['./tests/setup.ts'],
     env: {
       NODE_ENV: 'test'
     }
