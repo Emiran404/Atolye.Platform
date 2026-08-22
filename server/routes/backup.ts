@@ -10,6 +10,7 @@ import { dirname } from 'path';
 import archiver from 'archiver';
 import AdmZip from 'adm-zip';
 import multer from 'multer';
+import { restoreBackupData } from '../utils/backupRestore.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -168,49 +169,12 @@ router.get('/with-photos', async (req, res) => {
  */
 router.post('/restore', (req, res) => {
   try {
-    const { data } = req.body;
+    const restoredCollections = restoreBackupData(req.body?.data ?? req.body, getData, setData);
 
-    if (!data) {
-      return res.status(400).json({ success: false, error: 'Geçersiz yedek dosyası' });
-    }
-
-    // Veritabanını/dosyaları güncelle
-    if (data.students) {
-      setData('students', data.students);
-    }
-    if (data.teachers) {
-      setData('teachers', data.teachers);
-    }
-    if (data.exams) {
-      setData('exams', data.exams);
-    }
-    if (data.submissions) {
-      setData('submissions', data.submissions);
-    }
-    if (data.notifications) {
-      setData('notifications', data.notifications);
-    }
-    if (data.schedules) {
-      setData('schedules', data.schedules);
-    }
-    if (data.classes) {
-      setData('classes', data.classes);
-    }
-    if (data.reports) {
-      setData('reports', data.reports);
-    }
-    if (data.settings) {
-      const currentSettings = getData('settings') || {};
-      setData('settings', {
-        ...data.settings,
-        dbMigrated: currentSettings.dbMigrated === true
-      });
-    }
-
-    res.json({ success: true, message: 'Veriler başarıyla geri yüklendi' });
+    res.json({ success: true, message: `${restoredCollections} veri grubu başarıyla geri yüklendi` });
   } catch (error) {
     console.error('Restore error:', error);
-    res.status(500).json({ success: false, error: 'Geri yükleme sırasında hata oluştu' });
+    res.status(400).json({ success: false, error: error.message || 'Geri yükleme sırasında hata oluştu' });
   }
 });
 
@@ -264,42 +228,7 @@ router.post('/restore-zip', upload.single('backup'), async (req, res) => {
     const backupContent = fs.readFileSync(backupJsonPath, 'utf-8');
     const backupData = JSON.parse(backupContent);
 
-    if (!backupData.data) {
-      throw new Error('Geçersiz yedek dosyası');
-    }
-
-    // Veritabanını/dosyaları güncelle
-    if (backupData.data.students) {
-      setData('students', backupData.data.students);
-    }
-    if (backupData.data.teachers) {
-      setData('teachers', backupData.data.teachers);
-    }
-    if (backupData.data.exams) {
-      setData('exams', backupData.data.exams);
-    }
-    if (backupData.data.submissions) {
-      setData('submissions', backupData.data.submissions);
-    }
-    if (backupData.data.notifications) {
-      setData('notifications', backupData.data.notifications);
-    }
-    if (backupData.data.schedules) {
-      setData('schedules', backupData.data.schedules);
-    }
-    if (backupData.data.classes) {
-      setData('classes', backupData.data.classes);
-    }
-    if (backupData.data.reports) {
-      setData('reports', backupData.data.reports);
-    }
-    if (backupData.data.settings) {
-      const currentSettings = getData('settings') || {};
-      setData('settings', {
-        ...backupData.data.settings,
-        dbMigrated: currentSettings.dbMigrated === true
-      });
-    }
+    restoreBackupData(backupData, getData, setData);
 
     // Fotoğrafları geri yükle (varsa)
     const uploadsStudentSrc = path.join(extractDir, 'uploads_student');
@@ -509,25 +438,7 @@ router.post('/restore-local/:fileName', authenticateToken, authorizeRole('teache
       }
 
       const backupData = JSON.parse(fs.readFileSync(backupJsonPath, 'utf-8'));
-      if (!backupData.data) {
-        throw new Error('Geçersiz yedek verisi');
-      }
-
-      if (backupData.data.students) setData('students', backupData.data.students);
-      if (backupData.data.teachers) setData('teachers', backupData.data.teachers);
-      if (backupData.data.exams) setData('exams', backupData.data.exams);
-      if (backupData.data.submissions) setData('submissions', backupData.data.submissions);
-      if (backupData.data.notifications) setData('notifications', backupData.data.notifications);
-      if (backupData.data.schedules) setData('schedules', backupData.data.schedules);
-      if (backupData.data.classes) setData('classes', backupData.data.classes);
-      if (backupData.data.reports) setData('reports', backupData.data.reports);
-      if (backupData.data.settings) {
-        const currentSettings = getData('settings') || {};
-        setData('settings', {
-          ...backupData.data.settings,
-          dbMigrated: currentSettings.dbMigrated === true
-        });
-      }
+      restoreBackupData(backupData, getData, setData);
 
       const uploadsStudentSrc = path.join(extractDir, 'uploads_student');
       const uploadsSrc = path.join(extractDir, 'uploads');
@@ -551,23 +462,7 @@ router.post('/restore-local/:fileName', authenticateToken, authorizeRole('teache
 
     } else if (fileName.endsWith('.json')) {
       const backupData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-      const data = backupData.data || backupData;
-
-      if (data.students) setData('students', data.students);
-      if (data.teachers) setData('teachers', data.teachers);
-      if (data.exams) setData('exams', data.exams);
-      if (data.submissions) setData('submissions', data.submissions);
-      if (data.notifications) setData('notifications', data.notifications);
-      if (data.schedules) setData('schedules', data.schedules);
-      if (data.classes) setData('classes', data.classes);
-      if (data.reports) setData('reports', data.reports);
-      if (data.settings) {
-        const currentSettings = getData('settings') || {};
-        setData('settings', {
-          ...data.settings,
-          dbMigrated: currentSettings.dbMigrated === true
-        });
-      }
+      restoreBackupData(backupData, getData, setData);
     }
 
     res.json({ success: true, message: 'Yedek başarıyla geri yüklendi' });

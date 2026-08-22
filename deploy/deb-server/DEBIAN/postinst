@@ -3,14 +3,62 @@ set -e
 
 echo "Atolye Platform Server yapılandırılıyor..."
 
+SERVICE_USER="atolye-platform"
+SERVICE_GROUP="atolye-platform"
+INSTALL_DIR="/opt/atolye-server"
+
+# Sunucuyu root yerine sınırlı bir sistem kullanıcısıyla çalıştır.
+if ! getent group "$SERVICE_GROUP" >/dev/null; then
+    groupadd --system "$SERVICE_GROUP"
+fi
+if ! id "$SERVICE_USER" >/dev/null 2>&1; then
+    useradd --system --gid "$SERVICE_GROUP" --home-dir "$INSTALL_DIR" \
+        --no-create-home --shell /usr/sbin/nologin "$SERVICE_USER"
+fi
+
+# Çalışma klasörlerini oluştur ve ortak grup üzerinden düzenlenebilir yap.
+mkdir -p "$INSTALL_DIR/server/data" \
+         "$INSTALL_DIR/server/dist/data" \
+         "$INSTALL_DIR/server/backups" \
+         "$INSTALL_DIR/server/temp" \
+         "$INSTALL_DIR/server/uploads" \
+         "$INSTALL_DIR/src/uploads_student"
+
+chown -R root:"$SERVICE_GROUP" "$INSTALL_DIR"
+chmod -R g+rwX "$INSTALL_DIR"
+find "$INSTALL_DIR" -type d -exec chmod g+s {} +
+
+# Kurulumu yapan kullanıcıyı ve sudo/wheel yöneticilerini ortak gruba ekle.
+add_platform_user() {
+    candidate="$1"
+    if [ -n "$candidate" ] && [ "$candidate" != "root" ] && id "$candidate" >/dev/null 2>&1; then
+        usermod -a -G "$SERVICE_GROUP" "$candidate"
+    fi
+}
+
+add_platform_user "${SUDO_USER:-}"
+for admin_group in sudo wheel; do
+    if getent group "$admin_group" >/dev/null; then
+        members="$(getent group "$admin_group" | cut -d: -f4 | tr ',' ' ')"
+        for member in $members; do
+            add_platform_user "$member"
+        done
+    fi
+done
+
 # Bağımlılıkları kontrol et ve yerel mimariye göre derle/rebuild yap
 if command -v npm &> /dev/null; then
     echo "better-sqlite3 modülü yerel mimari için yapılandırılıyor..."
-    cd /opt/atolye-server/server
+    cd "$INSTALL_DIR/server"
     # Eşleşmeyen native binary'leri temizle ve yerel olarak yeniden derlemeyi dene
     # Hata durumunda kurulumun yarıda kalmaması için exit code 0 ile devam edilmesini sağlıyoruz
     npm rebuild better-sqlite3 || echo "⚠️ better-sqlite3 yerel olarak derlenemedi. Sunucu hibrit JSON modunda çalışacaktır."
 fi
+
+# npm rebuild sonrasında oluşan dosyaları da servis grubuna teslim et.
+chown -R root:"$SERVICE_GROUP" "$INSTALL_DIR"
+chmod -R g+rwX "$INSTALL_DIR"
+find "$INSTALL_DIR" -type d -exec chmod g+s {} +
 
 # Servis dosyasını etkinleştir
 systemctl daemon-reload
@@ -19,3 +67,4 @@ systemctl restart atolye-server.service
 
 echo "✅ Atolye Platform Server başarıyla yüklendi ve başlatıldı."
 echo "🌐 Ağda 'atolye-server.local' olarak bulunabilir."
+echo "ℹ️ /opt/atolye-server erişimi için oturumu kapatıp yeniden açın veya 'newgrp atolye-platform' çalıştırın."

@@ -1,11 +1,11 @@
-# Atolye Platform v4.4.1
+# Atolye Platform v4.4.2
 
-Bu sürüm güvenlik, kararlılık ve Control Panel iyileştirmeleri içerir.
+Küçük hata düzeltmeleri ve kullanım iyileştirmeleri:
 
-- Upload yollarında ek güvenlik kontrolleri
-- Güncel ve güvenli bağımlılık sürümleri
-- SQLite yedekleme ve aktif öğrenci oturumu iyileştirmeleri
-- Control Panel canlı log ve bağlantı düzenlemeleri
-- Sürüm ve PolyOS Team bilgilerinin güncellenmesi
+- SQLite modunda JSON yedek geri yükleme düzeltildi.
+- Eski ve farklı JSON yedek biçimleri desteklendi.
+- Geri yükleme hata mesajları iyileştirildi.
+- Debian kurulumunda `/opt/atolye-server` erişimi kolaylaştırıldı.
+- Sunucu servisi ayrı ve sınırlı bir sistem kullanıcısına taşındı.
 
-> Mevcut kurulumunuzu güncellemeden önce yedek almanız önerilir.
+> Paket güncellemesinden sonra yeni grup izni için oturumu kapatıp yeniden açın.

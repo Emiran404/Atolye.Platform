@@ -4,13 +4,15 @@ After=network.target
 
 [Service]
 Type=simple
-User=root
+User=atolye-platform
+Group=atolye-platform
 WorkingDirectory=/opt/atolye-server
 ExecStart=/usr/bin/node /opt/atolye-server/server/dist/index.js
 Restart=always
 RestartSec=10
 Environment=NODE_ENV=production
 LimitNOFILE=65536
+UMask=0002
 
 [Install]
 WantedBy=multi-user.target

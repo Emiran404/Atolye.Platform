@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION="4.4.1"
+VERSION="4.4.2"
 PKG_NAME="atolye-platform-server"
 BUILD_DIR="build_deb_tmp"
 

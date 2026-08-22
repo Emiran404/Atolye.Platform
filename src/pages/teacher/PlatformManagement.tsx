@@ -931,10 +931,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
             const text = await file.text();
             const backupData = JSON.parse(text);
 
-            if (!backupData.data) {
-              throw new Error('Geçersiz yedek dosyası');
-            }
-            result = await backupApi.restore(backupData.data);
+            result = await backupApi.restore(backupData);
           }
 
           if (result?.success) {
@@ -947,7 +944,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
           }
         } catch (error) {
           console.error('Geri yükleme hatası:', error);
-          toast.error('Geçersiz yedek dosyası veya bir hata oluştu');
+          toast.error(error.message || 'Geçersiz yedek dosyası veya bir hata oluştu');
         }
       }
     });
