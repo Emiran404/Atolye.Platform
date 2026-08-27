@@ -9,9 +9,9 @@
 <br/>
 
 <!-- CORE BADGES -->
-[![Version](https://img.shields.io/badge/Versiyon-4.4.4--beta.0-f59e0b?style=for-the-badge)](https://github.com/Emiran404/Atolye.Platform/releases)
+[![Version](https://img.shields.io/badge/Versiyon-4.4.4--beta.0-f59e0b?style=for-the-badge)](https://github.com/PolyOS-Team/Atolye.Platform/releases)
 [![License](https://img.shields.io/badge/Lisans-MIT-10b981?style=for-the-badge)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Pardus_%7C_Windows-ef4444?style=for-the-badge)](https://github.com/Emiran404/Atolye.Platform)
+[![Platform](https://img.shields.io/badge/Platform-Pardus_%7C_Windows-ef4444?style=for-the-badge)](https://github.com/PolyOS-Team/Atolye.Platform)
 
 <!-- TECH STACK BADGES -->
 [![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
@@ -32,7 +32,7 @@
 <br/>
 
 <!-- REPO STATS -->
-![Stars](https://img.shields.io/github/stars/Emiran404/Atolye.Platform?style=flat-square&color=ffd700) ![Forks](https://img.shields.io/github/forks/Emiran404/Atolye.Platform?style=flat-square&color=60a5fa) ![Issues](https://img.shields.io/github/issues/Emiran404/Atolye.Platform?style=flat-square&color=f87171) ![Pull Requests](https://img.shields.io/github/issues-pr/Emiran404/Atolye.Platform?style=flat-square&color=34d399) ![Repo Size](https://img.shields.io/github/repo-size/Emiran404/Atolye.Platform?style=flat-square&color=818cf8) ![Last Commit](https://img.shields.io/github/last-commit/Emiran404/Atolye.Platform?style=flat-square&color=a78bfa)
+![Stars](https://img.shields.io/github/stars/PolyOS-Team/Atolye.Platform?style=flat-square&color=ffd700) ![Forks](https://img.shields.io/github/forks/PolyOS-Team/Atolye.Platform?style=flat-square&color=60a5fa) ![Issues](https://img.shields.io/github/issues/PolyOS-Team/Atolye.Platform?style=flat-square&color=f87171) ![Pull Requests](https://img.shields.io/github/issues-pr/PolyOS-Team/Atolye.Platform?style=flat-square&color=34d399) ![Repo Size](https://img.shields.io/github/repo-size/PolyOS-Team/Atolye.Platform?style=flat-square&color=818cf8) ![Last Commit](https://img.shields.io/github/last-commit/PolyOS-Team/Atolye.Platform?style=flat-square&color=a78bfa)
 
 <br/>
 
@@ -74,10 +74,10 @@ Derleme yapmadan, aşağıdaki hazır paketlerle saniyeler içinde kurulum yapı
 
 | | Paket | İşletim Sistemi | İndir |
 | :---: | :--- | :--- | :---: |
-| 🖥️ | **Öğretmen Sunucusu** | Pardus / Debian | [📥 `.deb` Sunucu](https://github.com/Emiran404/Atolye.Platform/releases/latest) |
-| 🪟 | **Masaüstü İstemci** | Windows 10/11 | [📥 `.exe` Kurulum](https://github.com/Emiran404/Atolye.Platform/releases/latest) |
-| 🐧 | **Masaüstü İstemci** | Linux / Pardus | [📥 `.deb` İstemci](https://github.com/Emiran404/Atolye.Platform/releases/latest) |
-| ⚙️ | **Atolye Platform Control Panel** | Pardus / Debian / Ubuntu | [📥 `.deb` Control Panel](https://github.com/Emiran404/Atolye.Platform/releases/latest) |
+| 🖥️ | **Öğretmen Sunucusu** | Pardus / Debian | [📥 `.deb` Sunucu](https://github.com/PolyOS-Team/Atolye.Platform/releases/latest) |
+| 🪟 | **Masaüstü İstemci** | Windows 10/11 | [📥 `.exe` Kurulum](https://github.com/PolyOS-Team/Atolye.Platform/releases/latest) |
+| 🐧 | **Masaüstü İstemci** | Linux / Pardus | [📥 `.deb` İstemci](https://github.com/PolyOS-Team/Atolye.Platform/releases/latest) |
+| ⚙️ | **Atolye Platform Control Panel** | Pardus / Debian / Ubuntu | [📥 `.deb` Control Panel](https://github.com/PolyOS-Team/Atolye.Platform/releases/latest) |
 
 </div>
 
@@ -224,7 +224,7 @@ Sınav güvenliğini en üst düzeye çıkarmak için **Electron İstemcisi** ö
 
 ```bash
 # 1. Projeyi klonlayın
-git clone https://github.com/Emiran404/Atolye.Platform.git
+git clone https://github.com/PolyOS-Team/Atolye.Platform.git
 cd Atolye.Platform
 
 # 2. Otomatik kurulum sihirbazını çalıştırın
@@ -254,7 +254,7 @@ Fatih Projesi internet ağındaki port kısıtlamaları veya tamamen interneti b
 
 ```bash
 # 1. Projeyi klonlayın
-git clone https://github.com/Emiran404/Atolye.Platform.git
+git clone https://github.com/PolyOS-Team/Atolye.Platform.git
 cd Atolye.Platform
 
 # 2. Bağımlılıkları yükleyin (frontend + backend)
@@ -278,7 +278,7 @@ Uygulamayı bir sunucuda 7/24 kesintisiz (production) çalıştırmak için en k
 
 ```bash
 # 1. Projenin ana (Source Code) kaynak kodlarını indirin veya klonlayın
-git clone https://github.com/Emiran404/Atolye.Platform.git
+git clone https://github.com/PolyOS-Team/Atolye.Platform.git
 cd Atolye.Platform
 
 # 2. Docker kullanarak sistemi izole ortamda ayağa kaldırın

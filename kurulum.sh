@@ -64,7 +64,7 @@ if [ "$INSTALL_MODE" = "2" ]; then
         echo "🌐 GitHub Releases üzerinden otomatik indiriliyor (v4.0.0)..."
         
         VERSION="4.0.0"
-        DOWNLOAD_URL="https://github.com/Emiran404/Atolye.Platform/releases/download/v$VERSION/atolye-platform-offline_v$VERSION.zip"
+        DOWNLOAD_URL="https://github.com/PolyOS-Team/Atolye.Platform/releases/download/v$VERSION/atolye-platform-offline_v$VERSION.zip"
         ZIP_FILE="atolye-platform-offline_v$VERSION.zip"
         
         if command -v curl &> /dev/null; then
@@ -139,4 +139,3 @@ echo ""
 echo "Uygulamayi baslatmak icin './baslat.sh' komutunu kullanin."
 echo ""
 chmod +x baslat.sh
-

@@ -182,7 +182,7 @@ function isNewer(latest, current) {
 }
 
 async function checkUpdate() {
-  const remote = await fetchJson('https://raw.githubusercontent.com/Emiran404/Atolye.Platform/main/package.json');
+  const remote = await fetchJson('https://raw.githubusercontent.com/PolyOS-Team/Atolye.Platform/main/package.json');
   const current = app.getVersion();
   return { current, latest: remote.version, available: isNewer(remote.version, current) };
 }
@@ -379,7 +379,7 @@ app.whenReady().then(() => {
   ipcMain.handle('panel:export-diagnostics', exportDiagnostics);
   ipcMain.handle('panel:check-update', checkUpdate);
   ipcMain.handle('panel:open-update-page', async () => {
-    await shell.openExternal('https://github.com/Emiran404/Atolye.Platform/releases');
+    await shell.openExternal('https://github.com/PolyOS-Team/Atolye.Platform/releases');
     return { ok: true };
   });
   ipcMain.handle('panel:get-autostart', () => getAutostart());

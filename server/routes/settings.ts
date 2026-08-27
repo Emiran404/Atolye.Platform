@@ -32,7 +32,7 @@ const loadSettings = () => {
     telemetryPromptAnswered: false,
     autoDownloadClientUpdates: true,
     clientUpdateChannel: 'stable',
-    clientUpdatesUrl: 'https://github.com/Emiran404/Atolye.Platform/releases/latest/download'
+    clientUpdatesUrl: 'https://github.com/PolyOS-Team/Atolye.Platform/releases/latest/download'
   };
 
   if (!settings) return defaults;

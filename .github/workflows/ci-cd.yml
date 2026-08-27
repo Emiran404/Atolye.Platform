@@ -70,8 +70,8 @@ jobs:
         APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       run: |
-        cd client-electron && npx electron-builder --mac dmg --universal --publish never
-        cd ../control-panel && npm run build:mac
+        cd client-electron && npx electron-builder --mac dmg --arm64 --publish never
+        cd ../control-panel && npx electron-builder --mac dmg --arm64 --publish never
 
     - name: Upload macOS client
       uses: actions/upload-artifact@v4

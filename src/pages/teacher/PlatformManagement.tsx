@@ -268,7 +268,7 @@ const PlatformManagement = () => {
   // Masaüstü Güncellemeleri
   const [autoDownloadClientUpdates, setAutoDownloadClientUpdates] = useState(true);
   const [clientUpdateChannel, setClientUpdateChannel] = useState('stable');
-  const [clientUpdatesUrl, setClientUpdatesUrl] = useState('https://github.com/Emiran404/Atolye.Platform/releases/latest/download');
+  const [clientUpdatesUrl, setClientUpdatesUrl] = useState('https://github.com/PolyOS-Team/Atolye.Platform/releases/latest/download');
 
   // Güncelleme state'leri
   const [currentVersion, setCurrentVersion] = useState('1.0.0');
@@ -2622,7 +2622,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
               type="text"
               value={clientUpdatesUrl}
               onChange={(e) => setClientUpdatesUrl(e.target.value)}
-              placeholder="https://github.com/Emiran404/Atolye.Platform/releases/latest/download"
+              placeholder="https://github.com/PolyOS-Team/Atolye.Platform/releases/latest/download"
               style={{
                 flex: 1,
                 padding: '10px 12px',

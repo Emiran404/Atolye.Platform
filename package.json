@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Emiran404/Atolye.Platform.git"
+    "url": "https://github.com/PolyOS-Team/Atolye.Platform.git"
   },
   "notes": "## Atolye Platform v4.4.4 Beta 2\nSQLite yedekleme ve çok platformlu masaüstü güncelleme altyapısı.",
   "keywords": [

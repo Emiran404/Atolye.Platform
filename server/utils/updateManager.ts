@@ -12,8 +12,8 @@ const __dirname = dirname(__filename);
 // Kaynakta server/updates, derlenmiş sürümde dist/updates dizinine karşılık gelir.
 // server/index.ts de aynı dizini /updates altında yayınlar.
 const UPDATES_DIR = path.join(__dirname, '../updates');
-const DEFAULT_UPDATES_URL = 'https://github.com/Emiran404/Atolye.Platform/releases/latest/download';
-const RELEASES_API_URL = 'https://api.github.com/repos/Emiran404/Atolye.Platform/releases';
+const DEFAULT_UPDATES_URL = 'https://github.com/PolyOS-Team/Atolye.Platform/releases/latest/download';
+const RELEASES_API_URL = 'https://api.github.com/repos/PolyOS-Team/Atolye.Platform/releases';
 
 export class UpdateManager {
   constructor() {
@@ -109,7 +109,7 @@ export class UpdateManager {
 
     return {
       channel,
-      baseUrl: `https://github.com/Emiran404/Atolye.Platform/releases/download/${encodeURIComponent(release.tag_name)}`,
+      baseUrl: `https://github.com/PolyOS-Team/Atolye.Platform/releases/download/${encodeURIComponent(release.tag_name)}`,
       windows: windowsAsset
         ? { remoteName: windowsAsset.name, remoteUrl: windowsAsset.browser_download_url, localName: 'latest.yml' }
         : null,

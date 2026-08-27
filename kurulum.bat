@@ -60,7 +60,7 @@ if "!install_mode!"=="2" (
         echo GithHub Releases uzerinden otomatik indiriliyor (v4.0.0)...
         
         set "VERSION=4.0.0"
-        set "DOWNLOAD_URL=https://github.com/Emiran404/Atolye.Platform/releases/download/v!VERSION!/atolye-platform-offline_v!VERSION!.zip"
+        set "DOWNLOAD_URL=https://github.com/PolyOS-Team/Atolye.Platform/releases/download/v!VERSION!/atolye-platform-offline_v!VERSION!.zip"
         set "ZIP_FILE=atolye-platform-offline_v!VERSION!.zip"
         
         :: curl ile indirmeyi dene
