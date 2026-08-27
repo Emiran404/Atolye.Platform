@@ -9,7 +9,11 @@ import https from 'https';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const UPDATES_DIR = path.join(__dirname, '../../server/updates');
+// Kaynakta server/updates, derlenmiş sürümde dist/updates dizinine karşılık gelir.
+// server/index.ts de aynı dizini /updates altında yayınlar.
+const UPDATES_DIR = path.join(__dirname, '../updates');
+const DEFAULT_UPDATES_URL = 'https://github.com/Emiran404/Atolye.Platform/releases/latest/download';
+const RELEASES_API_URL = 'https://api.github.com/repos/Emiran404/Atolye.Platform/releases';
 
 export class UpdateManager {
   constructor() {
@@ -41,12 +45,12 @@ export class UpdateManager {
     }
   }
 
-  async fetchWithRedirects(url) {
+  async fetchWithRedirects(url, headers = {}) {
     return new Promise((resolve, reject) => {
-      const req = https.get(url, (res) => {
+      const req = https.get(url, { headers }, (res) => {
         if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
           // Redirect
-          resolve(this.fetchWithRedirects(res.headers.location));
+          resolve(this.fetchWithRedirects(res.headers.location, headers));
         } else if (res.statusCode === 200) {
           resolve(res);
         } else {
@@ -55,6 +59,67 @@ export class UpdateManager {
       });
       req.on('error', reject);
     });
+  }
+
+  async fetchJson(url) {
+    const response = await this.fetchWithRedirects(url, {
+      Accept: 'application/vnd.github+json',
+      'User-Agent': 'Atolye-Platform-UpdateManager'
+    });
+
+    return new Promise((resolve, reject) => {
+      let body = '';
+      response.setEncoding('utf8');
+      response.on('data', chunk => { body += chunk; });
+      response.on('end', () => {
+        try {
+          resolve(JSON.parse(body));
+        } catch (error) {
+          reject(new Error(`Güncelleme yanıtı okunamadı: ${error.message}`));
+        }
+      });
+      response.on('error', reject);
+    });
+  }
+
+  async resolveUpdateSource(settings) {
+    const channel = settings.clientUpdateChannel === 'beta' ? 'beta' : 'stable';
+    if (channel === 'stable') {
+      const baseUrl = settings.clientUpdatesUrl || DEFAULT_UPDATES_URL;
+      return {
+        channel,
+        baseUrl,
+        windows: { remoteName: 'latest.yml', localName: 'latest.yml' },
+        linux: { remoteName: 'latest-linux.yml', localName: 'latest-linux.yml' },
+        mac: { remoteName: 'latest-mac.yml', localName: 'latest-mac.yml' }
+      };
+    }
+
+    const releases = await this.fetchJson(RELEASES_API_URL);
+    const release = Array.isArray(releases)
+      ? releases.find(item => item && item.prerelease && !item.draft)
+      : null;
+
+    if (!release) throw new Error('Beta kanalında yayın bulunamadı.');
+
+    const assets = Array.isArray(release.assets) ? release.assets : [];
+    const windowsAsset = assets.find(asset => /^(beta|latest)\.yml$/i.test(asset.name));
+    const linuxAsset = assets.find(asset => /^(beta|latest)-linux\.yml$/i.test(asset.name));
+    const macAsset = assets.find(asset => /^(beta|latest)-mac\.yml$/i.test(asset.name));
+
+    return {
+      channel,
+      baseUrl: `https://github.com/Emiran404/Atolye.Platform/releases/download/${encodeURIComponent(release.tag_name)}`,
+      windows: windowsAsset
+        ? { remoteName: windowsAsset.name, remoteUrl: windowsAsset.browser_download_url, localName: 'latest.yml' }
+        : null,
+      linux: linuxAsset
+        ? { remoteName: linuxAsset.name, remoteUrl: linuxAsset.browser_download_url, localName: 'latest-linux.yml' }
+        : null,
+      mac: macAsset
+        ? { remoteName: macAsset.name, remoteUrl: macAsset.browser_download_url, localName: 'latest-mac.yml' }
+        : null
+    };
   }
 
   async downloadFile(url, destPath) {
@@ -79,16 +144,18 @@ export class UpdateManager {
     });
   }
 
-  async downloadUpdateFile(baseUrl, ymlFileName) {
-    const tempYmlPath = path.join(UPDATES_DIR, `${ymlFileName}.temp`);
+  async downloadUpdateFile(baseUrl, descriptor) {
+    if (!descriptor) return false;
+    const { remoteName, remoteUrl, localName } = descriptor;
+    const tempYmlPath = path.join(UPDATES_DIR, `${localName}.temp`);
     try {
-      await this.downloadFile(`${baseUrl}/${ymlFileName}`, tempYmlPath);
+      await this.downloadFile(remoteUrl || `${baseUrl}/${remoteName}`, tempYmlPath);
     } catch (err) {
-      console.log(`[UpdateManager] Hedefte ${ymlFileName} bulunamadı.`);
+      console.log(`[UpdateManager] Hedefte ${remoteName} bulunamadı.`);
       return false;
     }
 
-    const localYmlPath = path.join(UPDATES_DIR, ymlFileName);
+    const localYmlPath = path.join(UPDATES_DIR, localName);
     let shouldUpdate = true;
 
     const newYmlContent = fs.readFileSync(tempYmlPath, 'utf8');
@@ -105,15 +172,19 @@ export class UpdateManager {
     }
 
     if (!shouldUpdate) {
-      console.log(`[UpdateManager] Sistemdeki ${ymlFileName} versiyonu zaten en günceli.`);
+      console.log(`[UpdateManager] Sistemdeki ${localName} versiyonu zaten en günceli.`);
       fs.unlinkSync(tempYmlPath);
       return false;
     }
 
     const pathMatch = newYmlContent.match(/path: (.*)/);
     if (pathMatch && pathMatch[1]) {
-      const fileName = pathMatch[1].trim();
-      const fileUrl = `${baseUrl}/${fileName}`;
+      const fileName = pathMatch[1].trim().replace(/^['"]|['"]$/g, '');
+      if (!fileName || path.basename(fileName) !== fileName) {
+        fs.unlinkSync(tempYmlPath);
+        console.error(`[UpdateManager] Güvenli olmayan paket adı reddedildi: ${fileName}`);
+        return false;
+      }
       const destFilePath = path.join(UPDATES_DIR, fileName);
 
       console.log(`[UpdateManager] Yeni versiyon indiriliyor: ${fileName}`);
@@ -155,9 +226,11 @@ export class UpdateManager {
         for (const file of files) {
           if (file !== fileName) {
             // Sadece aynı platformun eski dosyalarını sil
-            if (ymlFileName === 'latest.yml' && file.endsWith('.exe')) {
+            if (localName === 'latest.yml' && file.endsWith('.exe')) {
               fs.unlinkSync(path.join(UPDATES_DIR, file));
-            } else if (ymlFileName === 'latest-linux.yml' && file.endsWith('.deb')) {
+            } else if (localName === 'latest-linux.yml' && file.endsWith('.deb')) {
+              fs.unlinkSync(path.join(UPDATES_DIR, file));
+            } else if (localName === 'latest-mac.yml' && file.endsWith('.zip')) {
               fs.unlinkSync(path.join(UPDATES_DIR, file));
             }
           }
@@ -195,7 +268,7 @@ export class UpdateManager {
       return true;
     } else {
       fs.unlinkSync(tempYmlPath);
-      console.log(`[UpdateManager] ${ymlFileName} okunamadı (path bulunamadı).`);
+      console.log(`[UpdateManager] ${remoteName} okunamadı (path bulunamadı).`);
       return false;
     }
   }
@@ -211,17 +284,18 @@ export class UpdateManager {
         return { success: false, message: 'Otomatik güncelleme indirme kapalı.' };
       }
 
-      const baseUrl = settings.clientUpdatesUrl || 'https://github.com/Emiran404/Atolye.Platform/releases/latest/download';
+      const source = await this.resolveUpdateSource(settings);
       
-      console.log(`[UpdateManager] Yeni güncellemeler kontrol ediliyor... (${baseUrl})`);
+      console.log(`[UpdateManager] ${source.channel} kanalında güncellemeler kontrol ediliyor... (${source.baseUrl})`);
 
-      const winUpdated = await this.downloadUpdateFile(baseUrl, 'latest.yml');
-      const linuxUpdated = await this.downloadUpdateFile(baseUrl, 'latest-linux.yml');
+      const winUpdated = await this.downloadUpdateFile(source.baseUrl, source.windows);
+      const linuxUpdated = await this.downloadUpdateFile(source.baseUrl, source.linux);
+      const macUpdated = await this.downloadUpdateFile(source.baseUrl, source.mac);
 
       this.isChecking = false;
 
-      if (winUpdated || linuxUpdated) {
-        return { success: true, message: `Yeni sürüm indirildi!`, updated: true };
+      if (winUpdated || linuxUpdated || macUpdated) {
+        return { success: true, message: `Yeni sürüm indirildi (${source.channel} kanalı).`, updated: true };
       } else {
         return { success: false, message: 'Yeni sürüm bulunamadı veya sisteminiz zaten güncel.', updated: false };
       }

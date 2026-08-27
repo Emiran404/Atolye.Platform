@@ -10,5 +10,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   enableAntiCheat: () => ipcRenderer.send('enable-anti-cheat'),
   disableAntiCheat: () => ipcRenderer.send('disable-anti-cheat'),
   onAntiCheatBlurDetected: (callback) => ipcRenderer.on('anti-cheat-blur-detected', () => callback()),
-  removeAntiCheatBlurListener: () => ipcRenderer.removeAllListeners('anti-cheat-blur-detected')
+  removeAntiCheatBlurListener: () => ipcRenderer.removeAllListeners('anti-cheat-blur-detected'),
+
+  // Desktop update UI
+  getUpdateStatus: () => ipcRenderer.invoke('get-update-status'),
+  onUpdateStatus: (callback) => {
+    const listener = (_event, status) => callback(status);
+    ipcRenderer.on('update-status', listener);
+    return () => ipcRenderer.removeListener('update-status', listener);
+  },
+  installUpdate: () => ipcRenderer.invoke('install-update')
 });

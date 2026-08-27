@@ -1,6 +1,7 @@
 // @ts-nocheck
-import { getData, setData } from '../utils/storage.js';
+import { getData, setData, createDatabaseBackup } from '../utils/storage.js';
 import fs from 'fs';
+import fsPromises from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -9,152 +10,80 @@ import archiver from 'archiver';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const backupsDir = path.join(__dirname, '../backups');
+const tempDir = path.join(__dirname, '../temp');
+const uploadsDir = path.join(__dirname, '../uploads');
+const uploadsStudentDir = path.join(__dirname, '../../src/uploads_student');
 
-// Ensure backups directory exists
-if (!fs.existsSync(backupsDir)) {
-  fs.mkdirSync(backupsDir, { recursive: true });
-}
+for (const directory of [backupsDir, tempDir]) fs.mkdirSync(directory, { recursive: true });
 
-// Function to run the backup
+const createZipBackup = async (filePath, databasePath) => {
+  const output = fs.createWriteStream(filePath);
+  const archive = archiver('zip', { zlib: { level: 9 } });
+  await new Promise((resolve, reject) => {
+    output.on('close', resolve);
+    output.on('error', reject);
+    archive.on('error', reject);
+    archive.pipe(output);
+    archive.file(databasePath, { name: 'database.db' });
+    if (fs.existsSync(uploadsDir)) archive.directory(uploadsDir, 'uploads');
+    if (fs.existsSync(uploadsStudentDir)) archive.directory(uploadsStudentDir, 'uploads_student');
+    archive.finalize();
+  });
+};
+
 export const runAutoBackup = async () => {
+  let tempDatabasePath;
   try {
     const settings = getData('settings') || {};
     const includePhotos = settings.autoBackupIncludePhotos === true;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 
-    console.log(`[AutoBackup] Starting automatic backup (Photos: ${includePhotos})...`);
+    if (includePhotos) {
+      tempDatabasePath = path.join(tempDir, `auto-backup-${timestamp}.db`);
+      const zipPath = path.join(backupsDir, `auto-backup-${timestamp}.zip`);
+      await createDatabaseBackup(tempDatabasePath);
+      await createZipBackup(zipPath, tempDatabasePath);
+    } else {
+      await createDatabaseBackup(path.join(backupsDir, `auto-backup-${timestamp}.db`));
+    }
 
-    const students = getData('students') || [];
-    const teachers = getData('teachers') || [];
-    const exams = getData('exams') || [];
-    const submissions = getData('submissions') || [];
-    const notifications = getData('notifications') || [];
-    const schedules = getData('schedules') || [];
-    const classes = getData('classes') || [];
-    const reports = getData('reports') || [];
-    const settingsData = getData('settings') || {};
-
-    const backupData = {
-      timestamp: new Date().toISOString(),
-      version: '1.0',
-      includesPhotos: includePhotos,
-      data: {
-        students,
-        teachers,
-        exams,
-        submissions,
-        notifications,
-        schedules,
-        classes,
-        reports,
-        settings: settingsData
-      }
-    };
-
-    const timestampStr = new Date().toISOString().replace(/[:.]/g, '-');
-    const fileName = `auto-backup-${timestampStr}.zip`;
-    const filePath = path.join(backupsDir, fileName);
-
-    const output = fs.createWriteStream(filePath);
-    const archive = archiver('zip', { zlib: { level: 9 } });
-
-    await new Promise((resolve, reject) => {
-      output.on('close', resolve);
-      archive.on('error', reject);
-
-      archive.pipe(output);
-
-      // Append backup JSON
-      archive.append(JSON.stringify(backupData, null, 2), { name: 'backup.json' });
-
-      // Append directories if photos included
-      if (includePhotos) {
-        const uploadsStudentPath = path.join(__dirname, '../../src/uploads_student');
-        if (fs.existsSync(uploadsStudentPath)) {
-          archive.directory(uploadsStudentPath, 'uploads_student');
-        }
-
-        const uploadsPath = path.join(__dirname, '../uploads');
-        if (fs.existsSync(uploadsPath)) {
-          archive.directory(uploadsPath, 'uploads');
-        }
-      }
-
-      archive.finalize();
-    });
-
-    console.log(`[AutoBackup] Backup saved to ${filePath}`);
-
-    // Update settings with last backup time
     settings.lastAutoBackupTime = new Date().toISOString();
     setData('settings', settings);
-
-    // Keep only the last 10 backups to prevent disk overflow
     cleanOldBackups();
-
+    console.log(`[AutoBackup] SQLite yedeği oluşturuldu (Dosyalar: ${includePhotos}).`);
   } catch (error) {
-    console.error('[AutoBackup] Error during auto-backup:', error);
+    console.error('[AutoBackup] Yedekleme hatası:', error);
+  } finally {
+    if (tempDatabasePath && fs.existsSync(tempDatabasePath)) await fsPromises.unlink(tempDatabasePath);
   }
 };
 
-// Keep last 10 backups
 const cleanOldBackups = () => {
   try {
     const files = fs.readdirSync(backupsDir)
-      .filter(file => file.startsWith('auto-backup-') && file.endsWith('.zip'))
-      .map(file => ({
-        name: file,
-        time: fs.statSync(path.join(backupsDir, file)).mtime.getTime()
-      }))
-      .sort((a, b) => b.time - a.time); // Newest first
-
-    if (files.length > 10) {
-      const filesToDelete = files.slice(10);
-      filesToDelete.forEach(f => {
-        const fileToDeletePath = path.join(backupsDir, f.name);
-        if (fs.existsSync(fileToDeletePath)) {
-          fs.unlinkSync(fileToDeletePath);
-          console.log(`[AutoBackup] Cleaned old backup file: ${f.name}`);
-        }
-      });
-    }
-  } catch (err) {
-    console.error('[AutoBackup] Error cleaning old backups:', err);
+      .filter(file => file.startsWith('auto-backup-') && /\.(db|zip)$/i.test(file))
+      .map(name => ({ name, time: fs.statSync(path.join(backupsDir, name)).mtime.getTime() }))
+      .sort((a, b) => b.time - a.time);
+    for (const file of files.slice(10)) fs.unlinkSync(path.join(backupsDir, file.name));
+  } catch (error) {
+    console.error('[AutoBackup] Eski yedekler temizlenemedi:', error);
   }
 };
 
 const checkAndRunBackup = () => {
   try {
     const settings = getData('settings') || {};
-    if (settings.autoBackupEnabled !== true) {
-      return;
-    }
-
-    const intervalHours = settings.autoBackupInterval || 24;
-    const lastBackup = settings.lastAutoBackupTime;
-
-    if (!lastBackup) {
-      // Run immediately if never run
-      runAutoBackup();
-    } else {
-      const timeDiffMs = Date.now() - new Date(lastBackup).getTime();
-      const thresholdMs = intervalHours * 60 * 60 * 1000;
-
-      if (timeDiffMs >= thresholdMs) {
-        runAutoBackup();
-      }
-    }
-  } catch (err) {
-    console.error('[AutoBackup] Error checking auto-backup:', err);
+    if (settings.autoBackupEnabled !== true) return;
+    const elapsed = Date.now() - new Date(settings.lastAutoBackupTime || 0).getTime();
+    const interval = (settings.autoBackupInterval || 24) * 60 * 60 * 1000;
+    if (!settings.lastAutoBackupTime || elapsed >= interval) runAutoBackup();
+  } catch (error) {
+    console.error('[AutoBackup] Kontrol hatası:', error);
   }
 };
 
-// Worker loop
 export const startBackupWorker = () => {
-  console.log('[AutoBackup] Worker loop started.');
-
-  // Check once shortly after startup
+  console.log('[AutoBackup] SQLite yedekleme workerı başlatıldı.');
   setTimeout(checkAndRunBackup, 5000);
-
-  // Check every 5 minutes
   setInterval(checkAndRunBackup, 5 * 60 * 1000);
 };

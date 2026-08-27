@@ -428,12 +428,14 @@ export const statsApi = {
 
 // Backup API
 export const backupApi = {
-  get: () => fetchApi('/backup'),
-  restore: (data) =>
-    fetchApi('/backup/restore', {
+  restoreDatabase: (file) => {
+    const formData = new FormData();
+    formData.append('backup', file);
+    return fetchApi('/backup/restore', {
       method: 'POST',
-      body: JSON.stringify({ data })
-    }),
+      body: formData
+    });
+  },
   restoreZip: (file) => {
     const formData = new FormData();
     formData.append('backup', file);

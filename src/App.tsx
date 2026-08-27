@@ -7,6 +7,7 @@ import { useNotificationListener } from './hooks/useNotificationListener';
 import { useAuthStore } from './store/authStore';
 import { initializeDemoData } from './utils/initData';
 import ConnectionStatusOverlay from './components/ConnectionStatusOverlay';
+import ElectronUpdateNotice from './components/ElectronUpdateNotice';
 import { telemetry } from './services/telemetry';
 
 // Landing
@@ -513,6 +514,7 @@ function App() {
       </div>
       {/* Global Connection Status Overlay */}
       <ConnectionStatusOverlay />
+      <ElectronUpdateNotice />
     </BrowserRouter>
   );
 }

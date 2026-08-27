@@ -10,9 +10,29 @@ let mainWindow;
 let splashWindow;
 let currentServerUrl = null;
 let isDiscoveryFound = false;
+let updaterEventsRegistered = false;
+let updateDownloaded = false;
+let latestUpdateStatus = { state: 'idle' };
 const bonjour = new Bonjour();
 const BROADCAST_PORT = 41234;
 const SERVER_PORT = 3002;
+
+function publishUpdateStatus(status) {
+  latestUpdateStatus = status;
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('update-status', status);
+  }
+  if (splashWindow && !splashWindow.isDestroyed() && status.message) {
+    splashWindow.webContents.send('discovery-status', status.message);
+  }
+}
+
+ipcMain.handle('get-update-status', () => latestUpdateStatus);
+ipcMain.handle('install-update', () => {
+  if (!updateDownloaded) return { success: false, error: 'Kurulmaya hazır güncelleme yok.' };
+  setImmediate(() => autoUpdater.quitAndInstall(false, true));
+  return { success: true };
+});
 
 function createSplash() {
   splashWindow = new BrowserWindow({
@@ -400,47 +420,57 @@ function setupAutoUpdater(serverUrl) {
     url: updateUrl
   });
 
-  autoUpdater.on('checking-for-update', () => {
-    console.log('[Updater] Güncellemeler kontrol ediliyor...');
-  });
+  if (!updaterEventsRegistered) {
+    updaterEventsRegistered = true;
 
-  autoUpdater.on('update-available', (info) => {
-    console.log(`[Updater] Güncelleme bulundu: v${info.version}`);
-    if (splashWindow) splashWindow.webContents.send('discovery-status', `YENİ SÜRÜM İNDİRİLİYOR (v${info.version})`);
-  });
+    autoUpdater.on('checking-for-update', () => {
+      console.log('[Updater] Güncellemeler kontrol ediliyor...');
+      publishUpdateStatus({ state: 'checking' });
+    });
 
-  autoUpdater.on('update-not-available', (info) => {
-    console.log('[Updater] Güncelleme yok.');
-  });
+    autoUpdater.on('update-available', (info) => {
+      console.log(`[Updater] Güncelleme bulundu: v${info.version}`);
+      publishUpdateStatus({
+        state: 'available',
+        version: info.version,
+        message: `YENİ SÜRÜM İNDİRİLİYOR (v${info.version})`
+      });
+    });
 
-  autoUpdater.on('error', (err) => {
-    console.error('[Updater] Hata:', err);
-  });
+    autoUpdater.on('update-not-available', () => {
+      console.log('[Updater] Güncelleme yok.');
+      publishUpdateStatus({ state: 'idle' });
+    });
 
-  autoUpdater.on('download-progress', (progressObj) => {
-    let log_message = `Hız: ${Math.round(progressObj.bytesPerSecond / 1024)} KB/s`;
-    log_message = log_message + ` - İndirilen: ${Math.round(progressObj.percent)}%`;
-    console.log(`[Updater] ${log_message}`);
-    
-    if (splashWindow) {
-      splashWindow.webContents.send('discovery-status', `GÜNCELLENİYOR: %${Math.round(progressObj.percent)}`);
-    } else if (mainWindow) {
-      mainWindow.webContents.send('update-progress', Math.round(progressObj.percent));
-    }
-  });
+    autoUpdater.on('error', (err) => {
+      console.error('[Updater] Hata:', err);
+      publishUpdateStatus({ state: 'error', message: err.message || 'Güncelleme kontrolü başarısız.' });
+    });
 
-  autoUpdater.on('update-downloaded', (info) => {
-    console.log('[Updater] Güncelleme indirildi. Kuruluyor...');
-    if (splashWindow) splashWindow.webContents.send('discovery-status', `GÜNCELLEME HAZIR. YENİDEN BAŞLATILIYOR...`);
-    
-    setTimeout(() => {
-      autoUpdater.quitAndInstall();
-    }, 2000);
-  });
+    autoUpdater.on('download-progress', (progressObj) => {
+      const percent = Math.round(progressObj.percent);
+      console.log(`[Updater] Hız: ${Math.round(progressObj.bytesPerSecond / 1024)} KB/s - İndirilen: ${percent}%`);
+      publishUpdateStatus({
+        state: 'downloading',
+        percent,
+        bytesPerSecond: progressObj.bytesPerSecond,
+        message: `GÜNCELLENİYOR: %${percent}`
+      });
+    });
+
+    autoUpdater.on('update-downloaded', (info) => {
+      updateDownloaded = true;
+      console.log('[Updater] Güncelleme indirildi. Kullanıcı onayı bekleniyor.');
+      publishUpdateStatus({
+        state: 'downloaded',
+        version: info.version,
+        message: 'GÜNCELLEME HAZIR'
+      });
+    });
+  }
 
   // Kontrolü başlat
-  autoUpdater.checkForUpdatesAndNotify().catch(err => {
+  autoUpdater.checkForUpdates().catch(err => {
     console.error('[Updater] Başlatma Hatası:', err);
   });
 }
-

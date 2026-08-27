@@ -31,6 +31,7 @@ const loadSettings = () => {
     telemetryEnabled: true,
     telemetryPromptAnswered: false,
     autoDownloadClientUpdates: true,
+    clientUpdateChannel: 'stable',
     clientUpdatesUrl: 'https://github.com/Emiran404/Atolye.Platform/releases/latest/download'
   };
 
@@ -91,6 +92,7 @@ router.post('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
       telemetryEnabled,
       telemetryPromptAnswered,
       autoDownloadClientUpdates,
+      clientUpdateChannel,
       clientUpdatesUrl
     } = req.body;
 
@@ -111,6 +113,7 @@ router.post('/', authenticateToken, authorizeRole('teacher'), (req, res) => {
       telemetryEnabled: telemetryEnabled !== undefined ? telemetryEnabled : currentSettings.telemetryEnabled,
       telemetryPromptAnswered: telemetryPromptAnswered !== undefined ? telemetryPromptAnswered : currentSettings.telemetryPromptAnswered,
       autoDownloadClientUpdates: autoDownloadClientUpdates !== undefined ? autoDownloadClientUpdates : currentSettings.autoDownloadClientUpdates,
+      clientUpdateChannel: ['stable', 'beta'].includes(clientUpdateChannel) ? clientUpdateChannel : currentSettings.clientUpdateChannel,
       clientUpdatesUrl: clientUpdatesUrl !== undefined ? clientUpdatesUrl : currentSettings.clientUpdatesUrl
     };
 
@@ -177,7 +180,7 @@ router.post('/check-updates', authenticateToken, authorizeRole('teacher'), async
  */
 router.get('/downloaded-updates', authenticateToken, authorizeRole('teacher'), (req, res) => {
   try {
-    const UPDATES_DIR = path.join(__dirname, '../../server/updates');
+    const UPDATES_DIR = path.join(__dirname, '../updates');
     if (!fs.existsSync(UPDATES_DIR)) {
       return res.json({ success: true, files: [] });
     }

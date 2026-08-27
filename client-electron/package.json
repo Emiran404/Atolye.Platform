@@ -1,6 +1,6 @@
 {
   "name": "atolye-platform-client",
-  "version": "4.4.4-beta.0",
+  "version": "4.4.4-beta.1",
   "type": "commonjs",
   "description": "Atolye Platform Smart Client with Auto-Discovery",
   "main": "main.js",
@@ -45,7 +45,7 @@
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
-      "identity": null
+      "notarize": true
     },
     "directories": {
       "output": "dist"

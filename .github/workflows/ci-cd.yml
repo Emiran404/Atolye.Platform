@@ -22,7 +22,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 20.x
+        node-version: 22.x
         cache: 'npm'
         
     - name: Install Dependencies
@@ -35,9 +35,86 @@ jobs:
     - name: Build All (Frontend & Backend)
       run: npm run build:all
 
+  macos-build:
+    runs-on: macos-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+
+    - name: Install Electron dependencies
+      run: |
+        cd client-electron && npm install
+        cd ../control-panel && npm install
+
+    - name: Prepare App Store Connect API key
+      env:
+        APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+      run: |
+        mkdir -p "$RUNNER_TEMP/apple-api"
+        echo "$APPLE_API_KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/apple-api/AuthKey.p8"
+        chmod 600 "$RUNNER_TEMP/apple-api/AuthKey.p8"
+
+    - name: Build, sign and notarize macOS applications
+      env:
+        CSC_LINK: ${{ secrets.CSC_LINK }}
+        CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+        APPLE_API_KEY: ${{ runner.temp }}/apple-api/AuthKey.p8
+        APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+        APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      run: |
+        cd client-electron && npx electron-builder --mac dmg --universal
+        cd ../control-panel && npm run build:mac
+
+    - name: Upload macOS client
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-client
+        path: |
+          client-electron/dist/*.dmg
+          client-electron/dist/*.zip
+          client-electron/dist/*-mac.yml
+
+    - name: Upload macOS control panel
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-control-panel
+        path: control-panel/dist/*.dmg
+
+  windows-build:
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+    - name: Build Windows applications
+      shell: bash
+      run: |
+        cd client-electron && npm install && npx electron-builder --win nsis --x64
+        cd ../control-panel && npm install && npm run build:win
+    - uses: actions/upload-artifact@v4
+      with:
+        name: windows-apps
+        path: |
+          client-electron/dist/*.exe
+          client-electron/dist/*.yml
+          control-panel/dist/*.exe
+
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
+    needs: [macos-build, windows-build]
     
     steps:
     - uses: actions/checkout@v4
@@ -45,7 +122,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 20.x
+        node-version: 22.x
         cache: 'npm'
         
     - name: Install Dependencies
@@ -70,17 +147,18 @@ jobs:
     - name: Package Control Panel (Linux .deb)
       run: npm run package:control-panel
       
-    - name: Install Wine for Windows Build
-      run: |
-        sudo dpkg --add-architecture i386
-        sudo apt-get update
-        sudo apt-get install -y wine64 wine32
-        
-    - name: Package Client (Windows .exe)
-      # Some electron-builder tasks on Linux for Windows might need Wine, 
-      # but NSIS is usually fine.
-      run: npm run package:client-win
-      
+    - uses: actions/download-artifact@v4
+      with:
+        name: macos-client
+        path: release-assets/macos-client
+    - uses: actions/download-artifact@v4
+      with:
+        name: macos-control-panel
+        path: release-assets/macos-control-panel
+    - uses: actions/download-artifact@v4
+      with:
+        name: windows-apps
+        path: release-assets/windows
 
     - name: Release to GitHub
       uses: softprops/action-gh-release@v2
@@ -91,7 +169,8 @@ jobs:
           *.deb
           control-panel/dist/*.deb
           *.zip
-          client-electron/dist/*.exe
-          client-electron/dist/latest.yml
-          client-electron/dist/latest-linux.yml
+          client-electron/dist/*.yml
+          release-assets/macos-client/*
+          release-assets/macos-control-panel/*
+          release-assets/windows/*
         body_path: release_description.txt

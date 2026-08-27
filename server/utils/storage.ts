@@ -14,8 +14,9 @@ const LEGACY_KEYS = [
 fs.mkdirSync(dataPath, { recursive: true });
 
 let DatabaseSync;
+let sqliteBackup;
 try {
-  ({ DatabaseSync } = await import('node:sqlite'));
+  ({ DatabaseSync, backup: sqliteBackup } = await import('node:sqlite'));
 } catch (error) {
   throw new Error(
     'Atolye Platform SQLite ile çalışmak için Node.js 22 veya üstünü gerektirir. ' +
@@ -113,3 +114,43 @@ export const getDbStatus = () => ({
   dbType: 'sqlite',
   ready: true
 });
+
+export const createDatabaseBackup = async (destinationPath) => {
+  db.exec('PRAGMA wal_checkpoint(PASSIVE)');
+  await sqliteBackup(db, destinationPath);
+  return destinationPath;
+};
+
+export const restoreDatabaseBackup = (sourcePath) => {
+  const sourceDb = new DatabaseSync(sourcePath, { readOnly: true });
+  try {
+    const integrity = sourceDb.prepare('PRAGMA integrity_check').get();
+    if (!integrity || Object.values(integrity)[0] !== 'ok') {
+      throw new Error('SQLite yedeği bütünlük kontrolünden geçemedi.');
+    }
+
+    const table = sourceDb.prepare(
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'collections'"
+    ).get();
+    if (!table) throw new Error('Bu dosya Atolye Platform veritabanı değil.');
+
+    const rows = sourceDb.prepare('SELECT key, value FROM collections').all();
+    for (const row of rows) JSON.parse(row.value);
+
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      db.exec('DELETE FROM collections');
+      const insert = db.prepare('INSERT INTO collections (key, value) VALUES (?, ?)');
+      for (const row of rows) insert.run(row.key, row.value);
+      db.exec('COMMIT');
+    } catch (error) {
+      db.exec('ROLLBACK');
+      throw error;
+    }
+
+    db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
+    return rows.length;
+  } finally {
+    sourceDb.close();
+  }
+};

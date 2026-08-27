@@ -267,6 +267,7 @@ const PlatformManagement = () => {
 
   // Masaüstü Güncellemeleri
   const [autoDownloadClientUpdates, setAutoDownloadClientUpdates] = useState(true);
+  const [clientUpdateChannel, setClientUpdateChannel] = useState('stable');
   const [clientUpdatesUrl, setClientUpdatesUrl] = useState('https://github.com/Emiran404/Atolye.Platform/releases/latest/download');
 
   // Güncelleme state'leri
@@ -475,6 +476,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
         setAutoBackupWizardConfigured(data.settings.autoBackupWizardConfigured || false);
         setLastAutoBackupTime(data.settings.lastAutoBackupTime || null);
         setAutoDownloadClientUpdates(data.settings.autoDownloadClientUpdates !== false);
+        setClientUpdateChannel(data.settings.clientUpdateChannel === 'beta' ? 'beta' : 'stable');
         if (data.settings.clientUpdatesUrl) {
           setClientUpdatesUrl(data.settings.clientUpdatesUrl);
         }
@@ -508,6 +510,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
         autoBackupIncludePhotos: newSettings.autoBackupIncludePhotos !== undefined ? newSettings.autoBackupIncludePhotos : autoBackupIncludePhotos,
         autoBackupWizardConfigured: newSettings.autoBackupWizardConfigured !== undefined ? newSettings.autoBackupWizardConfigured : autoBackupWizardConfigured,
         autoDownloadClientUpdates: newSettings.autoDownloadClientUpdates !== undefined ? newSettings.autoDownloadClientUpdates : autoDownloadClientUpdates,
+        clientUpdateChannel: newSettings.clientUpdateChannel !== undefined ? newSettings.clientUpdateChannel : clientUpdateChannel,
         clientUpdatesUrl: newSettings.clientUpdatesUrl !== undefined ? newSettings.clientUpdatesUrl : clientUpdatesUrl
       };
 
@@ -667,20 +670,16 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
   const handleBackupData = async () => {
     setBackupInProgress(true);
     try {
-      const data = await backupApi.get();
-
-      if (!data?.success) {
-        toast.error('Yedekleme başarısız');
-        return;
-      }
-
-      const backupData = data.backup;
-      const jsonString = JSON.stringify(backupData, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
+      const token = useAuthStore.getState().token;
+      const response = await fetch('/api/backup', {
+        headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+      });
+      if (!response.ok) throw new Error('Yedekleme başarısız');
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `platform-backup-${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `atolye-platform-backup-${new Date().toISOString().split('T')[0]}.db`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -921,17 +920,15 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
       type: 'warning',
       onConfirm: async () => {
         try {
-          const isZip = file.name.endsWith('.zip');
+          const isZip = file.name.toLowerCase().endsWith('.zip');
           let result;
 
           if (isZip) {
             toast.info('ZIP dosyası yükleniyor ve geri yükleniyor...');
             result = await backupApi.restoreZip(file);
           } else {
-            const text = await file.text();
-            const backupData = JSON.parse(text);
-
-            result = await backupApi.restore(backupData);
+            toast.info('SQLite veritabanı doğrulanıyor ve geri yükleniyor...');
+            result = await backupApi.restoreDatabase(file);
           }
 
           if (result?.success) {
@@ -1977,7 +1974,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
         )}
       </div>
 
-      {/* JSON Yedekleme */}
+      {/* SQLite Yedekleme */}
       <div style={styles.card}>
         <div style={styles.cardHeader}>
           <Download size={24} style={{ color: '#10b981' }} />
@@ -1985,7 +1982,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
         </div>
 
         <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginBottom: '20px' }}>
-          Platform verilerini JSON formatında yedekleyin. Bu yedek dosyası ile tüm öğrenci, öğretmen, sınav ve not bilgilerini kaydedebilirsiniz.
+          Platformun SQLite veritabanını doğrudan yedekleyin. Öğrenci, öğretmen, sınav, teslim, ayar ve diğer sistem verilerinin tamamı `.db` dosyasına dahil edilir.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1999,12 +1996,11 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
               <Database size={20} style={{ color: '#10b981' }} />
               <h3 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-text-primary)' }}>
-                Standart Yedekleme (JSON)
+                Veritabanı Yedeği (SQLite)
               </h3>
             </div>
             <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: '16px', lineHeight: '1.6' }}>
-              Tüm platform verileri JSON dosyası olarak indirilir. Fotoğraflar dahil <strong>değildir</strong>.
-              Dosya boyutu küçüktür ve hızlı indirilir.
+              Çalışan SQLite veritabanının güvenli ve tutarlı bir `.db` kopyası indirilir. Yüklenen dosyalar dahil <strong>değildir</strong>.
             </p>
             <button
               onClick={handleBackupData}
@@ -2016,7 +2012,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
               }}
             >
               <Download size={18} />
-              {backupInProgress ? 'Yedekleniyor...' : 'JSON Yedek İndir'}
+              {backupInProgress ? 'Yedekleniyor...' : 'SQLite Yedeği İndir (.db)'}
             </button>
           </div>
 
@@ -2034,9 +2030,9 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
               </h3>
             </div>
             <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: '16px', lineHeight: '1.6' }}>
-              Tüm veriler + yüklenen fotoğraflar ZIP arşivi olarak indirilir.
+              SQLite veritabanı + yüklenen dosyalar ZIP arşivi olarak indirilir.
               <strong> Dosya boyutu büyük olabilir.</strong> İndirme işlemi daha uzun sürebilir.
-              ZIP içeriği: backup.json, uploads/ ve uploads_student/ klasörleri.
+              ZIP içeriği: database.db, uploads/ ve uploads_student/ klasörleri.
             </p>
 
             <div style={{
@@ -2123,7 +2119,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
           <strong style={{ color: '#ef4444' }}> Bu işlem mevcut tüm verileri silecektir!</strong>
           <br />
           <span style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginTop: '8px', display: 'block' }}>
-            Desteklenen formatlar: <strong>JSON</strong> (sadece veriler) veya <strong>ZIP</strong> (veriler + fotoğraflar)
+            Desteklenen formatlar: <strong>DB</strong> (SQLite veritabanı) veya <strong>ZIP</strong> (database.db + yüklenen dosyalar)
           </span>
         </p>
 
@@ -2146,7 +2142,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
 
           <input
             type="file"
-            accept=".json,.zip"
+            accept=".db,.zip"
             onChange={handleRestoreData}
             style={{ display: 'none' }}
             id="restore-file-input"
@@ -2160,7 +2156,7 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
             }}
           >
             <Database size={18} />
-            Yedek Dosyası Seç (.json veya .zip)
+            Yedek Dosyası Seç (.db veya .zip)
           </label>
         </div>
       </div>
@@ -2581,6 +2577,40 @@ HAZIR MISINIZ? Bu işlem tüm sistemi Fabrika Ayarlarına döndürecektir. 👋`
               </>
             )}
           </button>
+        </div>
+
+        <div style={{ marginTop: '16px' }}>
+          <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: '8px', display: 'block' }}>
+            Yayın Kanalı
+          </label>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {[
+              { value: 'stable', label: 'Stable', description: 'Kararlı sürümler' },
+              { value: 'beta', label: 'Beta', description: 'Erken deneme sürümleri' }
+            ].map(channel => (
+              <button
+                key={channel.value}
+                onClick={() => {
+                  setClientUpdateChannel(channel.value);
+                  handleSaveSettings({ clientUpdateChannel: channel.value });
+                }}
+                disabled={saving}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: '10px',
+                  border: clientUpdateChannel === channel.value ? '2px solid #2563eb' : '1px solid var(--color-border)',
+                  backgroundColor: clientUpdateChannel === channel.value ? '#eff6ff' : 'var(--color-background)',
+                  color: clientUpdateChannel === channel.value ? '#1d4ed8' : 'var(--color-text-primary)',
+                  cursor: 'pointer',
+                  textAlign: 'left'
+                }}
+              >
+                <strong style={{ display: 'block', fontSize: '14px' }}>{channel.label}</strong>
+                <span style={{ display: 'block', marginTop: '3px', fontSize: '12px', opacity: 0.75 }}>{channel.description}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         <div style={{ marginTop: '16px' }}>
