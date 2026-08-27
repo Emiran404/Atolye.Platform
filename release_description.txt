@@ -1,6 +1,6 @@
-# Atolye Platform v4.4.4 Beta 2
+# Atolye Platform v4.4.4 Beta 3
 
-Bu sürüm test amaçlı ikinci beta sürümüdür.
+Bu sürüm test amaçlı üçüncü beta sürümüdür.
 
 - Yedekleme ve geri yükleme sistemi doğrudan SQLite `.db` biçimine geçirildi.
 - Otomatik yedeklere SQLite veritabanı dahil edildi; dosyalı ZIP yedeklerinde `database.db` kullanılıyor.
@@ -8,6 +8,6 @@ Bu sürüm test amaçlı ikinci beta sürümüdür.
 - Öğrenci istemcisine güncelleme bildirimi, indirme ilerlemesi ve kullanıcı onaylı kurulum eklendi.
 - Öğretmen paneline Stable/Beta masaüstü güncelleme kanalı seçimi eklendi.
 - Sunucunun indirdiği istemci güncellemelerinin yerel ağda yayınlanması düzeltildi.
-- Öğrenci istemcisi Linux, Windows ve imzalı/notarize edilmiş macOS paketleriyle yayınlanıyor.
-- Control Panel Linux, Windows ve imzalı/notarize edilmiş macOS paketleriyle yayınlanıyor.
-- Bu beta sürümünde macOS istemcisi ve Control Panel yalnızca Apple Silicon (ARM64) için hazırlanıyor.
+- Öğrenci istemcisi bu beta sürümünde Linux ve Windows paketleriyle yayınlanıyor.
+- Control Panel bu beta sürümünde Linux ve Windows paketleriyle yayınlanıyor.
+- macOS istemcisi ve Control Panel paketleri, Apple noter servisindeki uzun bekleme süreleri nedeniyle geçici olarak askıya alınmıştır.
