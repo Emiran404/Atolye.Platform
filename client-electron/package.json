@@ -23,6 +23,7 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
+    "afterSign": "build/notarize.cjs",
     "appId": "com.atolye.platform",
     "productName": "Atolye Platform",
     "linux": {
@@ -45,7 +46,7 @@
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
-      "notarize": true
+      "notarize": false
     },
     "directories": {
       "output": "dist"
