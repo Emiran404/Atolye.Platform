@@ -1,6 +1,6 @@
 {
   "name": "sinav-platformu-backend",
-  "version": "4.4.4-beta.1",
+  "version": "4.4.4-beta.2",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {

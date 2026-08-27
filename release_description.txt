@@ -10,3 +10,4 @@ Bu sürüm test amaçlı ikinci beta sürümüdür.
 - Sunucunun indirdiği istemci güncellemelerinin yerel ağda yayınlanması düzeltildi.
 - Öğrenci istemcisi Linux, Windows ve imzalı/notarize edilmiş macOS paketleriyle yayınlanıyor.
 - Control Panel Linux, Windows ve imzalı/notarize edilmiş macOS paketleriyle yayınlanıyor.
+- Bu beta sürümünde macOS istemcisi ve Control Panel yalnızca Apple Silicon (ARM64) için hazırlanıyor.
